@@ -1,33 +1,46 @@
-const CACHE_NAME = 'my-site-cache-v1'; // Можете изменить название кэша (например, "my-app-v1")
+const CACHE_NAME = 'my-site-cache-v2'; // Версия кэша (меняйте при обновлениях!)
 
-// Список файлов для кэширования (укажите свои!)
 const urlsToCache = [
-  '/',              // Главная страница
-  '/index.html',    // Основной HTML
-  '/style.css',    // CSS-файл (если есть)
-  '/script.js',     // JS-файл (если есть)
-  '/img/icon-192x192.png', // Иконка
+  '/',
+  '/index.html',
+  '/style.css',
+  '/script.js',
+  '/img/icon-192x192.png',
   '/img/icon-512x512.png'
 ];
 
+// Установка и кэширование файлов
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache)) // Кэшируем файлы
+      .then((cache) => {
+        console.log('Кэш открыт');
+        return cache.addAll(urlsToCache).catch(err => {
+          console.error('Ошибка кэширования:', err);
+        });
+      })
   );
 });
 
+// Активация и очистка старых кэшей
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Обработка запросов
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
-      .then((response) => response || fetch(event.request)) // Отдаём из кэша или загружаем
+      .then((response) => response || fetch(event.request))
   );
 });
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js') // Укажите правильный путь, если sw.js не в корне
-      .then(registration => console.log('ServiceWorker зарегистрирован'))
-      .catch(err => console.log('Ошибка ServiceWorker:', err));
-  });
-}
