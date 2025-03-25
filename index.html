@@ -548,6 +548,13 @@
                 hiddenLink.classList.add('hidden'); // Скрываем слово через 5 секунд
             }, 2000);
         });
+     
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/otz2025/sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        }
+     
     </script>
 </body>
 </html>
