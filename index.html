@@ -557,5 +557,43 @@
             }, 2000);
         });
     </script>
+
+      <!-- Скрипты -->
+  <script>
+    // Проверка подключения
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    
+    function updateNetworkStatus() {
+      document.getElementById('offline-alert').classList.toggle(
+        'hidden', navigator.onLine
+      );
+    }
+  </script>
+  
+  <!-- Основной скрипт приложения -->
+  <script src="/app.js"></script>
+  
+  <!-- Скрипт синхронизации -->
+  <script src="/sync.js"></script>
+  
+  <!-- Инициализация Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => {
+            console.log('ServiceWorker зарегистрирован');
+            
+            // Для iOS: принудительная проверка обновлений
+            reg.update().then(() => {
+              if (reg.installing) {
+                reg.installing.postMessage({type: 'UPDATE_CHECK'});
+              }
+            });
+          });
+      });
+    }
+  </script>
 </body>
 </html>
