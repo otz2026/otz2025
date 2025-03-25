@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+
+    <!-- Подключение манифеста (замените путь, если он не в корне) -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Иконка для iOS (Safari) -->
+    <link rel="apple-touch-icon" href="/img/icon-192x192.png"> <!-- Укажите свою иконку -->
+
+    <!-- Цвет статус-бара в iOS (должен совпадать с theme_color из manifest.json) -->
+    <meta name="theme-color" content="#000000"> <!-- Замените на ваш цвет -->
+
+    <!-- Включение PWA-режима -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- или "default", "black" -->
+
+
+    
     <!-- Основные метатеги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
