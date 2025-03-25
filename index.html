@@ -1,56 +1,99 @@
-// Обновление контента
-async function updateContent() {
-  try {
-    const response = await fetch('/otz2025/api/content');
-    const data = await response.json();
-    
-    // Кэширование
-    if ('caches' in window) {
-      caches.open('otz-dynamic').then(cache => {
-        cache.put('/otz2025/api/content', new Response(JSON.stringify(data)));
+<head>
+  <!-- ... остальные метатеги ... -->
+  
+  <!-- PWA Configuration -->
+  <link rel="manifest" href="/otz2025/manifest.json">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- iOS Specific -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="OTZ">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
+  <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
+  
+  <!-- Preload -->
+  <link rel="preload" href="/otz2025/styles.css" as="style">
+  <link rel="preload" href="/otz2025/app.js" as="script">
+</head>
+
+<!-- ... остальное содержимое body ... -->
+
+<script>
+// Регистрация Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/otz2025/sw.js')
+      .then(reg => {
+        console.log('SW зарегистрирован');
+        
+        // Проверка обновлений каждые 24 часа
+        setInterval(() => reg.update(), 86400000);
+        
+        // Инициализация синхронизации
+        initSync(reg);
       });
-    }
-    
-    // Обновление UI
-    document.getElementById('dynamic-content').innerHTML = `
-      <h3>${data.title}</h3>
-      <p>${data.content}</p>
-      <small>Обновлено: ${new Date().toLocaleString()}</small>
-    `;
-    
-    return data;
-  } catch (err) {
-    console.error('Ошибка загрузки:', err);
-    return caches.match('/otz2025/api/content').then(response => 
-      response ? response.json() : {title: "Офлайн-режим", content: "Нет соединения с сервером"}
-    );
+  });
+}
+
+// Синхронизация данных
+let deferredPrompt;
+
+function initSync(reg) {
+  // Для Android
+  if ('sync' in reg) {
+    document.querySelector('#sync-btn').addEventListener('click', () => {
+      reg.sync.register('sync-data')
+        .then(() => console.log('Синхронизация запланирована'))
+        .catch(err => console.error('Ошибка синхронизации:', err));
+    });
+  }
+  
+  // Для iOS
+  if ('periodicSync' in reg) {
+    navigator.permissions.query({name: 'periodic-background-sync'}).then(status => {
+      if (status.state === 'granted') {
+        reg.periodicSync.register('update-content', {minInterval: 86400000});
+      }
+    });
+  }
+  
+  // Обработка установки PWA
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.querySelector('#install-btn').style.display = 'block';
+  });
+}
+
+// Установка PWA
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        console.log('PWA установлено');
+      }
+      deferredPrompt = null;
+    });
   }
 }
 
-// Отправка данных
-async function sendData(data) {
-  try {
-    const response = await fetch('/otz2025/api/update', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    
-    if (!response.ok) throw new Error('Ошибка сервера');
-    return response.json();
-  } catch (err) {
-    console.error('Ошибка отправки:', err);
-    
-    // Сохранение для фоновой синхронизации
-    if ('serviceWorker' in navigator && 'SyncManager' in window) {
-      navigator.serviceWorker.ready.then(reg => {
-        caches.open('otz-pending').then(cache => {
-          cache.put('/otz2025/pending', new Response(JSON.stringify(data)));
-          reg.sync.register('sync-data');
-        });
+// Проверка соединения
+function updateNetworkStatus() {
+  const offlineElement = document.getElementById('offline-alert');
+  if (offlineElement) {
+    offlineElement.style.display = navigator.onLine ? 'none' : 'block';
+    if (!navigator.onLine) {
+      caches.match('/otz2025/offline.html').then(response => {
+        if (response) document.getElementById('content').innerHTML = response;
       });
     }
-    
-    return {status: 'pending', message: 'Данные будут отправлены позже'};
   }
 }
+
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+updateNetworkStatus();
+</script>
