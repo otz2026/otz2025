@@ -2,32 +2,62 @@
 const CONFIG = {
   API_URL: '/otz2025/api/data',
   UPDATE_INTERVAL: 300000, // 5 минут
-  CACHE_KEY: 'otz-ui-cache'
+  CACHE_KEY: 'otz-app-data'
 };
 
-// DOM элементы
-const elements = {
-  content: document.getElementById('content'),
-  loader: document.getElementById('loader'),
-  offlineAlert: document.getElementById('offline-alert')
+// Состояние приложения
+const state = {
+  isOnline: navigator.onLine,
+  lastUpdate: null,
+  isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+  isAndroid: /Android/.test(navigator.userAgent)
 };
 
 // Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  initServiceWorker();
-  loadInitialData();
-  setupUpdateInterval();
-  setupEventListeners();
-});
+document.addEventListener('DOMContentLoaded', initApp);
 
-// Работа с Service Worker
-function initServiceWorker() {
+async function initApp() {
+  registerServiceWorker();
+  setupEventListeners();
+  loadInitialData();
+  
+  // Особые настройки для iOS
+  if (state.isIOS) {
+    document.body.classList.add('ios');
+    setupIOSHandlers();
+  }
+  
+  // Особые настройки для Android
+  if (state.isAndroid) {
+    document.body.classList.add('android');
+    setupAndroidHandlers();
+  }
+}
+
+// Регистрация Service Worker
+function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/otz2025/sw.js')
-      .then(reg => {
-        console.log('SW registered');
-        setupPeriodicSync(reg);
-      });
+    navigator.serviceWorker.register('/otz2025/sw.js', {
+      scope: '/otz2025/'
+    })
+    .then(registration => {
+      console.log('SW зарегистрирован:', registration.scope);
+      
+      // Проверка обновлений каждые 5 минут
+      setInterval(() => registration.update(), CONFIG.UPDATE_INTERVAL);
+      
+      // Для Android - активация фоновой синхронизации
+      if ('sync' in registration && state.isAndroid) {
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) {
+            registration.sync.register('sync-data');
+          }
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка регистрации SW:', error);
+    });
   }
 }
 
@@ -36,146 +66,188 @@ async function loadInitialData() {
   showLoader();
   
   try {
-    // Пытаемся получить свежие данные
-    const data = await fetchData(CONFIG.API_URL);
-    renderData(data);
-    saveToCache(data);
-  } catch (err) {
-    // Если ошибка - пробуем взять из кэша
-    const cachedData = await getCachedData();
-    if (cachedData) {
-      renderData(cachedData);
-      showMessage('Используются кэшированные данные');
+    const [networkData, cachedData] = await Promise.all([
+      fetchData(CONFIG.API_URL),
+      getCachedData()
+    ]);
+    
+    // Используем сетевые данные если есть, иначе кэш
+    const dataToShow = networkData || cachedData;
+    
+    if (dataToShow) {
+      renderData(dataToShow);
+      state.lastUpdate = Date.now();
+      
+      // Если есть сетевые данные - обновляем кэш
+      if (networkData) {
+        await cacheData(networkData);
+        showNotification('Данные обновлены');
+      } else if (cachedData) {
+        showNotification('Используются кэшированные данные');
+      }
     } else {
-      showError('Не удалось загрузить данные');
+      showError('Нет данных для отображения');
     }
+  } catch (error) {
+    console.error('Ошибка загрузки:', error);
+    showError('Ошибка загрузки данных');
   } finally {
     hideLoader();
+    scheduleNextUpdate();
   }
 }
 
-// Получение данных с сервера
+// Работа с данными
 async function fetchData(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('Network error');
-  return response.json();
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Ошибка сети');
+    return response.json();
+  } catch (error) {
+    console.error('Ошибка получения данных:', error);
+    return null;
+  }
 }
 
-// Работа с локальным кэшем
 async function getCachedData() {
   if ('caches' in window) {
-    const cache = await caches.open(API_CACHE);
-    const response = await cache.match(CONFIG.API_URL);
-    return response ? response.json() : null;
+    try {
+      const cache = await caches.open(API_CACHE_NAME);
+      const response = await cache.match(CONFIG.API_URL);
+      return response ? response.json() : null;
+    } catch (error) {
+      console.error('Ошибка чтения кэша:', error);
+      return null;
+    }
   }
   return null;
 }
 
-function saveToCache(data) {
+async function cacheData(data) {
   if ('caches' in window) {
-    caches.open(API_CACHE)
-      .then(cache => 
-        cache.put(CONFIG.API_URL, 
-          new Response(JSON.stringify(data)))
+    try {
+      const cache = await caches.open(API_CACHE_NAME);
+      await cache.put(
+        CONFIG.API_URL,
+        new Response(JSON.stringify(data))
       );
+    } catch (error) {
+      console.error('Ошибка кэширования:', error);
+    }
   }
 }
 
-// Рендеринг данных
+// Отображение данных
 function renderData(data) {
-  if (!elements.content) return;
+  const appContainer = document.getElementById('app');
+  if (!appContainer) return;
   
-  elements.content.innerHTML = `
-    <div class="content-block">
-      <h2>${data.title}</h2>
-      <p>${data.content}</p>
-      <small>Обновлено: ${new Date().toLocaleString()}</small>
+  appContainer.innerHTML = `
+    <div class="content">
+      <h2>${data.title || 'Без названия'}</h2>
+      <p>${data.content || 'Нет содержимого'}</p>
+      <div class="meta">
+        <small>Обновлено: ${new Date().toLocaleString()}</small>
+        ${state.isOnline ? '' : '<span class="offline-badge">Офлайн</span>'}
+      </div>
     </div>
   `;
-  
-  // Анимация появления
-  setTimeout(() => {
-    elements.content.querySelector('.content-block')
-      .style.opacity = 1;
-  }, 50);
 }
 
-// Фоновая синхронизация
-function setupPeriodicSync(reg) {
-  // Для Android
-  if ('sync' in reg) {
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        reg.sync.register('update-content');
-      }
-    });
-  }
+// Обработчики событий
+function setupEventListeners() {
+  // Сетевое соединение
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
   
-  // Для iOS
-  if ('periodicSync' in reg) {
-    navigator.permissions.query({name: 'periodic-background-sync'})
-      .then(status => {
-        if (status.state === 'granted') {
-          reg.periodicSync.register('update-content', {
-            minInterval: CONFIG.UPDATE_INTERVAL
-          });
-        }
-      });
+  // Сообщения от Service Worker
+  navigator.serviceWorker?.addEventListener('message', handleSWMessage);
+  
+  // Обновление по кнопке
+  document.getElementById('refresh-btn')?.addEventListener('click', loadInitialData);
+}
+
+function handleOnline() {
+  state.isOnline = true;
+  document.body.classList.remove('offline');
+  loadInitialData();
+}
+
+function handleOffline() {
+  state.isOnline = false;
+  document.body.classList.add('offline');
+  showNotification('Вы перешли в офлайн-режим');
+}
+
+function handleSWMessage(event) {
+  if (event.data.type === 'content-updated') {
+    showNotification('Данные обновлены в фоне');
+    loadInitialData();
   }
+}
+
+// iOS специфика
+function setupIOSHandlers() {
+  // Принудительное обновление при открытии
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      loadInitialData();
+    }
+  });
+  
+  // Обработка добавления на домашний экран
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    showIOSInstallPrompt();
+  });
+}
+
+// Android специфика
+function setupAndroidHandlers() {
+  // Обработка обновлений
+  navigator.serviceWorker?.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
 }
 
 // Вспомогательные функции
-function setupUpdateInterval() {
-  setInterval(() => {
-    if (!document.hidden) {
-      checkForUpdates();
-    }
-  }, CONFIG.UPDATE_INTERVAL);
-}
-
-async function checkForUpdates() {
-  try {
-    const data = await fetchData(CONFIG.API_URL);
-    const cachedData = await getCachedData();
-    
-    if (JSON.stringify(data) !== JSON.stringify(cachedData)) {
-      renderData(data);
-      saveToCache(data);
-      showMessage('Данные обновлены', 2000);
-    }
-  } catch (err) {
-    console.log('Ошибка при проверке обновлений:', err);
-  }
-}
-
 function showLoader() {
-  if (elements.loader) elements.loader.style.display = 'block';
+  document.getElementById('loader')?.classList.add('active');
 }
 
 function hideLoader() {
-  if (elements.loader) elements.loader.style.display = 'none';
+  document.getElementById('loader')?.classList.remove('active');
 }
 
-function showMessage(text, duration = 3000) {
-  const msg = document.createElement('div');
-  msg.className = 'notification';
-  msg.textContent = text;
-  document.body.appendChild(msg);
+function showNotification(message, duration = 3000) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
   
   setTimeout(() => {
-    msg.classList.add('fade-out');
-    setTimeout(() => msg.remove(), 500);
+    notification.classList.add('fade-out');
+    setTimeout(() => notification.remove(), 500);
   }, duration);
 }
 
-function setupEventListeners() {
-  // Обработка онлайн/офлайн статуса
-  window.addEventListener('online', () => {
-    elements.offlineAlert.style.display = 'none';
-    checkForUpdates();
-  });
-  
-  window.addEventListener('offline', () => {
-    elements.offlineAlert.style.display = 'block';
-  });
+function showError(message) {
+  const errorEl = document.getElementById('error-message');
+  if (errorEl) {
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+    setTimeout(() => {
+      errorEl.style.display = 'none';
+    }, 5000);
+  }
 }
+
+function scheduleNextUpdate() {
+  setTimeout(loadInitialData, CONFIG.UPDATE_INTERVAL);
+}
+
+// Публичное API (если нужно)
+window.OTZApp = {
+  refresh: loadInitialData,
+  getState: () => state
+};
