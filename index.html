@@ -1,23 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
-    <link rel="manifest" href="/otz2025/manifest.json">
-    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
-
-    <!-- Для GitHub Pages обязательно -->
-    <meta name="theme-color" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Дополнительно для iOS -->
-    <meta name="apple-mobile-web-app-title" content="OTZ">
-    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
-
-
-    
-    <!-- Основные метатеги -->
+ 
+  <!-- Основные метатеги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Over Time Zvenigorod - Баскетбольная лига</title>
@@ -25,6 +10,21 @@
     <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
     <meta name="author" content="Over Time Zvenigorod">
 
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/otz2025/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- iOS Specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="OTZ">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
+    
+    <!-- Иконки -->
+    <link rel="icon" href="/otz2025/img/icon-192x192.png">
+    
     <!-- Open Graph метатеги для соцсетей и поисковиков -->
     <meta property="og:title" content="Over Time Zvenigorod - Баскетбольная лига">
     <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png"> <!-- Укажите полный URL логотипа -->
@@ -486,8 +486,52 @@
     <script>window.yaContextCb=window.yaContextCb||[]</script>
     <script src="https://yandex.ru/ads/system/context.js" async></script>
 
-
+    <!-- Скрипты -->
     <script>
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/otz2025/sw.js')
+                    .then(reg => {
+                        console.log('ServiceWorker успешно зарегистрирован');
+                        
+                        // Автоматическая проверка обновлений
+                        setInterval(() => reg.update(), 86400000); // Каждые 24 часа
+                    })
+                    .catch(err => console.log('Ошибка регистрации ServiceWorker:', err));
+            });
+        }
+
+        // Управление кнопкой установки
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'block';
+        });
+
+        document.getElementById('install-btn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(choice => {
+                    if (choice.outcome === 'accepted') {
+                        console.log('Пользователь установил PWA');
+                    }
+                    document.getElementById('install-btn').style.display = 'none';
+                });
+            }
+        });
+
+        // Проверка подключения
+        function updateNetworkStatus() {
+            document.getElementById('offline-alert').style.display = 
+                navigator.onLine ? 'none' : 'block';
+        }
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        
         // Скрипт для изменения фона шапки при скролле
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
