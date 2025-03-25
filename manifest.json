@@ -1,16 +1,19 @@
 {
   "name": "Over Time Zvenigorod",
   "short_name": "OTZ",
-  "start_url": "/otz2025/",
+  "start_url": "/otz2025/?source=pwa",
   "scope": "/otz2025/",
   "display": "standalone",
   "background_color": "#2a2a2a",
   "theme_color": "#000000",
+  "description": "Официальное приложение баскетбольной лиги Over Time Zvenigorod",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/otz2025/img/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/otz2025/img/icon-512x512.png",
@@ -18,5 +21,31 @@
       "type": "image/png"
     }
   ],
-  "prefer_related_applications": false
+  "screenshots": [
+    {
+      "src": "/otz2025/img/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "features": [
+    "webapp",
+    "offline"
+  ],
+  "categories": [
+    "sports",
+    "basketball"
+  ],
+  "shortcuts": [
+    {
+      "name": "Новости",
+      "url": "/otz2025/news",
+      "description": "Последние новости лиги"
+    },
+    {
+      "name": "Расписание",
+      "url": "/otz2025/schedule",
+      "description": "Расписание матчей"
+    }
+  ]
 }
