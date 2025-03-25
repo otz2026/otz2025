@@ -2,41 +2,20 @@
 <html lang="ru">
 <head>
 
+    <link rel="manifest" href="/otz2025/manifest.json">
+    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
 
-    <!-- Обязательные мета-теги 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <!-- Настройки PWA 
-    <title>Over Time Zwenigorod</title>
-    <meta name="description" content="Официальное приложение лиги OVER TIME ZWENIGOROD">
-  
-    <!-- Цвет темы для браузеров -->
+    <!-- Для GitHub Pages обязательно -->
     <meta name="theme-color" content="#000000">
-  
-    <!-- Иконка для Android -->
-    <link rel="icon" href="/img/icon-192x192.png">
-  
-    <!-- Манифест PWA -->
-    <link rel="manifest" href="/manifest.json">
-  
-    <!-- Настройки для iOS -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="OTZ">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/img/icon-192x192.png">
-  
-    <!-- Splash Screen для iOS (необязательно) -->
-    <link rel="apple-touch-startup-image" href="/img/splash.png">
-  
-    <!-- CSS -->
-    <link rel="stylesheet" href="/styles.css">
-  
-    <!-- Предзагрузка важных ресурсов -->
-    <link rel="preload" href="/app.js" as="script">
-    <link rel="preload" href="/img/icon-512x512.png" as="image">
 
-    
+    <!-- Дополнительно для iOS -->
+    <meta name="apple-mobile-web-app-title" content="OTZ">
+    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
+
+
     
     <!-- Основные метатеги -->
     <meta charset="UTF-8">
@@ -376,37 +355,6 @@
     </style>
 </head>
 <body>
-     <!-- Основная структура приложения -->
-      <div class="app-container">
-        <header class="app-header">
-          <h1>OVER TIME ZWENIGOROD</h1>
-          <button id="refresh-btn" aria-label="Обновить">
-            <svg><!-- Иконка обновления --></svg>
-          </button>
-        </header>
-    
-        <main class="app-content">
-          <!-- Динамически обновляемый контент -->
-          <div id="dynamic-content" class="content-wrapper">
-            <p>Загрузка данных...</p>
-          </div>
-      
-          <!-- Офлайн-уведомление -->
-          <div id="offline-alert" class="hidden">
-            <p>Вы в офлайн-режиме. Данные могут быть неактуальны.</p>
-          </div>
-        </main>
-    
-        <footer class="app-footer">
-          <button id="sync-btn" class="sync-button">
-            Синхронизировать
-          </button>
-        </footer>
-      </div>
-
-
-
-    
     <header id="header">
         <div class="logo">OVER TIME ZWENIGOROD</div>
         <nav>
@@ -557,43 +505,5 @@
             }, 2000);
         });
     </script>
-
-      <!-- Скрипты -->
-  <script>
-    // Проверка подключения
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
-    
-    function updateNetworkStatus() {
-      document.getElementById('offline-alert').classList.toggle(
-        'hidden', navigator.onLine
-      );
-    }
-  </script>
-  
-  <!-- Основной скрипт приложения -->
-  <script src="/app.js"></script>
-  
-  <!-- Скрипт синхронизации -->
-  <script src="/sync.js"></script>
-  
-  <!-- Инициализация Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => {
-            console.log('ServiceWorker зарегистрирован');
-            
-            // Для iOS: принудительная проверка обновлений
-            reg.update().then(() => {
-              if (reg.installing) {
-                reg.installing.postMessage({type: 'UPDATE_CHECK'});
-              }
-            });
-          });
-      });
-    }
-  </script>
 </body>
 </html>
