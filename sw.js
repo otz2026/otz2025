@@ -2,13 +2,13 @@ const CACHE_NAME = 'otz-sync-v2';
 const API_CACHE = 'otz-api-v1';
 const ASSETS = [
   '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/manifest.json',
-  '/img/icon-192x192.png',
-  '/img/icon-512x512.png',
-  '/sync.js'
+  '/otz2025/index.html',
+  '/otz2025/styles.css',
+  '/otz2025/app.js',
+  '/otz2025/manifest.json',
+  '/otz2025/img/icon-192x192.png',
+  '/otz2025/img/icon-512x512.png',
+  '/otz2025/sync.js'
 ];
 
 // Установка
