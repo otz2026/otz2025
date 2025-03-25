@@ -1,6 +1,6 @@
 // Конфигурация кэша
 const CACHE_VERSION = 'v1.0.3'; // Меняйте при обновлениях
-const BASE_PATH = '/имя_репозитория/'; // Укажите ваш путь на GitHub Pages
+const BASE_PATH = '/otz2025/'; // Укажите ваш путь на GitHub Pages
 const CACHE_NAME = `otz-cache-${CACHE_VERSION}`;
 
 // Файлы для предварительного кэширования (обязательно полные пути)
