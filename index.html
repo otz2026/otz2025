@@ -62,38 +62,19 @@
             min-height: 100vh;
         }
 
-        /* Фиксированная шапка */
+        /* Фиксированное меню */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: #000;
+            background-color: rgba(0, 0, 0, 1);
             display: flex;
             justify-content: center;
-            padding: 15px 0; /* Только вертикальные отступы */
+            align-items: center;
+            padding: 10px 20px;
             z-index: 1000;
-            box-shadow: 0 0 10px rgba(0,0,0,0.9); /* Чтобы не было просветов */
+            transition: background-color 0.3s ease;
         }
-
-        /* Пункты меню - БЕЗ ЛЮБЫХ ПОЛОСОК */
-        header nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin: 0 15px;
-            padding: 8px 0; /* Увеличиваем область нажатия */
-            position: relative;
-        }
-
-        /* Только фон при наведении */
-        header nav a:hover {
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 3px;
-        }
-
-
-
-        
 
         header.scrolled {
             background-color: rgba(0, 0, 0, 0.7);
@@ -110,6 +91,17 @@
         header nav {
             display: flex;
             gap: 20px;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #ccc;
         }
 
         /* Hero-секция */
