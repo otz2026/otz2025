@@ -62,30 +62,43 @@
             min-height: 100vh;
         }
 
-        /* Фиксированное меню */
+        
+        /* Фиксированное меню (как в оригинале, но без просвета) */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 1);
+            background-color: #000; /* Полностью черный без прозрачности */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px 20px;
+            padding: 0; /* Убираем все отступы */
             z-index: 1000;
-            transition: background-color 0.3s ease;
+            height: 60px; /* Фиксированная высота */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5); /* Для гарантии */
         }
 
-        header.scrolled {
-            background-color: rgba(0, 0, 0, 0.7);
+        /* Пункты меню (как в оригинале) */
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 0 15px;
+            padding: 5px 0;
         }
 
+        /* Логотип (если нужно) */
         header .logo {
             position: absolute;
             left: 20px;
             font-size: 24px;
-            font-weight: bold;
-            color: white;
+        }
+        
+
+
+        
+        header.scrolled {
+            background-color: rgba(0, 0, 0, 0.7);
         }
 
         header nav {
@@ -93,12 +106,6 @@
             gap: 20px;
         }
 
-        header nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            transition: color 0.3s ease;
-        }
 
         header nav a:hover {
             color: #ccc;
