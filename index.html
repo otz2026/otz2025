@@ -50,29 +50,6 @@
     <meta name="yandex-verification" content="143713e69ae2928c" />
 
     <style>
-
-        /* Стиль для постоянной полоски под пунктами меню в PWA-режиме */
-        @media (display-mode: standalone) {
-          header nav a {
-            position: relative;
-            padding-bottom: 8px; /* Отступ для полоски */
-          }
-  
-          header nav a::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px; /* Толщина полоски */
-            background-color: white; /* Цвет полоски */
-          }
-  
-          /* Убираем стандартный отступ шапки, если он мешает */
-          header {
-            padding-bottom: 0 !important;
-          }
-        }
         
         /* Общие стили */
         body {
