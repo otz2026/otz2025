@@ -62,6 +62,7 @@
             min-height: 100vh;
         }
 
+        /* Фиксированное меню */
         header {
             position: fixed;
             top: 0;
@@ -70,12 +71,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 20px;
+            padding: 10px 20px;
             z-index: 1000;
-            height: 60px; /* Базовая высота */
-            box-sizing: border-box;
+            transition: background-color 0.3s ease;
         }
-        
 
         header.scrolled {
             background-color: rgba(0, 0, 0, 0.7);
@@ -104,7 +103,7 @@
         header nav a:hover {
             color: #ccc;
         }
-        
+
         /* Hero-секция */
         .hero {
             height: 540px;
@@ -117,7 +116,6 @@
             background-repeat: no-repeat;
             margin-top: 60px;
             position: relative;
-            margin-top: 60px;
         }
 
         /* Заголовок перед картинкой (только для десктопов) */
@@ -133,22 +131,6 @@
             display: none;
         }
 
-        /* Стили для PWA-режима */
-        @media all and (display-mode: standalone) {
-          header {
-            padding-top: env(safe-area-inset-top); /* Учет "челки" на iPhone */
-            height: calc(60px + env(safe-area-inset-top)); /* Общая высота с учетом safe-area */
-          }
-  
-          .hero {
-            margin-top: calc(60px + env(safe-area-inset-top)); /* Компенсируем высоту header */
-          }
-  
-          body {
-            padding-top: env(safe-area-inset-top); /* Дополнительная страховка */
-          }
-        }
-        
         /* Показываем заголовок только на десктопах */
         @media (min-width: 769px) {
             .hero h1 {
@@ -577,4 +559,3 @@
     <script src="/otz2025/app.js"></script>
 </body>
 </html>
-В режиме PWE сделай чтоб верхняя меню кнопки остались там же а вот задний фон(черная линия) ее надо увеличить по вертикали чтоб она закрывала часть между ее верхней гранью и верхней частью экрана. Напиши только где и что надо изменить не пиши весь скрипт
