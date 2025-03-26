@@ -63,35 +63,43 @@
         }
 
         
-        /* Фиксированное меню (как в оригинале, но без просвета) */
+        /* Фиксированная шапка */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: #000; /* Полностью черный без прозрачности */
+            background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0; /* Убираем все отступы */
+            padding: 0;
+        height: 60px;
             z-index: 1000;
-            height: 60px; /* Фиксированная высота */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5); /* Для гарантии */
+            box-shadow: 0 0 10px #000; /* Убираем любые просветы */
         }
 
-        /* Пункты меню (как в оригинале) */
+        /* Контейнер меню */
+        header nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Пункты меню */
         header nav a {
             color: white;
             text-decoration: none;
             font-size: 18px;
-            margin: 0 15px;
             padding: 5px 0;
+            position: relative;
         }
 
-        /* Логотип (если нужно) */
+        /* Логотип */
         header .logo {
             position: absolute;
             left: 20px;
             font-size: 24px;
+            font-weight: bold;
+            color: white;
         }
         
 
