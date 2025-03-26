@@ -62,38 +62,24 @@
             min-height: 100vh;
         }
 
-        
-        /* Фиксированная шапка */
+        /* Фиксированное меню */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: #000;
+            background-color: rgba(0, 0, 0, 1);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0;
-        height: 60px;
+            padding: 10px 20px;
             z-index: 1000;
-            box-shadow: 0 0 10px #000; /* Убираем любые просветы */
+            transition: background-color 0.3s ease;
         }
 
-        /* Контейнер меню */
-        header nav {
-            display: flex;
-            gap: 20px;
+        header.scrolled {
+            background-color: rgba(0, 0, 0, 0.7);
         }
 
-        /* Пункты меню */
-        header nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            padding: 5px 0;
-            position: relative;
-        }
-
-        /* Логотип */
         header .logo {
             position: absolute;
             left: 20px;
@@ -101,20 +87,22 @@
             font-weight: bold;
             color: white;
         }
-        
-
-
-        
-        header.scrolled {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
 
         header nav {
             display: flex;
             gap: 20px;
         }
 
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
 
+        header nav a:hover {
+            color: #ccc;
+        }
 
         /* Hero-секция */
         .hero {
