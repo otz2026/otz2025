@@ -1,35 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Основные метатеги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paw Patrol - Over Time Zvenigorod</title>
     <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Paw Patrol'.">
-    <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, Paw Patrol">
-    <meta name="author" content="Over Time Zvenigorod">
-
-    <!-- Open Graph метатеги для соцсетей и поисковиков -->
     <meta property="og:title" content="Paw Patrol - Over Time Zvenigorod">
-    <meta property="og:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Paw Patrol'.">
-    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png"> <!-- Укажите полный URL логотипа--> 
+    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
     <meta property="og:url" content="https://otz2026.github.io/otz2025/teams/PawPatrol/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card метатеги -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Paw Patrol - Over Time Zvenigorod">
-    <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Paw Patrol'.">
-    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png"> <!-- Укажите полный URL логотипа 
-
-    <!-- Фавиконка -->
     <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
-
-    <!-- Каноническая ссылка -->
     <link rel="canonical" href="https://otz2026.github.io/otz2025/teams/PawPatrol/">
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         /* Общие стили */
@@ -365,9 +345,9 @@
             }
         }
     </style>
+    
 </head>
 <body>
-    <!-- Верхний блок с кнопками навигации -->
     <header id="header">
         <div class="logo">OVER TIME ZWENIGOROD</div>
         <nav>
@@ -378,24 +358,20 @@
         </nav>
     </header>
 
-    <!-- Основной контент страницы -->
     <div class="content">
-        <!-- Блок с информацией о команде -->
         <div class="team-info">
-            <img src="/otz2025/img/PPATROL.png" alt="team">
+            <img src="/otz2025/img/PPATROL.png" alt="Paw Patrol" id="teamLogo">
             <div>
                 <div class="team-name">Paw Patrol</div>
                 <div class="team-description">Сезон 2025</div>
             </div>
         </div>
 
-        <!-- Заголовок и линия над таблицей -->
         <div class="table-header">
             <h3>Рейтинг</h3>
             <hr>
         </div>
 
-        <!-- Таблица -->
         <div class="table-container">
             <table>
                 <thead>
@@ -412,23 +388,8 @@
                         <th>Очки</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Строки таблицы -->
-                    <tr>
-                        <td>1</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/PPATROL.png" alt="PPATROL" class="team-logo">
-                            Paw Patrol
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
+                <tbody id="teamStats">
+                    <!-- Данные загружаются скриптом -->
                 </tbody>
             </table>
         </div>
@@ -488,31 +449,146 @@
             
         </div>
     </div>
-
-    <!-- Подвал -->
+    
     <footer>
         <div class="footer-content">
-            <!-- Логотипы TikTok и изображение сайта -->
             <div class="social-links">
-                <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1" target="_blank">
+                <a href="https://www.tiktok.com/@otz.summer.league" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
                         <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
                     </svg>
                 </a>
                 <a href="https://t.me/pisunapidora" target="_blank">
-                    <img src="/otz2025/img/TG.png" alt="Логотип сайта">
+                    <img src="/otz2025/img/TG.png" alt="Telegram">
                 </a>
             </div>
-
-            <p>© 2025 Over Time Zvenigorod. Все права защищены.</p>
+            <p>© 2025 Over Time Zvenigorod</p>
         </div>
     </footer>
 
     <script>
-        // Скрипт для изменения фона шапки при скролле
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('header');
-            header.classList.toggle('scrolled', window.scrollY > 50);
+        // Конфигурация
+        const CONFIG = {
+            JSON_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/tournament_data.json",
+            UPDATE_INTERVAL: 30000, // 30 секунд
+            TEAM_ID: "PawPatrol",
+            DEFAULT_LOGO: "/otz2025/img/OTZ3.png"
+        };
+
+        // Кеширование
+        let cachedData = null;
+        let updateInterval = null;
+
+        // Основная функция загрузки данных
+        const loadTeamData = async () => {
+            try {
+                const response = await fetch(CONFIG.JSON_URL);
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                
+                const data = await response.json();
+                const teamData = data.find(t => t.urlname === CONFIG.TEAM_ID);
+                
+                if (!teamData) {
+                    console.warn('Team data not found in JSON');
+                    return getDefaultData();
+                }
+                
+                // Форматируем данные для отображения
+                return {
+                    place: teamData.place || 5,
+                    team: teamData.team || "PAW PATROL",
+                    logo: teamData.logo || "/otz2025/img/PPATROL.png",
+                    games: teamData.games || 0,
+                    wins: teamData.wins || 0,
+                    losses: teamData.losses || 0,
+                    percentage: teamData.percentage ? `${teamData.percentage}%` : "0%",
+                    scored: teamData.scored || 0,
+                    conceded: teamData.conceded || 0,
+                    difference: teamData.difference || 0,
+                    points: teamData.points || 0
+                };
+                
+            } catch (error) {
+                console.error('Failed to load team data:', error);
+                return getDefaultData();
+            }
+        };
+
+        // Данные по умолчанию
+        const getDefaultData = () => ({
+            place: 5,
+            team: "PAW PATROL",
+            logo: "/otz2025/img/PPATROL.png",
+            games: 0,
+            wins: 0,
+            losses: 0,
+            percentage: "0%",
+            scored: 0,
+            conceded: 0,
+            difference: 0,
+            points: 0
+        });
+
+        // Обновление таблицы
+        const updateTeamStats = async () => {
+            try {
+                const data = await loadTeamData();
+                const tableBody = document.getElementById('teamStats');
+                
+                if (!tableBody) {
+                    console.error('Table body element not found');
+                    return;
+                }
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td>${data.place}</td>
+                        <td class="team-cell">
+                            <img src="${data.logo}" 
+                                 class="team-logo"
+                                 alt="${data.team}"
+                                 onerror="this.src='${CONFIG.DEFAULT_LOGO}'">
+                            ${data.team}
+                        </td>
+                        <td>${data.games}</td>
+                        <td>${data.wins}</td>
+                        <td>${data.losses}</td>
+                        <td>${data.percentage}</td>
+                        <td>${data.scored}</td>
+                        <td>${data.conceded}</td>
+                        <td>${data.difference}</td>
+                        <td>${data.points}</td>
+                    </tr>
+                `;
+                
+            } catch (error) {
+                console.error('Error updating team stats:', error);
+            }
+        };
+
+        // Инициализация
+        const init = () => {
+            updateTeamStats();
+            updateInterval = setInterval(updateTeamStats, CONFIG.UPDATE_INTERVAL);
+            
+            window.addEventListener('scroll', () => {
+                const header = document.getElementById('header');
+                if (header) {
+                    header.classList.toggle('scrolled', window.scrollY > 50);
+                }
+            });
+        };
+
+        // Запуск приложения
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Очистка
+        window.addEventListener('beforeunload', () => {
+            if (updateInterval) clearInterval(updateInterval);
         });
     </script>
 </body>

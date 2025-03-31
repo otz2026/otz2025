@@ -412,23 +412,8 @@
                         <th>Очки</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Строки таблицы -->
-                    <tr>
-                        <td>1</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/TN.png" alt="PPATROL" class="team-logo">
-                            Texas Ners
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
+                <tbody id="teamStats">
+                    <!-- Данные будут загружены динамически -->
                 </tbody>
             </table>
         </div>
@@ -510,10 +495,99 @@
     </footer>
 
     <script>
-        // Скрипт для изменения фона шапки при скролле
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('header');
-            header.classList.toggle('scrolled', window.scrollY > 50);
+        // Конфигурация для Texas Ners
+        const CONFIG = {
+            JSON_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/tournament_data.json",
+            UPDATE_INTERVAL: 30000, // 30 секунд
+            TEAM_ID: "TN", // Должно совпадать с urlname в JSON
+            DEFAULT_LOGO: "/otz2025/img/OTZ2.png",
+            TEAM_LOGO: "/otz2025/img/TN.png"
+        };
+    
+        // Загрузка данных команды
+        async function loadTeamData() {
+            try {
+                const response = await fetch(CONFIG.JSON_URL);
+                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+                
+                const data = await response.json();
+                const teamData = data.find(team => team.urlname === CONFIG.TEAM_ID);
+                
+                if (!teamData) {
+                    console.warn('Команда Texas Ners не найдена');
+                    return getDefaultData();
+                }
+                
+                return {
+                    place: teamData.place || 1,
+                    team: teamData.team || "TEXAS NERS",
+                    logo: teamData.logo || CONFIG.TEAM_LOGO,
+                    games: teamData.games || 0,
+                    wins: teamData.wins || 0,
+                    losses: teamData.losses || 0,
+                    percentage: teamData.percentage ? `${teamData.percentage}%` : "0%",
+                    scored: teamData.scored || 0,
+                    conceded: teamData.conceded || 0,
+                    difference: teamData.difference || 0,
+                    points: teamData.points || 0
+                };
+                
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                return getDefaultData();
+            }
+        }
+    
+        // Данные по умолчанию
+        function getDefaultData() {
+            return {
+                place: 1,
+                team: "TEXAS NERS",
+                logo: CONFIG.TEAM_LOGO,
+                games: 0,
+                wins: 0,
+                losses: 0,
+                percentage: "0%",
+                scored: 0,
+                conceded: 0,
+                difference: 0,
+                points: 0
+            };
+        }
+    
+        // Обновление таблицы
+        async function updateTeamStats() {
+            const data = await loadTeamData();
+            const tableBody = document.getElementById('teamStats');
+            
+            if (!tableBody) return;
+    
+            tableBody.innerHTML = `
+                <tr>
+                    <td>${data.place}</td>
+                    <td class="team-cell">
+                        <img src="${data.logo}" 
+                             class="team-logo"
+                             alt="${data.team}"
+                             onerror="this.src='${CONFIG.DEFAULT_LOGO}'">
+                        ${data.team}
+                    </td>
+                    <td>${data.games}</td>
+                    <td>${data.wins}</td>
+                    <td>${data.losses}</td>
+                    <td>${data.percentage}</td>
+                    <td>${data.scored}</td>
+                    <td>${data.conceded}</td>
+                    <td>${data.difference}</td>
+                    <td>${data.points}</td>
+                </tr>
+            `;
+        }
+    
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTeamStats();
+            setInterval(updateTeamStats, CONFIG.UPDATE_INTERVAL);
         });
     </script>
 </body>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTZ Управление расписанием</title>
+    <meta name="theme-color" content="#dd4710">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../otz2025/img/OTZ3.png">
+    <style>
+        :root {
+            --primary-color: #dd4710;
+            --secondary-color: #2a2a2a;
+            --text-color: #ffffff;
+            --hover-color: #c03d0d;
+            --bg-dark: rgba(0, 0, 0, 0.7);
+            --bg-light: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Навигационное меню */
+        .nav-menu {
+            background-color: var(--bg-dark);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(221, 71, 16, 0.2);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .main-header {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: var(--primary-color);
+            text-align: center;
+            margin: 20px 0;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .main-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .section-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--primary-color);
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .delete-btn {
+            background-color: #572d2c;
+        }
+        
+        .status-message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .success {
+            background-color: rgba(45, 87, 44, 0.7);
+        }
+        
+        .error {
+            background-color: rgba(87, 45, 44, 0.7);
+        }
+        
+        .info {
+            background-color: rgba(45, 58, 87, 0.7);
+        }
+        
+        .schedule-editor {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ddd;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        .schedule-list {
+            margin-top: 20px;
+        }
+        
+        .match-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .match-team {
+            display: flex;
+            align-items: center;
+            width: 40%;
+        }
+        
+        .match-team.logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+        
+        .match-score {
+            font-weight: bold;
+            font-size: 18px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .match-date {
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+        
+        .stage-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin: 25px 0 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .nav-link {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .schedule-editor {
+                padding: 15px;
+            }
+            
+            .match-team {
+                width: 35%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .button-group, .match-actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационное меню -->
+    <nav class="nav-menu">
+        <div class="nav-title">OTZ Админ-панель</div>
+        <div class="nav-links">
+            <a href="/otz2025/SSTimeSS" class="nav-link">Главная</a>
+            <a href="/otz2025/SSTimeSS/schedule" class="nav-link active">Расписание</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="main-header">Управление расписанием матчей</h1>
+        
+        <div class="schedule-editor">
+            <div class="form-group">
+                <label for="scheduleAction">Действие:</label>
+                <select id="scheduleAction">
+                    <option value="add">Добавить матч</option>
+                    <option value="edit">Редактировать матч</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="scheduleSelectContainer" style="display: none;">
+                <label for="scheduleSelect">Выберите матч:</label>
+                <select id="scheduleSelect"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="matchStage">Этап турнира:</label>
+                <select id="matchStage">
+                    <option value="opening_night">OPENING NIGHT</option>
+                    <option value="all_star">ALL-STAR</option>
+                    <option value="after_all_star">После ALL-STAR</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="team1Select">Команда 1:</label>
+                <select id="team1Select"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="team2Select">Команда 2:</label>
+                <select id="team2Select"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="matchScore">Счет (если матч завершен):</label>
+                <input type="text" id="matchScore" placeholder="Например: 21-18">
+            </div>
+            
+            <div class="form-group">
+                <label for="matchDate">Дата и время:</label>
+                <input type="datetime-local" id="matchDate">
+            </div>
+            
+            <div class="button-group">
+                <button id="saveScheduleBtn">Сохранить матч</button>
+                <button id="deleteScheduleBtn" class="delete-btn">Удалить матч</button>
+            </div>
+            
+            <div id="scheduleStatusMsg" class="status-message"></div>
+        </div>
+        
+        <div class="schedule-list">
+            <h2 class="section-title">Текущее расписание</h2>
+            
+            <div id="openingNightList">
+                <h3 class="stage-title">OPENING NIGHT</h3>
+                <div id="openingNightMatches"></div>
+            </div>
+            
+            <div id="allStarList">
+                <h3 class="stage-title">ALL-STAR</h3>
+                <div id="allStarMatches"></div>
+            </div>
+            
+            <div id="afterAllStarList">
+                <h3 class="stage-title">После ALL-STAR</h3>
+                <div id="afterAllStarMatches"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация
+        const CONFIG = {
+            GITHUB_USER: "otz2026",
+            REPO_NAME: "otz2025",
+            TABLE_FILE_PATH: "SSTimeSS/tournament_data.json",
+            SCHEDULE_FILE_PATH: "SSTimeSS/schedule_data.json",
+            FEATURED_FILE_PATH: "SSTimeSS/featured_matches.json",
+            GITHUB_TOKEN: ""
+        };
+    
+        let scheduleData = {
+            opening_night: [],
+            all_star: [],
+            after_all_star: []
+        };
+        let teamsData = [];
+        let featuredMatches = [];
+    
+        // ========== Основные функции ========== //
+        async function loadSchedule() {
+            showScheduleStatus("Загрузка данных...", "info");
+            
+            try {
+                // Загружаем расписание
+                const scheduleUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.SCHEDULE_FILE_PATH}?t=${Date.now()}`;
+                const scheduleResponse = await fetch(scheduleUrl);
+                
+                if (!scheduleResponse.ok) throw new Error(`Ошибка загрузки расписания: ${scheduleResponse.status}`);
+                
+                const data = await scheduleResponse.json();
+                scheduleData = data.schedule || {
+                    opening_night: [],
+                    all_star: [],
+                    after_all_star: []
+                };
+                
+                // Загружаем избранные матчи
+                await loadFeaturedMatches();
+                
+                // Сортируем матчи по дате
+                sortMatchesByDate();
+                
+                // Загружаем данные команд
+                await loadTeams();
+                
+                updateScheduleSelect();
+                renderSchedule();
+                showScheduleStatus("Данные загружены", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showScheduleStatus(`Ошибка: ${error.message}`, "error");
+                scheduleData = {
+                    opening_night: [],
+                    all_star: [],
+                    after_all_star: []
+                };
+                featuredMatches = [];
+                updateScheduleSelect();
+                renderSchedule();
+            }
+        }
+    
+        async function loadFeaturedMatches() {
+            try {
+                const featuredUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.FEATURED_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(featuredUrl);
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки избранных матчей: ${response.status}`);
+                
+                const data = await response.json();
+                featuredMatches = data.featured || [];
+                
+            } catch (error) {
+                console.error("Ошибка загрузки избранных матчей:", error);
+                featuredMatches = [];
+            }
+        }
+    
+        async function loadTeams() {
+            try {
+                const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TABLE_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(teamsUrl);
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки команд: ${response.status}`);
+                
+                teamsData = await response.json();
+                
+                if (!Array.isArray(teamsData)) {
+                    throw new Error("Неверный формат данных команд");
+                }
+                
+                updateTeamSelects();
+                
+            } catch (error) {
+                console.error("Ошибка загрузки команд:", error);
+                teamsData = [];
+                updateTeamSelects();
+            }
+        }
+    
+        function parseCustomDate(dateStr) {
+            if (!dateStr) return null;
+            
+            try {
+                // Формат: "10 июня в 16:00" или "10 июня 16:00"
+                const months = {
+                    'января': 0, 'февраля': 1, 'марта': 2, 'апреля': 3,
+                    'мая': 4, 'июня': 5, 'июля': 6, 'августа': 7,
+                    'сентября': 8, 'октября': 9, 'ноября': 10, 'декабря': 11
+                };
+                
+                // Удаляем слово "в" если есть
+                dateStr = dateStr.replace(' в ', ' ');
+                
+                const parts = dateStr.split(' ');
+                if (parts.length !== 3) return null;
+                
+                const day = parseInt(parts[0]);
+                const month = parts[1].toLowerCase();
+                const timeParts = parts[2].split(':');
+                
+                if (!months[month] !== undefined || timeParts.length !== 2) return null;
+                
+                const hours = parseInt(timeParts[0]);
+                const minutes = parseInt(timeParts[1]);
+                const year = 2025; // Фиксированный год
+                
+                return new Date(year, months[month], day, hours, minutes);
+                
+            } catch (e) {
+                console.error('Ошибка парсинга даты:', dateStr, e);
+                return null;
+            }
+        }
+    
+        function sortMatchesByDate() {
+            for (const stage in scheduleData) {
+                scheduleData[stage].sort((a, b) => {
+                    const dateA = parseCustomDate(a.date);
+                    const dateB = parseCustomDate(b.date);
+                    
+                    if (!dateA || !dateB) return 0;
+                    return dateA - dateB;
+                });
+            }
+        }
+    
+        function updateTeamSelects() {
+            const team1Select = document.getElementById("team1Select");
+            const team2Select = document.getElementById("team2Select");
+            
+            team1Select.innerHTML = "";
+            team2Select.innerHTML = "";
+            
+            const emptyOption = document.createElement("option");
+            emptyOption.value = "";
+            emptyOption.textContent = "-- Выберите команду --";
+            team1Select.appendChild(emptyOption.cloneNode(true));
+            team2Select.appendChild(emptyOption.cloneNode(true));
+            
+            if (teamsData.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Нет данных о командах";
+                team1Select.appendChild(option.cloneNode(true));
+                team2Select.appendChild(option.cloneNode(true));
+                return;
+            }
+            
+            teamsData.forEach(team => {
+                const option = document.createElement("option");
+                option.value = team.team;
+                option.textContent = team.team;
+                option.dataset.logo = team.logo || "";
+                
+                team1Select.appendChild(option.cloneNode(true));
+                team2Select.appendChild(option);
+            });
+        }
+    
+        function updateScheduleSelect() {
+            const scheduleSelect = document.getElementById("scheduleSelect");
+            scheduleSelect.innerHTML = "";
+            
+            const allMatches = [
+                ...scheduleData.opening_night.map((m, i) => ({...m, stage: 'opening_night', index: i})),
+                ...scheduleData.all_star.map((m, i) => ({...m, stage: 'all_star', index: i})),
+                ...scheduleData.after_all_star.map((m, i) => ({...m, stage: 'after_all_star', index: i}))
+            ];
+            
+            allMatches.forEach(match => {
+                const option = document.createElement("option");
+                option.value = `${match.stage}|${match.index}`;
+                option.textContent = `${match.team1.name} vs ${match.team2.name} (${match.date})`;
+                scheduleSelect.appendChild(option);
+            });
+        }
+    
+        function renderSchedule() {
+            renderMatchesList('opening_night', 'openingNightMatches');
+            renderMatchesList('all_star', 'allStarMatches');
+            renderMatchesList('after_all_star', 'afterAllStarMatches');
+        }
+    
+        function renderMatchesList(stage, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            
+            if (!scheduleData[stage] || scheduleData[stage].length === 0) {
+                container.innerHTML = `
+                    <div class="match-item">
+                        <p style="text-align: center; color: #aaa;">Матчей пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            scheduleData[stage].forEach((match, index) => {
+                const matchId = `${stage}|${index}`;
+                const isFeatured = featuredMatches.includes(matchId);
+                
+                const matchItem = document.createElement("div");
+                matchItem.className = "match-item";
+                if (isFeatured) {
+                    matchItem.style.borderLeft = "3px solid #dd4710";
+                    matchItem.style.backgroundColor = "rgba(221, 71, 16, 0.1)";
+                }
+                
+                matchItem.innerHTML = `
+                    <div class="match-teams">
+                        <div class="match-team">
+                            ${match.team1.logo ? `<img src="${match.team1.logo}" class="match-team logo">` : ''}
+                            <span>${match.team1.name}</span>
+                        </div>
+                        <div class="match-score">${match.score || 'Не начался'}</div>
+                        <div class="match-team" style="justify-content: flex-end;">
+                            <span>${match.team2.name}</span>
+                            ${match.team2.logo ? `<img src="${match.team2.logo}" class="match-team logo">` : ''}
+                        </div>
+                    </div>
+                    <div class="match-date">${match.date}</div>
+                    <div class="match-actions">
+                        <button onclick="editScheduleMatch('${stage}', ${index})">Редактировать</button>
+                        <button onclick="toggleFeaturedMatch('${stage}', ${index})" class="${isFeatured ? 'featured-btn' : ''}">
+                            ${isFeatured ? 'Убрать с главной' : 'Показать на главной'}
+                        </button>
+                        <button onclick="deleteScheduleMatch('${stage}', ${index})" class="delete-btn">Удалить</button>
+                    </div>
+                `;
+                
+                container.appendChild(matchItem);
+            });
+        }
+    
+        function editScheduleMatch(stage, index) {
+            document.getElementById("scheduleAction").value = "edit";
+            document.getElementById("scheduleSelectContainer").style.display = "block";
+            document.getElementById("scheduleSelect").value = `${stage}|${index}`;
+            document.getElementById("matchStage").value = stage;
+            
+            const match = scheduleData[stage][index];
+            document.getElementById("team1Select").value = match.team1.name;
+            document.getElementById("team2Select").value = match.team2.name;
+            document.getElementById("matchScore").value = match.score || "";
+            
+            const dateInput = document.getElementById("matchDate");
+            if (match.date) {
+                const date = parseCustomDate(match.date);
+                if (date) {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    
+                    dateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                } else {
+                    dateInput.value = "";
+                }
+            } else {
+                dateInput.value = "";
+            }
+        }
+    
+        function deleteScheduleMatch(stage, index) {
+            if (confirm("Вы уверены, что хотите удалить этот матч?")) {
+                // Удаляем из избранных если нужно
+                const matchId = `${stage}|${index}`;
+                const featuredIndex = featuredMatches.indexOf(matchId);
+                if (featuredIndex !== -1) {
+                    featuredMatches.splice(featuredIndex, 1);
+                }
+                
+                scheduleData[stage].splice(index, 1);
+                saveSchedule();
+            }
+        }
+    
+        async function toggleFeaturedMatch(stage, index) {
+            const matchId = `${stage}|${index}`;
+            const matchIndex = featuredMatches.indexOf(matchId);
+            
+            if (matchIndex === -1) {
+                if (featuredMatches.length >= 2) {
+                    alert("На главной странице можно показывать только 2 матча. Сначала снимите отметку с одного из текущих.");
+                    return;
+                }
+                featuredMatches.push(matchId);
+            } else {
+                featuredMatches.splice(matchIndex, 1);
+            }
+            
+            await saveFeaturedMatches();
+            renderSchedule();
+        }
+    
+        function saveScheduleItem() {
+            const action = document.getElementById("scheduleAction").value;
+            const stage = document.getElementById("matchStage").value;
+            const team1Name = document.getElementById("team1Select").value;
+            const team2Name = document.getElementById("team2Select").value;
+            const score = document.getElementById("matchScore").value.trim();
+            const dateInput = document.getElementById("matchDate").value;
+            
+            if (!team1Name || !team2Name) {
+                showScheduleStatus("Выберите обе команды", "error");
+                return;
+            }
+            
+            if (team1Name === team2Name) {
+                showScheduleStatus("Команды должны быть разными", "error");
+                return;
+            }
+            
+            if (!dateInput) {
+                showScheduleStatus("Укажите дату и время матча", "error");
+                return;
+            }
+            
+            const team1Data = teamsData.find(t => t.team === team1Name) || { team: team1Name, logo: "" };
+            const team2Data = teamsData.find(t => t.team === team2Name) || { team: team2Name, logo: "" };
+            
+            const date = new Date(dateInput);
+            const options = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
+            const formattedDate = date.toLocaleDateString('ru-RU', options);
+            
+            const matchItem = {
+                team1: {
+                    name: team1Data.team,
+                    logo: team1Data.logo || "",
+                    link: `/otz2025/teams/${team1Data.team.replace(/\s+/g, '')}`
+                },
+                team2: {
+                    name: team2Data.team,
+                    logo: team2Data.logo || "",
+                    link: `/otz2025/teams/${team2Data.team.replace(/\s+/g, '')}`
+                },
+                score: score || "Не начался",
+                date: formattedDate
+            };
+            
+            if (action === "add") {
+                scheduleData[stage].push(matchItem);
+            } else {
+                const [selectedStage, index] = document.getElementById("scheduleSelect").value.split("|");
+                scheduleData[selectedStage][index] = matchItem;
+            }
+            
+            sortMatchesByDate();
+            saveSchedule();
+            resetScheduleForm();
+        }
+    
+        async function saveSchedule() {
+            let token = CONFIG.GITHUB_TOKEN;
+            
+            if (!token) {
+                token = prompt("Введите GitHub Token для сохранения:");
+                if (!token) {
+                    showScheduleStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showScheduleStatus("Сохранение расписания...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.SCHEDULE_FILE_PATH}`;
+                
+                let sha = null;
+                try {
+                    const fileInfo = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    
+                    if (fileInfo.ok) {
+                        const fileData = await fileInfo.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log("Файл расписания не существует, будет создан новый");
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление расписания матчей",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify({ schedule: scheduleData }, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения расписания");
+                
+                showScheduleStatus("Расписание сохранено!", "success");
+                setTimeout(loadSchedule, 1500);
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showScheduleStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+    
+        async function saveFeaturedMatches() {
+            let token = CONFIG.GITHUB_TOKEN;
+            
+            if (!token) {
+                token = prompt("Введите GitHub Token для сохранения:");
+                if (!token) {
+                    showScheduleStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showScheduleStatus("Сохранение избранных матчей...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.FEATURED_FILE_PATH}`;
+                
+                let sha = null;
+                try {
+                    const fileInfo = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    
+                    if (fileInfo.ok) {
+                        const fileData = await fileInfo.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log("Файл избранных матчей не существует, будет создан новый");
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление избранных матчей",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify({ featured: featuredMatches }, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения избранных матчей");
+                
+                showScheduleStatus("Избранные матчи сохранены!", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showScheduleStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+    
+        function resetScheduleForm() {
+            document.getElementById("team1Select").value = "";
+            document.getElementById("team2Select").value = "";
+            document.getElementById("matchScore").value = "";
+            document.getElementById("matchDate").value = "";
+            document.getElementById("scheduleAction").value = "add";
+            document.getElementById("scheduleSelectContainer").style.display = "none";
+        }
+    
+        function showScheduleStatus(msg, type) {
+            const status = document.getElementById("scheduleStatusMsg");
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    
+        // ========== Инициализация ========== //
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSchedule();
+            
+            document.getElementById("scheduleAction").addEventListener("change", function() {
+                document.getElementById("scheduleSelectContainer").style.display = 
+                    this.value === "edit" ? "block" : "none";
+            });
+            
+            document.getElementById("saveScheduleBtn").addEventListener("click", saveScheduleItem);
+            document.getElementById("deleteScheduleBtn").addEventListener("click", function() {
+                const [stage, index] = document.getElementById("scheduleSelect").value.split("|");
+                deleteScheduleMatch(stage, index);
+            });
+        });
+    
+        // Глобальные функции для кнопок
+        window.editScheduleMatch = editScheduleMatch;
+        window.deleteScheduleMatch = deleteScheduleMatch;
+        window.toggleFeaturedMatch = toggleFeaturedMatch;
+    </script>
+
+</body>
+</html>

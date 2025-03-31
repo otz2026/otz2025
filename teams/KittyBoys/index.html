@@ -9,10 +9,10 @@
     <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, Kitty Boys">
     <meta name="author" content="Over Time Zvenigorod">
 
-    <!-- Open Graph метатеги для соцсетей и поисковиков -->
+    <!-- Open Graph метатеги -->
     <meta property="og:title" content="Kitty Boys - Over Time Zvenigorod">
     <meta property="og:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Kitty Boys'.">
-    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ2.png"> <!-- Укажите полный URL логотипа -->
+    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ2.png">
     <meta property="og:url" content="https://otz2026.github.io/otz2025/teams/KittyBoys/">
     <meta property="og:type" content="website">
 
@@ -20,18 +20,14 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Kitty Boys - Over Time Zvenigorod">
     <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Kitty Boys'.">
-    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ2.png"> <!-- Укажите полный URL логотипа -->
+    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ2.png">
 
     <!-- Фавиконка -->
     <link rel="icon" type="image/png" href="/otz2025/img/OTZ2.png">
 
     <!-- Каноническая ссылка -->
     <link rel="canonical" href="https://otz2026.github.io/otz2025/teams/KittyBoys/">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitty Boys - Over Time Zvenigorod</title>
+
     <style>
         /* Общие стили */
         body {
@@ -368,7 +364,6 @@
     </style>
 </head>
 <body>
-    <!-- Верхний блок с кнопками навигации -->
     <header id="header">
         <div class="logo">OVER TIME ZWENIGOROD</div>
         <nav>
@@ -379,24 +374,20 @@
         </nav>
     </header>
 
-    <!-- Основной контент страницы -->
     <div class="content">
-        <!-- Блок с информацией о команде -->
         <div class="team-info">
-            <img src="/otz2025/img/KITTY BOYS.png" alt="team">
+            <img src="/otz2025/img/KITTY BOYS.png" alt="Kitty Boys" id="teamLogo">
             <div>
                 <div class="team-name">Kitty Boys</div>
                 <div class="team-description">Сезон 2025</div>
             </div>
         </div>
 
-        <!-- Заголовок и линия над таблицей -->
         <div class="table-header">
             <h3>Рейтинг</h3>
             <hr>
         </div>
 
-        <!-- Таблица -->
         <div class="table-container">
             <table>
                 <thead>
@@ -413,34 +404,18 @@
                         <th>Очки</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Строки таблицы -->
-                    <tr>
-                        <td>1</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/KITTY BOYS.png" alt="Kitty Boys" class="team-logo">
-                            Kitty Boys
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
+                <tbody id="teamStats">
+                    <!-- Данные будут загружены скриптом -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Заголовок "Состав" -->
         <div class="table-header">
             <h3>Состав</h3>
             <hr>
         </div>
 
-        <!-- Блок с составом команды -->
+       <!-- Блок с составом команды -->
         <div class="team-squad">
             <!-- Игрок 1 -->
             <div class="player-card">
@@ -495,23 +470,11 @@
                     <div class="player-stats">Рост: 192 см</div>
                 </div>
             </div>
-            
-<!-- Игрок 6 -->
-            <div class="player-card">
-                <img src="/otz2025/img/teams/22.jpg" alt="Игрок 2">
-                <div class="player-info">
-                    <div class="player-name">Луцик Владимир</div>
-                    <div class="player-stats">Рост: 192 см</div>
-                </div>
-            </div>
-            
         </div>
     </div>
 
-    <!-- Подвал -->
     <footer>
         <div class="footer-content">
-            <!-- Логотипы TikTok и изображение сайта -->
             <div class="social-links">
                 <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
@@ -519,19 +482,130 @@
                     </svg>
                 </a>
                 <a href="https://t.me/pisunapidora" target="_blank">
-                    <img src="/otz2025/img/TG.png" alt="Логотип сайта">
+                    <img src="/otz2025/img/TG.png" alt="Telegram">
                 </a>
             </div>
-
             <p>© 2025 Over Time Zvenigorod. Все права защищены.</p>
         </div>
     </footer>
 
     <script>
-        // Скрипт для изменения фона шапки при скролле
+        // Конфигурация
+        const CONFIG = {
+            JSON_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/tournament_data.json",
+            UPDATE_INTERVAL: 30000, // 30 секунд
+            TEAM_ID: "KittyBoys", // Должно совпадать с urlname в JSON
+            DEFAULT_LOGO: "/otz2025/img/OTZ2.png"
+        };
+    
+        // Кеширование данных
+        let cachedData = null;
+        let lastUpdateTime = 0;
+    
+        // Загрузка данных команды
+        async function loadTeamData() {
+            try {
+                // Используем кеш, если данные свежие
+                if (cachedData && Date.now() - lastUpdateTime < CONFIG.UPDATE_INTERVAL) {
+                    return cachedData;
+                }
+    
+                console.log('Загрузка данных для RWE...');
+                const response = await fetch(CONFIG.JSON_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Ищем команду по urlname
+                const teamData = data.find(team => team.urlname === CONFIG.TEAM_ID);
+                
+                if (!teamData) {
+                    console.warn('Команда RWE не найдена в данных');
+                    return getDefaultTeamData();
+                }
+    
+                // Обновляем кеш
+                cachedData = teamData;
+                lastUpdateTime = Date.now();
+                return teamData;
+                
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                return cachedData || getDefaultTeamData();
+            }
+        }
+    
+        // Данные по умолчанию для RWE
+        function getDefaultTeamData() {
+            return {
+                team: "Kitty Boys",
+                logo: "/otz2025/img/KITTY BOYS.png",
+                games: 0,
+                wins: 0,
+                losses: 0,
+                scored: 0,
+                conceded: 0,
+                percentage: "0.0",
+                difference: 0,
+                points: 0,
+                place: 1
+            };
+        }
+    
+        // Обновление таблицы
+        async function updateTeamStats() {
+            const teamData = await loadTeamData();
+            console.log('Данные команды:', teamData);
+    
+            const tableBody = document.getElementById('teamStats');
+            if (!tableBody) {
+                console.error('Таблица не найдена');
+                return;
+            }
+    
+            tableBody.innerHTML = `
+                <tr>
+                    <td>${teamData.place}</td>
+                    <td class="team-cell">
+                        <img src="${teamData.logo}" class="team-logo" 
+                             onerror="this.onerror=null;this.src='${CONFIG.DEFAULT_LOGO}'">
+                        ${teamData.team}
+                    </td>
+                    <td>${teamData.games}</td>
+                    <td>${teamData.wins}</td>
+                    <td>${teamData.losses}</td>
+                    <td>${teamData.percentage}%</td>
+                    <td>${teamData.scored}</td>
+                    <td>${teamData.conceded}</td>
+                    <td>${teamData.difference}</td>
+                    <td>${teamData.points}</td>
+                </tr>
+            `;
+        }
+    
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            // Первое обновление
+            updateTeamStats();
+            
+            // Автообновление
+            const intervalId = setInterval(updateTeamStats, CONFIG.UPDATE_INTERVAL);
+            
+            // Очистка при закрытии
+            window.addEventListener('beforeunload', () => {
+                clearInterval(intervalId);
+            });
+        });
+    
+        // Существующий скрипт для шапки
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
-            header.classList.toggle('scrolled', window.scrollY > 50);
+            if (header) {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            }
         });
     </script>
 </body>

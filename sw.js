@@ -1,18 +1,21 @@
-// Конфигурация
-const CACHE_VERSION = 'v1.3';
-const CACHE_NAME = `otz-cache-${CACHE_VERSION}`;
-const API_CACHE_NAME = `otz-api-cache-${CACHE_VERSION}`;
-const BASE_PATH = '/otz2025/';
-
-// Файлы для предварительного кэширования
-const PRE_CACHE_ASSETS = [
-  BASE_PATH,
-  `${BASE_PATH}index.html`,
-  `${BASE_PATH}styles.css`,
-  `${BASE_PATH}app.js`,
-  `${BASE_PATH}manifest.json`,
-  `${BASE_PATH}img/icon-192x192.png`,
-  `${BASE_PATH}img/icon-512x512.png`
+const CACHE_NAME = 'otz-cache-v4';
+const API_CACHE = 'otz-api-v1';
+const ASSETS = [
+  '/otz2025/',
+  '/otz2025/index.html',
+  '/otz2025/styles.css',
+  '/otz2025/app.js',
+  '/otz2025/manifest.json',
+  '/otz2025/img/icon-192x192.png',
+  '/otz2025/img/icon-512x512.png',
+  '/otz2025/img/OTZ.png',
+  '/otz2025/img/OTZ3.png',
+  '/otz2025/img/PPATROL.png',
+  '/otz2025/img/RWE.png',
+  '/otz2025/img/BULLDOGS.png',
+  '/otz2025/img/KITTY BOYS.png',
+  '/otz2025/img/NEWS_NO.png',
+  '/otz2025/img/TG.png'
 ];
 
 // Установка и кэширование
@@ -21,142 +24,71 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('[SW] Кэширование основных ресурсов');
-        return cache.addAll(PRE_CACHE_ASSETS);
-      })
-      .then(() => self.skipWaiting())
+        return cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })))
+      .catch(err => console.error('[SW] Ошибка кэширования:', err))
   );
 });
 
-// Активация
+// Активация и очистка старых кэшей
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME && cacheName !== API_CACHE_NAME) {
-            console.log('[SW] Удаление старого кэша:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => clients.claim())
+    caches.keys().then(cacheNames => 
+      Promise.all(cacheNames.map(cacheName => 
+        [CACHE_NAME, API_CACHE].includes(cacheName) ? null : caches.delete(cacheName)
+      )
+    )
   );
 });
 
-// Обработка запросов
+// Стратегия кэширования
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  const request = event.request;
-
+  
   // Пропускаем не-GET запросы
-  if (request.method !== 'GET') return;
+  if (event.request.method !== 'GET') return;
 
-  // Для API запросов
+  // Для API - Network First
   if (url.pathname.includes('/api/')) {
     event.respondWith(
-      handleApiRequest(request)
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(API_CACHE)
+            .then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }
 
-  // Для статических файлов
+  // Для статических файлов - Cache First
   event.respondWith(
-    cacheFirstWithUpdate(request)
+    caches.match(event.request)
+      .then(cached => cached || fetch(event.request))
   );
 });
 
-// Стратегия для API: Network First
-async function handleApiRequest(request) {
-  const cache = await caches.open(API_CACHE_NAME);
-  
-  try {
-    // Пытаемся получить свежие данные
-    const networkResponse = await fetch(request);
-    
-    // Клонируем ответ для кэширования
-    const responseClone = networkResponse.clone();
-    
-    // Обновляем кэш в фоне
-    event.waitUntil(
-      cache.put(request, responseClone)
-    );
-    
-    return networkResponse;
-  } catch (error) {
-    // Если сеть недоступна - берем из кэша
-    const cachedResponse = await cache.match(request);
-    return cachedResponse || createErrorResponse();
-  }
-}
-
-// Стратегия для статики: Cache First с фоновым обновлением
-async function cacheFirstWithUpdate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-  
-  // Фоновое обновление кэша
-  if (navigator.onLine) {
-    const updatePromise = fetch(request)
-      .then(networkResponse => {
-        cache.put(request, networkResponse.clone());
-        return networkResponse;
-      })
-      .catch(() => null);
-    
-    event.waitUntil(updatePromise);
-  }
-  
-  return cachedResponse || fetch(request);
-}
-
-function createErrorResponse() {
-  return new Response(JSON.stringify({
-    error: 'Офлайн-режим',
-    timestamp: Date.now()
-  }), {
-    headers: {'Content-Type': 'application/json'}
-  });
-}
-
-// Фоновая синхронизация (для Android)
-self.addEventListener('sync', event => {
+// Фоновая синхронизация
+self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-data') {
-    event.waitUntil(syncData());
+    event.waitUntil(syncPendingData());
   }
 });
 
-// Периодическая синхронизация (для iOS)
-self.addEventListener('periodicsync', event => {
-  if (event.tag === 'update-content') {
-    event.waitUntil(updateContent());
-  }
-});
-
-async function syncData() {
-  const cache = await caches.open(API_CACHE_NAME);
-  const requests = await cache.keys();
-  
-  await Promise.all(requests.map(async request => {
+async function syncPendingData() {
+  const cache = await caches.open(API_CACHE);
+  const pendingResponse = await cache.match('/otz2025/pending');
+  if (pendingResponse) {
+    const pendingData = await pendingResponse.json();
     try {
-      const response = await fetch(request.url);
-      if (response.ok) {
-        await cache.put(request, response.clone());
-      }
-    } catch (error) {
-      console.log('Ошибка синхронизации:', request.url, error);
+      await fetch('/otz2025/api/sync', {
+        method: 'POST',
+        body: JSON.stringify(pendingData)
+      });
+      await cache.delete('/otz2025/pending');
+    } catch (err) {
+      console.error('Ошибка синхронизации:', err);
     }
-  }));
-}
-
-async function updateContent() {
-  await syncData();
-  // Уведомляем клиентов об обновлении
-  const clients = await self.clients.matchAll();
-  clients.forEach(client => {
-    client.postMessage({
-      type: 'content-updated',
-      timestamp: Date.now()
-    });
-  });
+  }
 }

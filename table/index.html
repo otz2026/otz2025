@@ -1,38 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Основные метатеги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Over Time Zvenigorod - Баскетбольная лига</title>
-    <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
-    <meta name="author" content="Over Time Zvenigorod">
-
-    <!-- Open Graph метатеги для соцсетей и поисковиков -->
+    <title>Соревнования - Over Time Zvenigorod</title>
+    <meta name="description" content="Турнирная таблица и расписание матчей баскетбольной лиги Over Time Zvenigorod">
     <meta property="og:title" content="Соревнования - Over Time Zvenigorod">
-    <meta property="og:description" content="Актуальное расписание матчей и турнирная таблица баскетбольной лиги Over Time Zvenigorod. Следите за результатами и новостями!">
+    <meta property="og:description" content="Турнирная таблица и расписание матчей баскетбольной лиги Over Time Zvenigorod">
     <meta property="og:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png">
     <meta property="og:url" content="https://otz2025.github.io/otz2025/table">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card метатеги -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Over Time Zvenigorod - Баскетбольная лига">
-    <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="twitter:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png">
-
-    <!-- Фавиконка -->
     <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
-
-    <!-- Каноническая ссылка -->
-    <link rel="canonical" href="https://otz2025.github.io/otz2025/">
-
-    <!-- Подтверждение для Google Search Console -->
-    <meta name="google-site-verification" content="8HjvCESaYUgIvvERAwoEaYd3x6xdpR_ccWMwwkwgoA4" />
-
-    <!-- Подтверждение для Яндекс.Вебмастер -->
-    <meta name="yandex-verification" content="143713e69ae2928c" />
 
     <style>
         /* Общие стили */
@@ -388,12 +365,12 @@
         /* Стили для ссылок команд */
         .team-cell a, .team-name a {
             color: white;
-            text-decoration: none; /* Убираем подчеркивание */
+            text-decoration: none;
         }
 
         .team-cell a:hover, .team-name a:hover {
-            color: white; /* Оставляем цвет текста белым при наведении */
-            text-decoration: none; /* Убираем подчеркивание при наведении */
+            color: white;
+            text-decoration: none;
         }
 
         @media (max-width: 768px) {
@@ -402,6 +379,7 @@
             }
         }
     </style>
+ 
 </head>
 <body>
     <header id="header">
@@ -417,51 +395,13 @@
     <div class="content">
         <h2>Соревнования</h2>
 
-        <!-- Блок результатов (События) -->
-        <div class="match-results">
+        <!-- Блок результатов -->
+        <div class="match-results" id="featuredMatchesContainer">
             <div class="table-header">
                 <h3>Ближайшие матчи</h3>
                 <hr>
             </div>
-            <!-- Первый матч -->
-            <div class="match-result">
-                <div class="teams">
-                    <div class="team-logo">
-                        <img src="/otz2025/img/PPATROL.png" alt="Paw patrol">
-                        <div class="team-name">
-                            <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
-                        </div>
-                    </div>
-                    <div class="score">Не начался</div>
-                    <div class="team-logo">
-                        <img src="/otz2025/img/RWE.png" alt="RWE">
-                        <div class="team-name">
-                            <a href="/otz2025/teams/RWE">RWE</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="date">10 июня 16:00</div>
-            </div>
-
-            <!-- Второй матч -->
-            <div class="match-result">
-                <div class="teams">
-                    <div class="team-logo">
-                        <img src="/otz2025/img/BULLDOGS.png" alt="BULLDOGS">
-                        <div class="team-name">
-                            <a href="/otz2025/teams/Bulldogs">Bulldogs</a>
-                        </div>
-                    </div>
-                    <div class="score">Не начался</div>
-                    <div class="team-logo">
-                        <img src="/otz2025/img/KITTY BOYS.png" alt="KITTY BOYS">
-                        <div class="team-name">
-                            <a href="/otz2025/teams/KittyBoys">Kitty Boys</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="date">10 июня 18:00</div>
-            </div>
+            <div class="loading">Загрузка матчей...</div>
         </div>
 
         <!-- Ссылка на расписание -->
@@ -469,13 +409,11 @@
             <a href="/otz2025/schedule">Посмотреть полное расписание</a>
         </div>
 
-        <!-- Заголовок и линия над таблицей -->
+        <!-- Турнирная таблица -->
         <div class="table-header">
             <h3>Турнирная таблица</h3>
             <hr>
         </div>
-
-        <!-- Таблица -->
         <div class="table-container">
             <table>
                 <thead>
@@ -492,122 +430,244 @@
                         <th>Очки</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Строки таблицы -->
-                    <tr>
-                        <td>1</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/BULLDOGS.png" alt="BULLDOGS2" class="team-logo">
-                            <a href="/otz2025/teams/Bulldogs">BULLDOGS</a>
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/TN.png" alt="TN" class="team-logo">
-                            <a href="/otz2025/teams/TN">TEXAS NERS</a>
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/RWE.png" alt="RWE" class="team-logo">
-                            <a href="/otz2025/teams/RWE">RWE</a>
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/KITTY BOYS.png" alt="Kitty Boys" class="team-logo">
-                            <a href="/otz2025/teams/KittyBoys">KITTY BOYS</a>
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td class="team-cell">
-                            <img src="/otz2025/img/PPATROL.png" alt="PPATROL" class="team-logo">
-                            <a href="/otz2025/teams/PawPatrol">PAW PATROL</a>
-                        </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
+                <tbody id="tournamentTableBody"></tbody>
             </table>
         </div>
     </div>
 
     <footer>
         <div class="footer-content">
-            <!-- Логотипы TikTok и изображение сайта -->
             <div class="social-links">
-                <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1" target="_blank">
+                <a href="https://www.tiktok.com/@otz.summer.league" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
                         <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
                     </svg>
                 </a>
                 <a href="https://t.me/pisunapidora" target="_blank">
-                    <img src="/otz2025/img/TG.png" alt="Логотип сайта">
+                    <img src="/otz2025/img/TG.png" alt="Telegram">
                 </a>
             </div>
-
             <p>© 2025 Over Time Zvenigorod. Все права защищены.</p>
         </div>
     </footer>
 
     <script>
+    // Конфигурация
+    const CONFIG = {
+        TOURNAMENT_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/tournament_data.json",
+        FEATURED_MATCHES_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
+        SCHEDULE_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
+        UPDATE_INTERVAL: 30000
+    };
+
+    // Основные функции для турнирной таблицы
+    async function loadTournamentData() {
+        try {
+            const response = await fetch(`${CONFIG.TOURNAMENT_DATA_URL}?t=${Date.now()}`);
+            if (!response.ok) throw new Error('Ошибка загрузки данных');
+            return await response.json();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            return getDefaultTeamsData();
+        }
+    }
+
+    function getDefaultTeamsData() {
+        return [
+            { id: "Bulldogs", team: "BULLDOGS", logo: "/otz2025/img/BULLDOGS.png", games: 0, wins: 0, losses: 0, scored: 0, conceded: 0, urlname: "Bulldogs" },
+            { id: "TN", team: "TEXAS NERS", logo: "/otz2025/img/TN.png", games: 0, wins: 0, losses: 0, scored: 0, conceded: 0, urlname: "TN" },
+            { id: "RWE", team: "RWE", logo: "/otz2025/img/RWE.png", games: 0, wins: 0, losses: 0, scored: 0, conceded: 0, urlname: "RWE" },
+            { id: "KittyBoys", team: "KITTY BOYS", logo: "/otz2025/img/KITTY BOYS.png", games: 0, wins: 0, losses: 0, scored: 0, conceded: 0, urlname: "KittyBoys" },
+            { id: "PawPatrol", team: "PAW PATROL", logo: "/otz2025/img/PPATROL.png", games: 0, wins: 0, losses: 0, scored: 0, conceded: 0, urlname: "PawPatrol" }
+        ];
+    }
+
+    async function updateTournamentTable() {
+        const data = await loadTournamentData();
+        const tableBody = document.getElementById('tournamentTableBody');
+        if (!tableBody) return;
+
+        const processedData = data.map(team => ({
+            ...team,
+            percentage: team.games > 0 ? ((team.wins / team.games) * 100).toFixed(1) : 0,
+            difference: (team.scored || 0) - (team.conceded || 0),
+            points: (team.wins || 0) * 2 + (team.losses || 0) * 1
+        }));
+
+        processedData.sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            if (b.difference !== a.difference) return b.difference - a.difference;
+            return b.scored - a.scored;
+        });
+
+        tableBody.innerHTML = processedData.map((team, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td class="team-cell">
+                    <img src="${team.logo}" class="team-logo" onerror="this.src='/otz2025/img/default-team.png'">
+                    <a href="/otz2025/teams/${team.urlname}">${team.team}</a>
+                </td>
+                <td>${team.games || 0}</td>
+                <td>${team.wins || 0}</td>
+                <td>${team.losses || 0}</td>
+                <td>${team.percentage}</td>
+                <td>${team.scored || 0}</td>
+                <td>${team.conceded || 0}</td>
+                <td>${team.difference}</td>
+                <td>${team.points}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Функции для результатов матчей
+    async function loadFeaturedMatches() {
+        try {
+            const [featuredResponse, scheduleResponse] = await Promise.all([
+                fetch(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`),
+                fetch(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`)
+            ]);
+            
+            if (!featuredResponse.ok || !scheduleResponse.ok) throw new Error('Ошибка загрузки данных');
+            
+            const featuredData = await featuredResponse.json();
+            const scheduleData = await scheduleResponse.json();
+            
+            displayFeaturedMatches(featuredData.featured, scheduleData.schedule);
+        } catch (error) {
+            console.error('Ошибка загрузки матчей:', error);
+            renderFallbackMatches();
+        }
+    }
+
+    function displayFeaturedMatches(featuredMatches, scheduleData) {
+        const matchesContainer = document.getElementById('featuredMatchesContainer');
+        if (!matchesContainer || !featuredMatches?.length) {
+            renderFallbackMatches();
+            return;
+        }
+
+        const matchesToShow = [];
+        featuredMatches.forEach(matchId => {
+            const [stage, index] = matchId.split('|');
+            if (scheduleData[stage]?.[index]) {
+                matchesToShow.push({
+                    ...scheduleData[stage][index],
+                    stageName: stage
+                });
+            }
+        });
+
+        if (matchesToShow.length === 0) {
+            renderFallbackMatches();
+            return;
+        }
+
+        matchesToShow.sort((a, b) => parseMatchDate(a.date) - parseMatchDate(b.date));
+        renderMatches(matchesToShow.slice(0, 2));
+    }
+
+    function parseMatchDate(dateStr) {
+        const months = {
+            'января': 0, 'февраля': 1, 'марта': 2, 'апреля': 3, 'мая': 4, 'июня': 5,
+            'июля': 6, 'августа': 7, 'сентября': 8, 'октября': 9, 'ноября': 10, 'декабря': 11
+        };
+        
+        const parts = dateStr?.split(' ') || [];
+        const day = parseInt(parts[0]) || 1;
+        const month = months[parts[1]?.toLowerCase()] || 0;
+        const [hours, minutes] = (parts[2]?.split(':') || ['0','0']).map(Number);
+        
+        return new Date(new Date().getFullYear(), month, day, hours, minutes);
+    }
+
+    function renderFallbackMatches() {
+        const container = document.getElementById('featuredMatchesContainer');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="table-header">
+                <h3>Ближайшие матчи</h3>
+                <hr>
+            </div>
+            <div class="match-result">
+                <div class="teams">
+                    <div class="team-logo">
+                        <img src="/otz2025/img/PPATROL.png" alt="Paw patrol">
+                        <div class="team-name">
+                            <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
+                        </div>
+                    </div>
+                    <div class="score">Не начался</div>
+                    <div class="team-logo">
+                        <img src="/otz2025/img/RWE.png" alt="RWE">
+                        <div class="team-name">
+                            <a href="/otz2025/teams/RWE">RWE</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="date">Следите за обновлениями</div>
+            </div>
+        `;
+    }
+
+    function renderMatches(matches) {
+        const container = document.getElementById('featuredMatchesContainer');
+        if (!container) return;
+        
+        const now = new Date();
+        const matchesHTML = matches.map(match => `
+            <div class="match-result ${parseMatchDate(match.date) < now ? 'past-match' : ''}">
+                <div class="teams">
+                    <div class="team-logo">
+                        <img src="${match.team1?.logo || '/otz2025/img/default-team.png'}" 
+                             alt="${match.team1?.name || 'Team 1'}"
+                             onerror="this.src='/otz2025/img/default-team.png'">
+                        <div class="team-name">
+                            <a href="${match.team1?.link || '/otz2025/teams/default'}">${match.team1?.name || 'Team 1'}</a>
+                        </div>
+                    </div>
+                    <div class="score">${match.score || 'vs'}</div>
+                    <div class="team-logo">
+                        <img src="${match.team2?.logo || '/otz2025/img/default-team.png'}" 
+                             alt="${match.team2?.name || 'Team 2'}"
+                             onerror="this.src='/otz2025/img/default-team.png'">
+                        <div class="team-name">
+                            <a href="${match.team2?.link || '/otz2025/teams/default'}">${match.team2?.name || 'Team 2'}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="date">${match.date || 'Дата уточняется'}</div>
+            </div>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="table-header">
+                <h3>Ближайшие матчи</h3>
+                <hr>
+            </div>
+            ${matchesHTML}
+        `;
+    }
+
+    // Инициализация
+    function initAutoRefresh() {
+        updateTournamentTable();
+        loadFeaturedMatches();
+        
+        setInterval(() => {
+            updateTournamentTable();
+            loadFeaturedMatches();
+        }, CONFIG.UPDATE_INTERVAL);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initAutoRefresh();
+        
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
-            header.classList.toggle('scrolled', window.scrollY > 50);
+            if (header) header.classList.toggle('scrolled', window.scrollY > 50);
         });
-
-        // Добавляем обработчик события для показа слова "Абоюдно"
-        const footerText = document.querySelector('footer p');
-        const hiddenLink = document.querySelector('footer .hidden');
-
-        footerText.addEventListener('click', () => {
-            hiddenLink.classList.remove('hidden'); // Показываем слово
-            setTimeout(() => {
-                hiddenLink.classList.add('hidden'); // Скрываем слово через 5 секунд
-            }, 5000);
-        });
+    });
     </script>
 </body>
 </html>

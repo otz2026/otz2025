@@ -12,7 +12,7 @@
     <!-- Open Graph метатеги для соцсетей и поисковиков -->
     <meta property="og:title" content="Over Time Zvenigorod - Баскетбольная лига">
     <meta property="og:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta property="og:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png"> <!-- Укажите полный URL логотипа -->
+    <meta property="og:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png">
     <meta property="og:url" content="https://otz2025.github.io/otz2025/news/">
     <meta property="og:type" content="website">
 
@@ -20,7 +20,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Over Time Zvenigorod - Баскетбольная лига">
     <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="twitter:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png"> <!-- Укажите полный URL логотипа -->
+    <meta name="twitter:image" content="https://otz2025.github.io/otz2025/img/OTZ3.png">
 
     <!-- Фавиконка -->
     <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
@@ -33,9 +33,6 @@
 
     <!-- Подтверждение для Яндекс.Вебмастер -->
     <meta name="yandex-verification" content="143713e69ae2928c" />
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         /* Общие стили */
@@ -79,17 +76,17 @@
         header nav {
             display: flex;
             gap: 20px;
-            justify-content: center; /* Центрирование по горизонтали */
-            align-items: center; /* Центрирование по вертикали */
-            margin: 0 auto; /* Центрирование навигации */
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
         }
 
         header nav a {
             color: white;
             text-decoration: none;
-            font-size: 18px !important; /* Добавлено !important */
+            font-size: 18px !important;
             transition: color 0.3s ease;
-            white-space: nowrap; /* Запрет переноса текста */
+            white-space: nowrap;
         }
 
         header nav a:hover {
@@ -104,17 +101,17 @@
             padding-top: 100px;
             flex: 1;
             box-sizing: border-box;
-            text-align: center; /* Центрирование содержимого по горизонтали */
+            text-align: center;
         }
 
         .content h2 {
             font-size: 40px;
-            margin: 40px auto 40px; /* Увеличенный отступ сверху */
+            margin: 40px auto 40px;
             line-height: 1.2;
-            display: inline-block; /* Чтобы прямоугольник был по ширине текста */
-            padding: 20px 40px; /* Отступы для текста */
-            background-color: #dd4710; /* Цвет прямоугольника */
-            border-radius: 5px; /* Закругленные углы */
+            display: inline-block;
+            padding: 20px 40px;
+            background-color: #dd4710;
+            border-radius: 5px;
         }
 
         /* Блок с новостями */
@@ -135,7 +132,7 @@
             max-width: 800px;
             box-sizing: border-box;
             margin-top: 60px;
-            text-align: center; /* Центрирование текста внутри блока новости */
+            text-align: center;
         }
 
         .news-item img {
@@ -150,18 +147,27 @@
 
         .news-item .text {
             padding: 0 20px;
-            text-align: center; /* Центрирование текста внутри блока новости */
+            text-align: center;
         }
 
         .news-item h3 {
-            text-align: center; /* Центрирование заголовка */
-            margin-bottom: 20px; /* Отступ снизу для заголовка */
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .news-item p {
             line-height: 1.6;
             font-size: 16px;
             margin-bottom: 20px;
+            text-align: left;
+            white-space: pre-line; /* Сохраняет переносы строк */
+        }
+
+        .news-date {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         /* Футер */
@@ -186,7 +192,7 @@
         .social-links {
             display: flex;
             gap: 20px;
-            align-items: center; /* Выравнивание иконок по центру */
+            align-items: center;
         }
 
         .social-links a {
@@ -196,8 +202,8 @@
         }
 
         .social-links a:hover {
-            transform: scale(1.1); /* Увеличение при наведении */
-            opacity: 0.8; /* Легкое затемнение */
+            transform: scale(1.1);
+            opacity: 0.8;
         }
 
         .social-links img {
@@ -215,13 +221,13 @@
             header .logo {
                 position: static;
                 margin-bottom: 10px;
-                text-align: center; /* Центрирование логотипа */
+                text-align: center;
             }
 
             header nav {
-                flex-direction: row; /* Горизонтальное расположение пунктов меню */
+                flex-direction: row;
                 gap: 10px;
-                align-items: center; /* Центрирование пунктов меню */
+                align-items: center;
             }
 
             .content {
@@ -231,8 +237,8 @@
 
             .content h2 {
                 font-size: 32px;
-                margin: 60px auto 30px; /* Увеличенный отступ сверху для мобильных */
-                padding: 15px 30px; /* Уменьшенные отступы для мобильных */
+                margin: 60px auto 30px;
+                padding: 15px 30px;
             }
 
             .news-item {
@@ -253,7 +259,7 @@
 
         @media (max-width: 480px) {
             header nav {
-                gap: 8px; /* Уменьшение отступов между пунктами меню */
+                gap: 8px;
             }
 
             .content {
@@ -263,8 +269,8 @@
             
             .content h2 {
                 font-size: 28px;
-                margin: 80px auto 20px; /* Еще больше отступ сверху для маленьких экранов */
-                padding: 10px 20px; /* Уменьшенные отступы для мобильных */
+                margin: 80px auto 20px;
+                padding: 10px 20px;
             }
             
             .news-item {
@@ -292,61 +298,20 @@
 
     <div class="content">
         <h2>Новости</h2>
-        <div class="news">
-            <div class="news-item">
-                <img src="/otz2025/img/NEWS_NO.png" alt="Новость 0">
-                <div class="text">
-                    <h3>Команды готовятся к сезону: OVER TIME ZWENIGOROD стартует летом</h3>
-                    <p>Сезон в Лиге OVER TIME ZWENIGOROD начнется только летом, но уже сейчас команды активно тренируются, чтобы показать лучшие результаты на турнире. Игроки отрабатывают тактики, улучшают индивидуальное мастерство и тестируют новые составы – всё ради того, чтобы в ответственных матчах проявить себя на максимум.
-                    Подготовка в разгаре
-Тренировочные сборы, скриммы и аналитические разборы стали неотъемлемой частью подготовки команд. Многие коллективы используют перерыв между сезонами, чтобы усилить состав или отточить сыгранность.
-
-1) Тактические новшества – Тренеры и капитаны экспериментируют с новыми стратегиями, чтобы застать соперников врасплох.
-
-2)Физическая и психологическая подготовка – Для стабильной игры важна не только механика, но и выносливость.
-
-3) Тестовые матчи – Команды активно играют друг против друга, чтобы проверить свою готовность.</p>
-                </div>
-            </div>
-            <!--<div class="news-item">
-                <img src="/otz2025/img/NEWS2.png" alt="Новость 1">
-                <div class="text">
-                    <h3>Громкие трейды в OVER TIME ZWENIGOROD: KITTY BOYS, BULLDOGS и RWE обменялись игроками!</h3>
-                    <p>В OVER TIME ZWENIGOROD произошли важные изменения, которые уже вызвали бурное обсуждение среди болельщиков. Главной новостью стал обмен между командами KITTY BOYS и BULLDOGS.
-
-Команда KITTY BOYS получила в свой состав Луцика Владимира, несмотря на его текущую травму. Этот шаг стал неожиданностью для многих, так как Луцик известен своим опытом и навыками, которые могут значительно усилить команду после его восстановления.
-
-В свою очередь, команда BULLDOGS пополнила свои ряды Андреем Яртымом. Второй крупный трейд: RWE и BULLDOGS
-Еще одним важным событием стал обмен между командами RWE и BULLDOGS.
-
-Команда BULLDOGS получила в свой состав Шипко Владимира, который уже успел зарекомендовать себя как сильный и перспективный игрок. Его переход в BULLDOGS может стать ключевым моментом для команды в предстоящих матчах.
-
-В ответ команда RWE пополнила свои ряды Головко Романом. Этот игрок известен своей универсальностью и умением действовать в сложных ситуациях, что делает его ценным приобретением для RWE.</p>
-                </div>
-            </div>
-            <div class="news-item">
-                <img src="/otz2025/img/NEWS3.png" alt="Новость 2">
-                <div class="text">
-                    <h3>Травма Луцика Владимира: «Bulldogs» теряют ключевого игрока</h3>
-                    <p>  9 марта 2025 года в матче лиги Over Time Zwenigorod игрок «Bulldogs» Луцик Владимир получил травму ступни при неудачном приземлении после подбора. Врачи уверяют, что повреждение несерьезное, и он скоро вернется в строй. Однако клуб надеется, что он пропустит хотя бы первый матч, чтобы полностью восстановиться, так как его роль в команде крайне важна.  
-
-Мы стараемся держать вас в курсе всех событий и радовать свежими новостями. Следите за обновлениями! Желаем Владимиру скорейшего выздоровления!</p>
-                </div>
-            </div>
-            <!-- Добавьте больше новостей по аналогии -->
+        <div class="news" id="newsContainer">
+            <!-- Новости будут загружаться здесь динамически -->
+            <div class="news-loading">Загрузка новостей...</div>
         </div>
     </div>
 
     <footer>
         <div class="footer-content">
             <div class="social-links">
-                <!-- Логотип TikTok -->
                 <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
                         <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
                     </svg>
                 </a>
-                <!-- Ваша картинка -->
                 <a href="https://t.me/pisunapidora" target="_blank">
                     <img src="/otz2025/img/TG.png" alt="Логотип сайта">
                 </a>
@@ -356,10 +321,103 @@
     </footer>
 
     <script>
+        // Конфигурация
+        const CONFIG = {
+            NEWS_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json"
+        };
+
+        // Функция загрузки новостей
+        async function loadNews() {
+            try {
+                const response = await fetch(`${CONFIG.NEWS_DATA_URL}?t=${Date.now()}`);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки новостей');
+                }
+                
+                const newsData = await response.json();
+                displayFullNews(newsData);
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('newsContainer').innerHTML = `
+                    <div class="news-error">
+                        Не удалось загрузить новости. Пожалуйста, попробуйте позже.
+                    </div>
+                `;
+            }
+        }
+
+        // Функция отображения полных новостей
+        function displayFullNews(newsData) {
+            const newsContainer = document.getElementById('newsContainer');
+            
+            if (!newsData || newsData.length === 0) {
+                newsContainer.innerHTML = `
+                    <div class="news-empty">
+                        Новостей пока нет. Следите за обновлениями!
+                    </div>
+                `;
+                return;
+            }
+
+            let newsHTML = '';
+            
+            newsData.forEach(news => {
+                // Форматируем дату в более читаемый вид (если нужно)
+                const newsDate = news.date ? new Date(news.date).toLocaleDateString('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }) : '';
+                
+                newsHTML += `
+                    <div class="news-item">
+                        <img src="${news.image || '/otz2025/img/NEWS_NO.png'}" alt="${news.title}">
+                        <div class="text">
+                            <h3>${news.title}</h3>
+                            ${newsDate ? `<div class="news-date">${newsDate}</div>` : ''}
+                            <p>${news.full_content || news.content}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            newsContainer.innerHTML = newsHTML;
+        }
+
+        // Добавляем стили для состояний загрузки
+        const style = document.createElement('style');
+        style.textContent = `
+            .news-loading, .news-error, .news-empty {
+                text-align: center;
+                padding: 40px;
+                font-size: 18px;
+                color: #ccc;
+                width: 100%;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Загружаем новости при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadNews);
+
+        // Скрипт для изменения фона шапки при скролле
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
             header.classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/otz2025/sw.js')
+                    .then(reg => {
+                        console.log('ServiceWorker успешно зарегистрирован');
+                        setInterval(() => reg.update(), 86400000); // Каждые 24 часа
+                    })
+                    .catch(err => console.log('Ошибка регистрации ServiceWorker:', err));
+            });
+        }
     </script>
 </body>
 </html>
