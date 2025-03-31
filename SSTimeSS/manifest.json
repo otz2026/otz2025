@@ -7,12 +7,12 @@
   "theme_color": "#dd4710",
   "icons": [
     {
-      "src": "../otz2025/img/OTZ3.png",
+      "src": "/otz2025/img/icon2-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "../otz2025/img/OTZ3.png",
+      "src": "/otz2025/img/icon2-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
