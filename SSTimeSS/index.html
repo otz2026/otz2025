@@ -676,7 +676,7 @@
             let token = CONFIG.GITHUB_TOKEN;
             
             if (!token) {
-                token = prompt("Введите GitHub Token для сохранения:");
+                token = prompt("Введите Token для сохранения:"); // Введите GitHub Token для сохранения: 
                 if (!token) {
                     showStatus("Сохранение отменено", "error");
                     return;
@@ -862,7 +862,7 @@
             let token = CONFIG.GITHUB_TOKEN;
             
             if (!token) {
-                token = prompt("Введите GitHub Token для сохранения:");
+                token = prompt("Введите Token для сохранения:");// Введите GitHub Token для сохранения:
                 if (!token) {
                     showNewsStatus("Сохранение отменено", "error");
                     return;
@@ -1083,7 +1083,7 @@
         async function uploadImageToGitHub(file, fileName, imagePath) {
             let token = CONFIG.GITHUB_TOKEN;
             if (!token) {
-                token = prompt("Введите GitHub Token для загрузки изображения:");
+                token = prompt("Введите GitHub Token для загрузки изображения:");// Введите GitHub Token для загрузки изображения:
                 if (!token) {
                     throw new Error('Загрузка отменена');
                 }
@@ -1170,7 +1170,7 @@
             
             let token = CONFIG.GITHUB_TOKEN;
             if (!token) {
-                token = prompt("Введите GitHub Token для сохранения:");
+                token = prompt("Введите Token для сохранения:");//Введите GitHub Token для сохранения:
                 if (!token) {
                     showAwardsStatus("Сохранение отменено", "error");
                     return;
