@@ -5,24 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTZ Управление составами</title>
     <meta name="theme-color" content="#dd4710">
-    <link rel="manifest" href="manifest.json">
+    <!--<link rel="manifest" href="manifest.json">-->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="../otz2025/img/OTZ3.png">
-    <!-- Фавиконка -->
     <link rel="icon" type="image/png" href="/otz2025/img/icon3-512x512.png">
-
-    <!-- Open Graph метатеги для соцсетей и поисковиков -->
-    <meta property="og:title" content="OTZ Админ - панель">
-    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
-    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card метатеги -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="OTZ Админ - панель">
-    <meta name="twitter:description" content="OTZ Админ - панель.">
-    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
 
     <style>
         :root {
@@ -53,7 +40,6 @@
             flex-direction: column;
         }
         
-        /* Навигационное меню */
         .nav-menu {
             background-color: var(--bg-dark);
             padding: 10px 20px;
@@ -126,38 +112,20 @@
             border-left: 4px solid var(--primary-color);
         }
         
-        .button-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        
         button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 8px 15px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             border-radius: 6px;
             transition: all 0.3s;
-            flex: 1;
-            min-width: 120px;
             font-weight: 500;
         }
         
         button:hover {
             background-color: var(--hover-color);
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .delete-btn {
-            background-color: #572d2c;
         }
         
         .status-message {
@@ -179,57 +147,28 @@
             background-color: rgba(45, 58, 87, 0.7);
         }
         
-        .player-editor {
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #ddd;
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: white;
-            font-family: inherit;
-            font-size: 16px;
-        }
-        
-        .player-list {
-            margin-top: 20px;
-        }
-        
         .player-item {
             background-color: rgba(0, 0, 0, 0.2);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
             border-left: 3px solid var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .player-item.collapsed {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .player-item.expanded {
+            display: block;
         }
         
         .player-photo {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             border: 2px solid var(--border-color);
             object-fit: cover;
@@ -237,11 +176,10 @@
         
         .player-main-info {
             flex: 1;
-            min-width: 200px;
         }
         
         .player-name {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -252,8 +190,7 @@
         }
         
         .player-stats {
-            flex: 2;
-            min-width: 300px;
+            margin-top: 15px;
             overflow-x: auto;
         }
         
@@ -273,12 +210,21 @@
             background-color: rgba(221, 71, 16, 0.3);
         }
         
+        .stats-table input {
+            width: 60px;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: white;
+            text-align: center;
+        }
+        
         .player-actions {
             display: flex;
             gap: 8px;
-            margin-top: 10px;
+            margin-top: 15px;
             justify-content: flex-end;
-            width: 100%;
         }
         
         .team-title {
@@ -296,6 +242,57 @@
             height: 30px;
             margin-right: 10px;
             border-radius: 50%;
+        }
+        
+        .swap-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .swap-form {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .swap-form h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         @media (max-width: 768px) {
@@ -318,38 +315,10 @@
                 padding: 6px 8px;
                 font-size: 14px;
             }
-            
-            button {
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-            
-            .player-editor {
-                padding: 15px;
-            }
-            
-            .player-item {
-                flex-direction: column;
-            }
-            
-            .player-stats {
-                min-width: 100%;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .button-group, .player-actions {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Навигационное меню -->
     <nav class="nav-menu">
         <div class="nav-title">OTZ Админ-панель</div>
         <div class="nav-links">
@@ -362,84 +331,7 @@
     <div class="container">
         <h1 class="main-header">Управление составами команд</h1>
         
-        <div class="player-editor">
-            <div class="form-group">
-                <label for="playerAction">Действие:</label>
-                <select id="playerAction">
-                    <option value="add">Добавить игрока</option>
-                    <option value="edit">Редактировать игрока</option>
-                </select>
-            </div>
-            
-            <div class="form-group" id="playerSelectContainer" style="display: none;">
-                <label for="playerSelect">Выберите игрока:</label>
-                <select id="playerSelect"></select>
-            </div>
-            
-            <div class="form-group">
-                <label for="playerName">ФИО игрока:</label>
-                <input type="text" id="playerName" placeholder="Например: Иванов Иван Иванович">
-            </div>
-            
-            <div class="form-group">
-                <label for="playerTeam">Команда:</label>
-                <select id="playerTeam"></select>
-            </div>
-            
-            <div class="form-group">
-                <label for="playerPhoto">Номер фото (из папки /otz2025/img/teams/):</label>
-                <input type="text" id="playerPhoto" placeholder="Например: 5">
-            </div>
-            
-            <div class="form-group">
-                <label for="playerHeight">Рост (см):</label>
-                <input type="number" id="playerHeight" placeholder="Например: 185">
-            </div>
-            
-            <h3 class="section-title">Статистика игрока</h3>
-            
-            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerGames">Игры:</label>
-                    <input type="number" id="playerGames" placeholder="0">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerPoints">Очки:</label>
-                    <input type="number" step="0.1" id="playerPoints" placeholder="0.0">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerRebounds">Подборы:</label>
-                    <input type="number" step="0.1" id="playerRebounds" placeholder="0.0">
-                </div>
-            </div>
-            
-            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerAssists">Ассисты:</label>
-                    <input type="number" step="0.1" id="playerAssists" placeholder="0.0">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerBlocks">Блокшоты:</label>
-                    <input type="number" step="0.1" id="playerBlocks" placeholder="0.0">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerPlusMinus">+/-:</label>
-                    <input type="number" step="0.1" id="playerPlusMinus" placeholder="0.0">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="playerEfficiency">КПИ:</label>
-                <input type="number" step="0.1" id="playerEfficiency" placeholder="0.0">
-            </div>
-            
-            <div class="button-group">
-                <button id="savePlayerBtn">Сохранить игрока</button>
-                <button id="deletePlayerBtn" class="delete-btn">Удалить игрока</button>
-            </div>
-            
-            <div id="playerStatusMsg" class="status-message"></div>
-        </div>
+        <div id="playerStatusMsg" class="status-message"></div>
         
         <div class="player-list">
             <h2 class="section-title">Текущие составы команд</h2>
@@ -447,44 +339,49 @@
         </div>
     </div>
 
+    <div class="swap-dialog" id="swapDialog">
+        <div class="swap-form">
+            <h3>Обмен игроков между командами</h3>
+            <div class="form-group">
+                <label for="swapPlayerId">Номер фото игрока для обмена:</label>
+                <input type="text" id="swapPlayerId" placeholder="Введите номер фото">
+            </div>
+            <div class="form-group">
+                <label for="githubToken">GitHub Token:</label>
+                <input type="password" id="githubToken" placeholder="Введите ваш GitHub Token">
+            </div>
+            <div class="form-actions">
+                <button id="cancelSwapBtn">Отмена</button>
+                <button id="confirmSwapBtn">Подтвердить обмен</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Конфигурация
         const CONFIG = {
             GITHUB_USER: "otz2026",
             REPO_NAME: "otz2025",
             TEAMS_FILE_PATH: "SSTimeSS/tournament_data.json",
-            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json",
-            GITHUB_TOKEN: ""
+            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json"
         };
     
         let playersData = [];
         let teamsData = [];
+        let currentSwapPlayer = null;
     
-        // ========== Основные функции ========== //
         async function loadAllData() {
-            showPlayerStatus("Загрузка данных...", "info");
+            showStatus("Загрузка данных...", "info");
             
             try {
-                // 1. Загружаем команды
                 await loadTeamsData();
-                
-                // 2. Загружаем игроков
                 await loadPlayersData();
-                
-                // 3. Обновляем интерфейс
-                updateTeamSelect();
-                updatePlayerSelect();
                 renderTeams();
-                
-                showPlayerStatus("Данные успешно загружены", "success");
+                showStatus("Данные успешно загружены", "success");
             } catch (error) {
                 console.error("Ошибка загрузки:", error);
-                showPlayerStatus(`Ошибка: ${error.message}`, "error");
-                
-                // Используем резервные данные
+                showStatus(`Ошибка: ${error.message}`, "error");
                 teamsData = getFallbackTeams();
                 playersData = [];
-                updateTeamSelect();
             }
         }
     
@@ -493,26 +390,12 @@
                 const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
                 const response = await fetch(teamsUrl);
                 
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
                 
                 const rawData = await response.json();
+                teamsData = Array.isArray(rawData) ? rawData : (rawData.teams || []);
                 
-                // Обработка разных форматов данных
-                if (Array.isArray(rawData)) {
-                    teamsData = rawData;
-                } else if (rawData.teams) {
-                    teamsData = rawData.teams;
-                } else {
-                    teamsData = [];
-                }
-                
-                if (teamsData.length === 0) {
-                    throw new Error("Файл команд пуст");
-                }
-                
-                console.log("Загружено команд:", teamsData.length);
+                if (teamsData.length === 0) throw new Error("Файл команд пуст");
             } catch (error) {
                 console.error("Ошибка загрузки команд:", error);
                 throw error;
@@ -542,67 +425,10 @@
                 
                 const data = await response.json();
                 playersData = data.players || [];
-                console.log("Загружено игроков:", playersData.length);
             } catch (error) {
                 console.error("Ошибка загрузки игроков:", error);
                 playersData = [];
             }
-        }
-    
-        function updateTeamSelect() {
-            const select = document.getElementById("playerTeam");
-            if (!select) {
-                console.error("Элемент playerTeam не найден!");
-                return;
-            }
-            
-            // Сохраняем текущее значение
-            const currentValue = select.value;
-            
-            // Очищаем и добавляем placeholder
-            select.innerHTML = '';
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "-- Выберите команду --";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
-            
-            // Добавляем команды
-            teamsData.forEach(team => {
-                const teamName = team.team || team.name || "";
-                if (teamName) {
-                    const option = document.createElement("option");
-                    option.value = teamName;
-                    option.textContent = teamName;
-                    
-                    // Восстанавливаем выбранное значение
-                    if (teamName === currentValue) {
-                        option.selected = true;
-                    }
-                    
-                    select.appendChild(option);
-                }
-            });
-        }
-    
-        function updatePlayerSelect() {
-            const select = document.getElementById("playerSelect");
-            select.innerHTML = "";
-            
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "-- Выберите игрока --";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
-            
-            playersData.forEach(player => {
-                const option = document.createElement("option");
-                option.value = player.photo;
-                option.textContent = `${player.name} (${player.team}) - №${player.photo}`;
-                select.appendChild(option);
-            });
         }
     
         function renderTeams() {
@@ -645,7 +471,8 @@
     
         function createPlayerCard(player) {
             const card = document.createElement("div");
-            card.className = "player-item";
+            card.className = "player-item collapsed";
+            card.dataset.photo = player.photo;
             
             // Фото игрока
             const photo = document.createElement("img");
@@ -671,43 +498,70 @@
             // Статистика
             const stats = document.createElement("div");
             stats.className = "player-stats";
-            stats.innerHTML = `
-                <table class="stats-table">
-                    <thead>
-                        <tr>
-                            <th>И</th><th>О</th><th>П</th><th>А</th>
-                            <th>Б</th><th>+/-</th><th>КПИ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${player.games || 0}</td>
-                            <td>${player.points || 0}</td>
-                            <td>${player.rebounds || 0}</td>
-                            <td>${player.assists || 0}</td>
-                            <td>${player.blocks || 0}</td>
-                            <td>${player.plusMinus || 0}</td>
-                            <td>${player.efficiency || 0}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            const statsTable = document.createElement("table");
+            statsTable.className = "stats-table";
+            statsTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>И</th><th>О</th><th>П</th><th>А</th>
+                        <th>Б</th><th>+/-</th><th>КПИ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" value="${player.games || 0}" data-stat="games"></td>
+                        <td><input type="number" step="0.1" value="${player.points || 0}" data-stat="points"></td>
+                        <td><input type="number" step="0.1" value="${player.rebounds || 0}" data-stat="rebounds"></td>
+                        <td><input type="number" step="0.1" value="${player.assists || 0}" data-stat="assists"></td>
+                        <td><input type="number" step="0.1" value="${player.blocks || 0}" data-stat="blocks"></td>
+                        <td><input type="number" step="0.1" value="${player.plusMinus || 0}" data-stat="plusMinus" readonly></td>
+                        <td><input type="number" step="0.1" value="${player.efficiency || 0}" data-stat="efficiency" readonly></td>
+                    </tr>
+                </tbody>
             `;
             
             // Кнопки действий
             const actions = document.createElement("div");
             actions.className = "player-actions";
             
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "✏️ Редактировать";
-            editBtn.onclick = () => editPlayer(player.photo);
+            const moveBtn = document.createElement("button");
+            moveBtn.textContent = "Переместить в другой клуб";
+            moveBtn.onclick = (e) => {
+                e.stopPropagation();
+                currentSwapPlayer = player.photo;
+                document.getElementById("swapPlayerId").value = "";
+                document.getElementById("githubToken").value = "";
+                document.getElementById("swapDialog").style.display = "flex";
+            };
             
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "delete-btn";
-            deleteBtn.textContent = "🗑️ Удалить";
-            deleteBtn.onclick = () => deletePlayer(player.photo);
+            const saveBtn = document.createElement("button");
+            saveBtn.textContent = "Сохранить изменения";
+            saveBtn.onclick = (e) => {
+                e.stopPropagation();
+                savePlayerStats(player.photo);
+            };
             
-            actions.appendChild(editBtn);
-            actions.appendChild(deleteBtn);
+            actions.appendChild(moveBtn);
+            actions.appendChild(saveBtn);
+            
+            stats.appendChild(statsTable);
+            
+            // Обработчик клика для разворачивания/сворачивания
+            card.addEventListener("click", (e) => {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                    card.classList.toggle("collapsed");
+                    card.classList.toggle("expanded");
+                }
+            });
+            
+            // Обработчики изменения статистики
+            const inputs = statsTable.querySelectorAll("input[type='number']:not([readonly])");
+            inputs.forEach(input => {
+                input.addEventListener("change", () => {
+                    calculateDerivedStats(player.photo);
+                });
+            });
             
             // Собираем карточку
             card.appendChild(photo);
@@ -718,100 +572,83 @@
             return card;
         }
     
-        function editPlayer(photoId) {
+        function calculateDerivedStats(photoId) {
             const player = playersData.find(p => p.photo === photoId);
             if (!player) return;
             
-            document.getElementById("playerAction").value = "edit";
-            document.getElementById("playerSelectContainer").style.display = "block";
-            document.getElementById("playerSelect").value = photoId;
+            const card = document.querySelector(`.player-item[data-photo="${photoId}"]`);
+            if (!card) return;
             
-            // Заполняем форму
-            document.getElementById("playerName").value = player.name;
-            document.getElementById("playerTeam").value = player.team;
-            document.getElementById("playerPhoto").value = player.photo;
-            document.getElementById("playerHeight").value = player.height || "";
+            // Получаем значения из инпутов
+            const games = parseFloat(card.querySelector("[data-stat='games']").value) || 0;
+            const points = parseFloat(card.querySelector("[data-stat='points']").value) || 0;
+            const rebounds = parseFloat(card.querySelector("[data-stat='rebounds']").value) || 0;
+            const assists = parseFloat(card.querySelector("[data-stat='assists']").value) || 0;
+            const blocks = parseFloat(card.querySelector("[data-stat='blocks']").value) || 0;
             
-            // Статистика
-            document.getElementById("playerGames").value = player.games || 0;
-            document.getElementById("playerPoints").value = player.points || 0;
-            document.getElementById("playerRebounds").value = player.rebounds || 0;
-            document.getElementById("playerAssists").value = player.assists || 0;
-            document.getElementById("playerBlocks").value = player.blocks || 0;
-            document.getElementById("playerPlusMinus").value = player.plusMinus || 0;
-            document.getElementById("playerEfficiency").value = player.efficiency || 0;
+            // Рассчитываем +/- (просто пример формулы)
+            const plusMinus = (points + rebounds + assists + blocks) / 4;
             
-            // Прокрутка к форме
-            document.getElementById("playerName").scrollIntoView({ behavior: 'smooth' });
+            // Рассчитываем КПИ (примерная формула)
+            const efficiency = (points + rebounds * 1.2 + assists * 1.5 + blocks * 2) / games || 0;
+            
+            // Обновляем поля
+            card.querySelector("[data-stat='plusMinus']").value = plusMinus.toFixed(1);
+            card.querySelector("[data-stat='efficiency']").value = efficiency.toFixed(1);
+            
+            // Обновляем данные игрока
+            player.games = games;
+            player.points = points;
+            player.rebounds = rebounds;
+            player.assists = assists;
+            player.blocks = blocks;
+            player.plusMinus = plusMinus;
+            player.efficiency = efficiency;
         }
     
-        function deletePlayer(photoId) {
-            if (!confirm(`Удалить игрока с фото №${photoId}?`)) return;
+        function savePlayerStats(photoId) {
+            const player = playersData.find(p => p.photo === photoId);
+            if (!player) return;
             
-            const index = playersData.findIndex(p => p.photo === photoId);
-            if (index !== -1) {
-                playersData.splice(index, 1);
-                savePlayers();
-            }
-        }
-    
-        function savePlayer() {
-            const action = document.getElementById("playerAction").value;
-            const photoId = document.getElementById("playerSelect").value;
-            const name = document.getElementById("playerName").value.trim();
-            const team = document.getElementById("playerTeam").value;
-            const photo = document.getElementById("playerPhoto").value.trim();
-            const height = parseInt(document.getElementById("playerHeight").value) || 0;
+            const card = document.querySelector(`.player-item[data-photo="${photoId}"]`);
+            if (!card) return;
             
-            // Валидация
-            if (!name) return showPlayerStatus("Введите имя игрока", "error");
-            if (!team) return showPlayerStatus("Выберите команду", "error");
-            if (!photo) return showPlayerStatus("Укажите номер фото", "error");
-            
-            // Статистика
-            const stats = {
-                games: parseInt(document.getElementById("playerGames").value) || 0,
-                points: parseFloat(document.getElementById("playerPoints").value) || 0,
-                rebounds: parseFloat(document.getElementById("playerRebounds").value) || 0,
-                assists: parseFloat(document.getElementById("playerAssists").value) || 0,
-                blocks: parseFloat(document.getElementById("playerBlocks").value) || 0,
-                plusMinus: parseFloat(document.getElementById("playerPlusMinus").value) || 0,
-                efficiency: parseFloat(document.getElementById("playerEfficiency").value) || 0
-            };
-            
-            // Создаем/обновляем игрока
-            const playerData = { name, team, photo, height, ...stats };
-            
-            if (action === "add") {
-                // Проверка уникальности photo
-                if (playersData.some(p => p.photo === photo)) {
-                    return showPlayerStatus(`Игрок с фото №${photo} уже существует!`, "error");
-                }
-                playersData.push(playerData);
-            } else {
-                const index = playersData.findIndex(p => p.photo === photoId);
-                if (index === -1) return;
-                
-                // Проверка на изменение photo
-                if (photo !== photoId && playersData.some(p => p.photo === photo)) {
-                    return showPlayerStatus(`Игрок с фото №${photo} уже существует!`, "error");
-                }
-                
-                playersData[index] = playerData;
-            }
+            // Обновляем данные игрока из инпутов
+            player.games = parseFloat(card.querySelector("[data-stat='games']").value) || 0;
+            player.points = parseFloat(card.querySelector("[data-stat='points']").value) || 0;
+            player.rebounds = parseFloat(card.querySelector("[data-stat='rebounds']").value) || 0;
+            player.assists = parseFloat(card.querySelector("[data-stat='assists']").value) || 0;
+            player.blocks = parseFloat(card.querySelector("[data-stat='blocks']").value) || 0;
+            player.plusMinus = parseFloat(card.querySelector("[data-stat='plusMinus']").value) || 0;
+            player.efficiency = parseFloat(card.querySelector("[data-stat='efficiency']").value) || 0;
             
             savePlayers();
-            resetPlayerForm();
+        }
+    
+        function swapPlayers(player1Id, player2Id) {
+            const player1 = playersData.find(p => p.photo === player1Id);
+            const player2 = playersData.find(p => p.photo === player2Id);
+            
+            if (!player1 || !player2) {
+                return showStatus("Один из игроков не найден", "error");
+            }
+            
+            // Меняем команды местами
+            const tempTeam = player1.team;
+            player1.team = player2.team;
+            player2.team = tempTeam;
+            
+            showStatus(`Игроки ${player1.name} и ${player2.name} успешно обменяны`, "success");
+            renderTeams();
         }
     
         async function savePlayers() {
-            let token = CONFIG.GITHUB_TOKEN;
+            const token = document.getElementById("githubToken").value || CONFIG.GITHUB_TOKEN;
             if (!token) {
-                token = prompt("Введите GitHub Token для сохранения:");
-                if (!token) return showPlayerStatus("Сохранение отменено", "error");
+                return showStatus("GitHub Token не указан", "error");
             }
             
-            showPlayerStatus("Сохранение данных...", "info");
+            showStatus("Сохранение данных...", "info");
             
             try {
                 // Получаем текущий SHA файла
@@ -851,30 +688,15 @@
                     throw new Error(await response.text());
                 }
                 
-                showPlayerStatus("Данные успешно сохранены!", "success");
-                setTimeout(loadAllData, 1000);
+                showStatus("Данные успешно сохранены!", "success");
                 
             } catch (error) {
                 console.error("Ошибка сохранения:", error);
-                showPlayerStatus(`Ошибка: ${error.message}`, "error");
+                showStatus(`Ошибка: ${error.message}`, "error");
             }
         }
     
-        function resetPlayerForm() {
-            document.getElementById("playerAction").value = "add";
-            document.getElementById("playerSelectContainer").style.display = "none";
-            
-            // Сбрасываем поля формы
-            const form = document.querySelector(".player-editor");
-            form.reset();
-            
-            // Устанавливаем дефолтные значения для статистики
-            ["Games", "Points", "Rebounds", "Assists", "Blocks", "PlusMinus", "Efficiency"].forEach(field => {
-                document.getElementById(`player${field}`).value = "0";
-            });
-        }
-    
-        function showPlayerStatus(msg, type) {
+        function showStatus(msg, type) {
             const status = document.getElementById("playerStatusMsg");
             if (!status) return;
             
@@ -885,24 +707,40 @@
     
         // Инициализация
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("Инициализация страницы управления составами");
-            
-            // Загрузка данных
             loadAllData();
             
-            // Обработчики событий
-            document.getElementById("playerAction").addEventListener("change", function() {
-                document.getElementById("playerSelectContainer").style.display = 
-                    this.value === "edit" ? "block" : "none";
+            // Обработчики диалога обмена
+            document.getElementById("cancelSwapBtn").addEventListener("click", () => {
+                document.getElementById("swapDialog").style.display = "none";
             });
             
-            document.getElementById("savePlayerBtn").addEventListener("click", savePlayer);
-            document.getElementById("deletePlayerBtn").addEventListener("click", () => {
-                const photoId = document.getElementById("playerSelect").value;
-                if (photoId) deletePlayer(photoId);
+            document.getElementById("confirmSwapBtn").addEventListener("click", async () => {
+                const swapPlayerId = document.getElementById("swapPlayerId").value.trim();
+                const token = document.getElementById("githubToken").value.trim();
+                
+                if (!swapPlayerId || !currentSwapPlayer) {
+                    return showStatus("Укажите номер фото игрока для обмена", "error");
+                }
+                
+                if (!token) {
+                    return showStatus("Введите GitHub Token", "error");
+                }
+                
+                if (swapPlayerId === currentSwapPlayer) {
+                    return showStatus("Нельзя обменять игрока с самим собой", "error");
+                }
+                
+                CONFIG.GITHUB_TOKEN = token;
+                swapPlayers(currentSwapPlayer, swapPlayerId);
+                document.getElementById("swapDialog").style.display = "none";
+                
+                try {
+                    await savePlayers();
+                } catch (error) {
+                    console.error("Ошибка при сохранении:", error);
+                }
             });
         });
     </script>
-    
 </body>
 </html>
