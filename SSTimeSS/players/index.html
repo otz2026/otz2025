@@ -452,8 +452,8 @@
         const CONFIG = {
             GITHUB_USER: "otz2026",
             REPO_NAME: "otz2025",
-            TEAMS_FILE_PATH: "/SSTimeSS/tournament_data.json",
-            PLAYERS_FILE_PATH: "/SSTimeSS/players_data.json",
+            TEAMS_FILE_PATH: "SSTimeSS/tournament_data.json",
+            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json",
             GITHUB_TOKEN: ""
         };
     
@@ -544,8 +544,8 @@
             
             playersData.forEach(player => {
                 const option = document.createElement("option");
-                option.value = player.id;
-                option.textContent = `${player.name} (${player.team})`;
+                option.value = player.photo; // Используем номер фото как ID
+                option.textContent = `${player.name} (${player.team}) - Фото: ${player.photo}`;
                 playerSelect.appendChild(option);
             });
         }
@@ -597,11 +597,11 @@
         function createPlayerCard(player, team) {
             const playerItem = document.createElement("div");
             playerItem.className = "player-item";
-            playerItem.dataset.id = player.id;
+            playerItem.dataset.photo = player.photo; // Используем номер фото как ID
             
             const playerPhoto = document.createElement("img");
             playerPhoto.className = "player-photo";
-            playerPhoto.src = `/otz2025/img/teams/${player.photo || '0'}.jpg`;
+            playerPhoto.src = `/otz2025/img/teams/${player.photo}.jpg`;
             playerPhoto.alt = player.name;
             playerPhoto.onerror = function() {
                 this.src = '/otz2025/img/OTZ2.png';
@@ -616,7 +616,7 @@
             
             const playerTeam = document.createElement("div");
             playerTeam.className = "player-team";
-            playerTeam.textContent = `Команда: ${player.team} | Рост: ${player.height} см`;
+            playerTeam.textContent = `Команда: ${player.team} | Рост: ${player.height} см | Фото: ${player.photo}`;
             
             playerMainInfo.appendChild(playerName);
             playerMainInfo.appendChild(playerTeam);
@@ -659,12 +659,12 @@
             
             const editBtn = document.createElement("button");
             editBtn.textContent = "Редактировать";
-            editBtn.onclick = () => editPlayer(player.id);
+            editBtn.onclick = () => editPlayer(player.photo); // Используем номер фото как ID
             
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Удалить";
             deleteBtn.className = "delete-btn";
-            deleteBtn.onclick = () => deletePlayer(player.id);
+            deleteBtn.onclick = () => deletePlayer(player.photo); // Используем номер фото как ID
             
             playerActions.appendChild(editBtn);
             playerActions.appendChild(deleteBtn);
@@ -677,17 +677,17 @@
             return playerItem;
         }
     
-        function editPlayer(playerId) {
-            const player = playersData.find(p => p.id === playerId);
+        function editPlayer(photoId) {
+            const player = playersData.find(p => p.photo === photoId);
             if (!player) return;
             
             document.getElementById("playerAction").value = "edit";
             document.getElementById("playerSelectContainer").style.display = "block";
-            document.getElementById("playerSelect").value = playerId;
+            document.getElementById("playerSelect").value = photoId;
             
             document.getElementById("playerName").value = player.name;
             document.getElementById("playerTeam").value = player.team;
-            document.getElementById("playerPhoto").value = player.photo || "";
+            document.getElementById("playerPhoto").value = player.photo;
             document.getElementById("playerHeight").value = player.height || "";
             
             // Статистика
@@ -703,9 +703,9 @@
             document.getElementById("playerName").scrollIntoView({ behavior: 'smooth' });
         }
     
-        function deletePlayer(playerId) {
+        function deletePlayer(photoId) {
             if (confirm("Вы уверены, что хотите удалить этого игрока?")) {
-                const index = playersData.findIndex(p => p.id === playerId);
+                const index = playersData.findIndex(p => p.photo === photoId);
                 if (index !== -1) {
                     playersData.splice(index, 1);
                     savePlayers();
@@ -715,7 +715,7 @@
     
         function savePlayer() {
             const action = document.getElementById("playerAction").value;
-            const playerId = document.getElementById("playerSelect").value;
+            const photoId = document.getElementById("playerSelect").value;
             const name = document.getElementById("playerName").value.trim();
             const team = document.getElementById("playerTeam").value;
             const photo = document.getElementById("playerPhoto").value.trim();
@@ -740,11 +740,15 @@
                 return;
             }
             
+            if (!photo) {
+                showPlayerStatus("Укажите номер фото", "error");
+                return;
+            }
+    
             const playerData = {
-                id: action === "add" ? generateId() : playerId,
                 name,
                 team,
-                photo,
+                photo, // Используем как уникальный ID
                 height,
                 games,
                 points,
@@ -756,20 +760,30 @@
             };
             
             if (action === "add") {
+                // Проверяем, нет ли уже игрока с таким номером фото
+                const existingPlayer = playersData.find(p => p.photo === photo);
+                if (existingPlayer) {
+                    showPlayerStatus(`Игрок с фото №${photo} уже существует!`, "error");
+                    return;
+                }
                 playersData.push(playerData);
             } else {
-                const index = playersData.findIndex(p => p.id === playerId);
+                const index = playersData.findIndex(p => p.photo === photoId);
                 if (index !== -1) {
+                    // Если меняем номер фото, проверяем его уникальность
+                    if (photo !== photoId) {
+                        const exists = playersData.some(p => p.photo === photo && p.photo !== photoId);
+                        if (exists) {
+                            showPlayerStatus(`Игрок с фото №${photo} уже существует!`, "error");
+                            return;
+                        }
+                    }
                     playersData[index] = playerData;
                 }
             }
             
             savePlayers();
             resetPlayerForm();
-        }
-    
-        function generateId() {
-            return 'player-' + Math.random().toString(36).substr(2, 9);
         }
     
         async function savePlayers() {
@@ -814,7 +828,7 @@
                     },
                     body: JSON.stringify({
                         message: "Обновление данных игроков",
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify({ players: playersData }, null, 2)))),
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify({ players: playersData }, null, 2))),
                         sha: sha
                     })
                 });
@@ -833,7 +847,7 @@
     
         function resetPlayerForm() {
             document.getElementById("playerName").value = "";
-            document.getElementById("playerTeam").value = "";
+            document.getElementById("playerTeam").value = teamsData[0]?.team || "";
             document.getElementById("playerPhoto").value = "";
             document.getElementById("playerHeight").value = "";
             
@@ -868,10 +882,11 @@
             
             document.getElementById("savePlayerBtn").addEventListener("click", savePlayer);
             document.getElementById("deletePlayerBtn").addEventListener("click", function() {
-                const playerId = document.getElementById("playerSelect").value;
-                deletePlayer(playerId);
+                const photoId = document.getElementById("playerSelect").value;
+                deletePlayer(photoId);
             });
         });
     </script>
+    
 </body>
 </html>
