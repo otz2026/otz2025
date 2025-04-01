@@ -474,7 +474,7 @@
                 <input type="text" id="swapPlayerId" placeholder="Введите номер фото">
             </div>
             <div class="form-group">
-                <label for="githubToken">GitHub Token:</label>
+                <label for="githubToken">Token:</label>
                 <input type="password" id="githubToken" placeholder="Введите ваш GitHub Token">
             </div>
             <div class="form-actions">
@@ -705,9 +705,9 @@
         async function savePlayerStats(photoId) {
             // Запрашиваем токен, если он еще не был введен
             if (!CONFIG.GITHUB_TOKEN) {
-                const token = prompt("Для сохранения изменений введите GitHub Token:");
+                const token = prompt("Для сохранения изменений введите Token:");
                 if (!token) {
-                    showStatus("Сохранение отменено: не введен GitHub Token", "error");
+                    showStatus("Сохранение отменено: не введен Token", "error");
                     return;
                 }
                 CONFIG.GITHUB_TOKEN = token;
@@ -758,7 +758,7 @@
         // Сохранение данных на GitHub
         async function savePlayers() {
             if (!CONFIG.GITHUB_TOKEN) {
-                throw new Error("GitHub Token не указан");
+                throw new Error("Token не указан");
             }
             
             showStatus("Сохранение данных...", "info");
@@ -888,7 +888,7 @@
                 }
                 
                 if (!token) {
-                    return showStatus("Введите GitHub Token", "error");
+                    return showStatus("Введите Token", "error");
                 }
                 
                 if (swapPlayerId === currentSwapPlayer) {
