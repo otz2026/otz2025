@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTZ Управление составами</title>
+    <meta name="theme-color" content="#dd4710">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../otz2025/img/OTZ3.png">
+    <!-- Фавиконка -->
+    <link rel="icon" type="image/png" href="/otz2025/img/icon3-512x512.png">
+
+    <!-- Open Graph метатеги для соцсетей и поисковиков -->
+    <meta property="og:title" content="OTZ Админ - панель">
+    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
+    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card метатеги -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OTZ Админ - панель">
+    <meta name="twitter:description" content="OTZ Админ - панель.">
+    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
+
+    <style>
+        :root {
+            --primary-color: #dd4710;
+            --secondary-color: #2a2a2a;
+            --text-color: #ffffff;
+            --hover-color: #c03d0d;
+            --bg-dark: rgba(0, 0, 0, 0.7);
+            --bg-light: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Навигационное меню */
+        .nav-menu {
+            background-color: var(--bg-dark);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(221, 71, 16, 0.2);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .main-header {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: var(--primary-color);
+            text-align: center;
+            margin: 20px 0;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .main-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .section-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--primary-color);
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .delete-btn {
+            background-color: #572d2c;
+        }
+        
+        .status-message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .success {
+            background-color: rgba(45, 87, 44, 0.7);
+        }
+        
+        .error {
+            background-color: rgba(87, 45, 44, 0.7);
+        }
+        
+        .info {
+            background-color: rgba(45, 58, 87, 0.7);
+        }
+        
+        .player-editor {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ddd;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        .player-list {
+            margin-top: 20px;
+        }
+        
+        .player-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .player-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            object-fit: cover;
+        }
+        
+        .player-main-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .player-team {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .player-stats {
+            flex: 2;
+            min-width: 300px;
+            overflow-x: auto;
+        }
+        
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .stats-table th, .stats-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stats-table th {
+            background-color: rgba(221, 71, 16, 0.3);
+        }
+        
+        .player-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        
+        .team-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin: 25px 0 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .team-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .nav-link {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .player-editor {
+                padding: 15px;
+            }
+            
+            .player-item {
+                flex-direction: column;
+            }
+            
+            .player-stats {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .button-group, .player-actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационное меню -->
+    <nav class="nav-menu">
+        <div class="nav-title">OTZ Админ-панель</div>
+        <div class="nav-links">
+            <a href="/otz2025/SSTimeSS" class="nav-link">Главная</a>
+            <a href="/otz2025/SSTimeSS/schedule" class="nav-link">Расписание</a>
+            <a href="/otz2025/SSTimeSS/players" class="nav-link active">Составы</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="main-header">Управление составами команд</h1>
+        
+        <div class="player-editor">
+            <div class="form-group">
+                <label for="playerAction">Действие:</label>
+                <select id="playerAction">
+                    <option value="add">Добавить игрока</option>
+                    <option value="edit">Редактировать игрока</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="playerSelectContainer" style="display: none;">
+                <label for="playerSelect">Выберите игрока:</label>
+                <select id="playerSelect"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerName">ФИО игрока:</label>
+                <input type="text" id="playerName" placeholder="Например: Иванов Иван Иванович">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerTeam">Команда:</label>
+                <select id="playerTeam"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerPhoto">Номер фото (из папки /otz2025/img/teams/):</label>
+                <input type="text" id="playerPhoto" placeholder="Например: 5">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerHeight">Рост (см):</label>
+                <input type="number" id="playerHeight" placeholder="Например: 185">
+            </div>
+            
+            <h3 class="section-title">Статистика игрока</h3>
+            
+            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerGames">Игры:</label>
+                    <input type="number" id="playerGames" placeholder="0">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerPoints">Очки:</label>
+                    <input type="number" step="0.1" id="playerPoints" placeholder="0.0">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerRebounds">Подборы:</label>
+                    <input type="number" step="0.1" id="playerRebounds" placeholder="0.0">
+                </div>
+            </div>
+            
+            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerAssists">Ассисты:</label>
+                    <input type="number" step="0.1" id="playerAssists" placeholder="0.0">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerBlocks">Блокшоты:</label>
+                    <input type="number" step="0.1" id="playerBlocks" placeholder="0.0">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="playerPlusMinus">+/-:</label>
+                    <input type="number" step="0.1" id="playerPlusMinus" placeholder="0.0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerEfficiency">КПИ:</label>
+                <input type="number" step="0.1" id="playerEfficiency" placeholder="0.0">
+            </div>
+            
+            <div class="button-group">
+                <button id="savePlayerBtn">Сохранить игрока</button>
+                <button id="deletePlayerBtn" class="delete-btn">Удалить игрока</button>
+            </div>
+            
+            <div id="playerStatusMsg" class="status-message"></div>
+        </div>
+        
+        <div class="player-list">
+            <h2 class="section-title">Текущие составы команд</h2>
+            <div id="teamsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация
+        const CONFIG = {
+            GITHUB_USER: "otz2026",
+            REPO_NAME: "otz2025",
+            TEAMS_FILE_PATH: "SSTimeSS/tournament_data.json",
+            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json",
+            GITHUB_TOKEN: ""
+        };
+    
+        let playersData = [];
+        let teamsData = [];
+    
+        // ========== Основные функции ========== //
+        async function loadPlayers() {
+            showPlayerStatus("Загрузка данных...", "info");
+            
+            try {
+                // Загружаем данные команд
+                const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
+                const teamsResponse = await fetch(teamsUrl);
+                
+                if (!teamsResponse.ok) throw new Error(`Ошибка загрузки команд: ${teamsResponse.status}`);
+                
+                teamsData = await teamsResponse.json();
+                
+                if (!Array.isArray(teamsData)) {
+                    throw new Error("Неверный формат данных команд");
+                }
+                
+                // Загружаем данные игроков
+                const playersUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.PLAYERS_FILE_PATH}?t=${Date.now()}`;
+                const playersResponse = await fetch(playersUrl);
+                
+                if (!playersResponse.ok) {
+                    // Если файла нет, создаем пустой массив
+                    playersData = [];
+                    updateTeamSelect();
+                    updatePlayerSelect();
+                    renderTeams();
+                    showPlayerStatus("Создан новый файл игроков", "info");
+                    return;
+                }
+                
+                const data = await playersResponse.json();
+                playersData = data.players || [];
+                
+                updateTeamSelect();
+                updatePlayerSelect();
+                renderTeams();
+                showPlayerStatus("Данные загружены", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showPlayerStatus(`Ошибка: ${error.message}`, "error");
+                playersData = [];
+                teamsData = [];
+                updateTeamSelect();
+                updatePlayerSelect();
+                renderTeams();
+            }
+        }
+    
+        function updateTeamSelect() {
+            const teamSelect = document.getElementById("playerTeam");
+            teamSelect.innerHTML = "";
+            
+            if (teamsData.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Нет данных о командах";
+                teamSelect.appendChild(option);
+                return;
+            }
+            
+            teamsData.forEach(team => {
+                const option = document.createElement("option");
+                option.value = team.team;
+                option.textContent = team.team;
+                teamSelect.appendChild(option);
+            });
+        }
+    
+        function updatePlayerSelect() {
+            const playerSelect = document.getElementById("playerSelect");
+            playerSelect.innerHTML = "";
+            
+            if (playersData.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Нет данных об игроках";
+                playerSelect.appendChild(option);
+                return;
+            }
+            
+            playersData.forEach(player => {
+                const option = document.createElement("option");
+                option.value = player.id;
+                option.textContent = `${player.name} (${player.team})`;
+                playerSelect.appendChild(option);
+            });
+        }
+    
+        function renderTeams() {
+            const container = document.getElementById("teamsContainer");
+            container.innerHTML = "";
+            
+            if (teamsData.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #aaa;">Нет данных о командах</p>`;
+                return;
+            }
+            
+            teamsData.forEach(team => {
+                const teamPlayers = playersData.filter(p => p.team === team.team);
+                
+                const teamSection = document.createElement("div");
+                
+                const teamTitle = document.createElement("h3");
+                teamTitle.className = "team-title";
+                
+                if (team.logo) {
+                    const teamLogo = document.createElement("img");
+                    teamLogo.className = "team-logo";
+                    teamLogo.src = team.logo;
+                    teamLogo.alt = team.team;
+                    teamTitle.appendChild(teamLogo);
+                }
+                
+                teamTitle.innerHTML += `${team.team} (${teamPlayers.length} игроков)`;
+                teamSection.appendChild(teamTitle);
+                
+                if (teamPlayers.length === 0) {
+                    const emptyMsg = document.createElement("p");
+                    emptyMsg.style.textAlign = "center";
+                    emptyMsg.style.color = "#aaa";
+                    emptyMsg.textContent = "В этой команде пока нет игроков";
+                    teamSection.appendChild(emptyMsg);
+                } else {
+                    teamPlayers.forEach(player => {
+                        teamSection.appendChild(createPlayerCard(player, team));
+                    });
+                }
+                
+                container.appendChild(teamSection);
+            });
+        }
+    
+        function createPlayerCard(player, team) {
+            const playerItem = document.createElement("div");
+            playerItem.className = "player-item";
+            playerItem.dataset.id = player.id;
+            
+            const playerPhoto = document.createElement("img");
+            playerPhoto.className = "player-photo";
+            playerPhoto.src = `/otz2025/img/teams/${player.photo || '0'}.jpg`;
+            playerPhoto.alt = player.name;
+            playerPhoto.onerror = function() {
+                this.src = '/otz2025/img/OTZ2.png';
+            };
+            
+            const playerMainInfo = document.createElement("div");
+            playerMainInfo.className = "player-main-info";
+            
+            const playerName = document.createElement("div");
+            playerName.className = "player-name";
+            playerName.textContent = player.name;
+            
+            const playerTeam = document.createElement("div");
+            playerTeam.className = "player-team";
+            playerTeam.textContent = `Команда: ${player.team} | Рост: ${player.height} см`;
+            
+            playerMainInfo.appendChild(playerName);
+            playerMainInfo.appendChild(playerTeam);
+            
+            const playerStats = document.createElement("div");
+            playerStats.className = "player-stats";
+            
+            const statsTable = document.createElement("table");
+            statsTable.className = "stats-table";
+            
+            statsTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Игры</th>
+                        <th>Очки</th>
+                        <th>Подборы</th>
+                        <th>Ассисты</th>
+                        <th>Блокшоты</th>
+                        <th>+/-</th>
+                        <th>КПИ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${player.games || 0}</td>
+                        <td>${player.points || 0}</td>
+                        <td>${player.rebounds || 0}</td>
+                        <td>${player.assists || 0}</td>
+                        <td>${player.blocks || 0}</td>
+                        <td>${player.plusMinus || 0}</td>
+                        <td>${player.efficiency || 0}</td>
+                    </tr>
+                </tbody>
+            `;
+            
+            playerStats.appendChild(statsTable);
+            
+            const playerActions = document.createElement("div");
+            playerActions.className = "player-actions";
+            
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Редактировать";
+            editBtn.onclick = () => editPlayer(player.id);
+            
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Удалить";
+            deleteBtn.className = "delete-btn";
+            deleteBtn.onclick = () => deletePlayer(player.id);
+            
+            playerActions.appendChild(editBtn);
+            playerActions.appendChild(deleteBtn);
+            
+            playerItem.appendChild(playerPhoto);
+            playerItem.appendChild(playerMainInfo);
+            playerItem.appendChild(playerStats);
+            playerItem.appendChild(playerActions);
+            
+            return playerItem;
+        }
+    
+        function editPlayer(playerId) {
+            const player = playersData.find(p => p.id === playerId);
+            if (!player) return;
+            
+            document.getElementById("playerAction").value = "edit";
+            document.getElementById("playerSelectContainer").style.display = "block";
+            document.getElementById("playerSelect").value = playerId;
+            
+            document.getElementById("playerName").value = player.name;
+            document.getElementById("playerTeam").value = player.team;
+            document.getElementById("playerPhoto").value = player.photo || "";
+            document.getElementById("playerHeight").value = player.height || "";
+            
+            // Статистика
+            document.getElementById("playerGames").value = player.games || 0;
+            document.getElementById("playerPoints").value = player.points || 0;
+            document.getElementById("playerRebounds").value = player.rebounds || 0;
+            document.getElementById("playerAssists").value = player.assists || 0;
+            document.getElementById("playerBlocks").value = player.blocks || 0;
+            document.getElementById("playerPlusMinus").value = player.plusMinus || 0;
+            document.getElementById("playerEfficiency").value = player.efficiency || 0;
+            
+            // Прокрутка к форме
+            document.getElementById("playerName").scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        function deletePlayer(playerId) {
+            if (confirm("Вы уверены, что хотите удалить этого игрока?")) {
+                const index = playersData.findIndex(p => p.id === playerId);
+                if (index !== -1) {
+                    playersData.splice(index, 1);
+                    savePlayers();
+                }
+            }
+        }
+    
+        function savePlayer() {
+            const action = document.getElementById("playerAction").value;
+            const playerId = document.getElementById("playerSelect").value;
+            const name = document.getElementById("playerName").value.trim();
+            const team = document.getElementById("playerTeam").value;
+            const photo = document.getElementById("playerPhoto").value.trim();
+            const height = parseInt(document.getElementById("playerHeight").value) || 0;
+            
+            // Статистика
+            const games = parseInt(document.getElementById("playerGames").value) || 0;
+            const points = parseFloat(document.getElementById("playerPoints").value) || 0;
+            const rebounds = parseFloat(document.getElementById("playerRebounds").value) || 0;
+            const assists = parseFloat(document.getElementById("playerAssists").value) || 0;
+            const blocks = parseFloat(document.getElementById("playerBlocks").value) || 0;
+            const plusMinus = parseFloat(document.getElementById("playerPlusMinus").value) || 0;
+            const efficiency = parseFloat(document.getElementById("playerEfficiency").value) || 0;
+            
+            if (!name) {
+                showPlayerStatus("Введите имя игрока", "error");
+                return;
+            }
+            
+            if (!team) {
+                showPlayerStatus("Выберите команду", "error");
+                return;
+            }
+            
+            const playerData = {
+                id: action === "add" ? generateId() : playerId,
+                name,
+                team,
+                photo,
+                height,
+                games,
+                points,
+                rebounds,
+                assists,
+                blocks,
+                plusMinus,
+                efficiency
+            };
+            
+            if (action === "add") {
+                playersData.push(playerData);
+            } else {
+                const index = playersData.findIndex(p => p.id === playerId);
+                if (index !== -1) {
+                    playersData[index] = playerData;
+                }
+            }
+            
+            savePlayers();
+            resetPlayerForm();
+        }
+    
+        function generateId() {
+            return 'player-' + Math.random().toString(36).substr(2, 9);
+        }
+    
+        async function savePlayers() {
+            let token = CONFIG.GITHUB_TOKEN;
+            
+            if (!token) {
+                token = prompt("Введите Token для сохранения:");
+                if (!token) {
+                    showPlayerStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showPlayerStatus("Сохранение данных игроков...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.PLAYERS_FILE_PATH}`;
+                
+                let sha = null;
+                try {
+                    const fileInfo = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    
+                    if (fileInfo.ok) {
+                        const fileData = await fileInfo.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log("Файл игроков не существует, будет создан новый");
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление данных игроков",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify({ players: playersData }, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения данных игроков");
+                
+                showPlayerStatus("Данные игроков сохранены!", "success");
+                setTimeout(loadPlayers, 1500);
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showPlayerStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+    
+        function resetPlayerForm() {
+            document.getElementById("playerName").value = "";
+            document.getElementById("playerTeam").value = "";
+            document.getElementById("playerPhoto").value = "";
+            document.getElementById("playerHeight").value = "";
+            
+            // Сброс статистики
+            document.getElementById("playerGames").value = "0";
+            document.getElementById("playerPoints").value = "0";
+            document.getElementById("playerRebounds").value = "0";
+            document.getElementById("playerAssists").value = "0";
+            document.getElementById("playerBlocks").value = "0";
+            document.getElementById("playerPlusMinus").value = "0";
+            document.getElementById("playerEfficiency").value = "0";
+            
+            document.getElementById("playerAction").value = "add";
+            document.getElementById("playerSelectContainer").style.display = "none";
+        }
+    
+        function showPlayerStatus(msg, type) {
+            const status = document.getElementById("playerStatusMsg");
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    
+        // ========== Инициализация ========== //
+        document.addEventListener("DOMContentLoaded", () => {
+            loadPlayers();
+            
+            document.getElementById("playerAction").addEventListener("change", function() {
+                document.getElementById("playerSelectContainer").style.display = 
+                    this.value === "edit" ? "block" : "none";
+            });
+            
+            document.getElementById("savePlayerBtn").addEventListener("click", savePlayer);
+            document.getElementById("deletePlayerBtn").addEventListener("click", function() {
+                const playerId = document.getElementById("playerSelect").value;
+                deletePlayer(playerId);
+            });
+        });
+    </script>
+</body>
+</html>
