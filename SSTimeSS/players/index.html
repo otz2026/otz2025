@@ -358,6 +358,7 @@
     </div>
 
     <script>
+        // Конфигурация
         const CONFIG = {
             GITHUB_USER: "otz2026",
             REPO_NAME: "otz2025",
@@ -368,50 +369,18 @@
         let playersData = [];
         let teamsData = [];
         let currentSwapPlayer = null;
-    
-        async function loadAllData() {
-            showStatus("Загрузка данных...", "info");
+
+        // Функция для отображения статуса
+        function showStatus(msg, type) {
+            const status = document.getElementById("playerStatusMsg");
+            if (!status) return;
             
-            try {
-                await loadTeamsData();
-                await loadPlayersData();
-                renderTeams();
-                showStatus("Данные успешно загружены", "success");
-            } catch (error) {
-                console.error("Ошибка загрузки:", error);
-                showStatus(`Ошибка: ${error.message}`, "error");
-                teamsData = getFallbackTeams();
-                playersData = [];
-            }
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-    
-        async function loadTeamsData() {
-            try {
-                const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
-                const response = await fetch(teamsUrl);
-                
-                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-                
-                const rawData = await response.json();
-                teamsData = Array.isArray(rawData) ? rawData : (rawData.teams || []);
-                
-                if (teamsData.length === 0) throw new Error("Файл команд пуст");
-            } catch (error) {
-                console.error("Ошибка загрузки команд:", error);
-                throw error;
-            }
-        }
-    
-        function getFallbackTeams() {
-            return [
-                { team: "BULLDOGS", logo: "/otz2025/img/BULLDOGS.png" },
-                { team: "TEXAS NERS", logo: "/otz2025/img/TN.png" },
-                { team: "RWE", logo: "/otz2025/img/RWE.png" },
-                { team: "KITTY BOYS", logo: "/otz2025/img/KITTY BOYS.png" },
-                { team: "PAW PATROL", logo: "/otz2025/img/PPATROL.png" }
-            ];
-        }
-    
+
+        // Загрузка данных игроков
         async function loadPlayersData() {
             try {
                 const playersUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.PLAYERS_FILE_PATH}?t=${Date.now()}`;
@@ -425,50 +394,44 @@
                 
                 const data = await response.json();
                 playersData = data.players || [];
+                console.log("Загружено игроков:", playersData.length);
             } catch (error) {
                 console.error("Ошибка загрузки игроков:", error);
                 playersData = [];
             }
         }
-    
-        function renderTeams() {
-            const container = document.getElementById("teamsContainer");
-            container.innerHTML = "";
-            
-            teamsData.forEach(team => {
-                const teamPlayers = playersData.filter(p => p.team === (team.team || team.name));
+
+        // Загрузка данных команд
+        async function loadTeamsData() {
+            try {
+                const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(teamsUrl);
                 
-                const teamSection = document.createElement("div");
-                const teamTitle = document.createElement("h3");
-                teamTitle.className = "team-title";
+                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
                 
-                if (team.logo) {
-                    const logo = document.createElement("img");
-                    logo.className = "team-logo";
-                    logo.src = team.logo;
-                    logo.alt = team.team;
-                    teamTitle.appendChild(logo);
-                }
+                const rawData = await response.json();
+                teamsData = Array.isArray(rawData) ? rawData : (rawData.teams || []);
                 
-                teamTitle.innerHTML += `${team.team || team.name} (${teamPlayers.length})`;
-                teamSection.appendChild(teamTitle);
-                
-                if (teamPlayers.length === 0) {
-                    const emptyMsg = document.createElement("p");
-                    emptyMsg.textContent = "Нет игроков в этой команде";
-                    emptyMsg.style.textAlign = "center";
-                    emptyMsg.style.color = "#aaa";
-                    teamSection.appendChild(emptyMsg);
-                } else {
-                    teamPlayers.forEach(player => {
-                        teamSection.appendChild(createPlayerCard(player));
-                    });
-                }
-                
-                container.appendChild(teamSection);
-            });
+                if (teamsData.length === 0) throw new Error("Файл команд пуст");
+                console.log("Загружено команд:", teamsData.length);
+            } catch (error) {
+                console.error("Ошибка загрузки команд:", error);
+                throw error;
+            }
         }
-    
+
+        // Резервные данные команд
+        function getFallbackTeams() {
+            return [
+                { team: "BULLDOGS", logo: "/otz2025/img/BULLDOGS.png" },
+                { team: "TEXAS NERS", logo: "/otz2025/img/TN.png" },
+                { team: "RWE", logo: "/otz2025/img/RWE.png" },
+                { team: "KITTY BOYS", logo: "/otz2025/img/KITTY BOYS.png" },
+                { team: "PAW PATROL", logo: "/otz2025/img/PPATROL.png" }
+            ];
+        }
+
+        // Создание карточки игрока
         function createPlayerCard(player) {
             const card = document.createElement("div");
             card.className = "player-item collapsed";
@@ -536,7 +499,7 @@
             };
             
             const saveBtn = document.createElement("button");
-            saveBtn.textContent = "Сохранить изменения";
+            saveBtn.textContent = "Сохранить статистику";
             saveBtn.onclick = (e) => {
                 e.stopPropagation();
                 savePlayerStats(player.photo);
@@ -571,7 +534,8 @@
             
             return card;
         }
-    
+
+        // Расчет производных статистик
         function calculateDerivedStats(photoId) {
             const player = playersData.find(p => p.photo === photoId);
             if (!player) return;
@@ -586,11 +550,11 @@
             const assists = parseFloat(card.querySelector("[data-stat='assists']").value) || 0;
             const blocks = parseFloat(card.querySelector("[data-stat='blocks']").value) || 0;
             
-            // Рассчитываем +/- (просто пример формулы)
+            // Рассчитываем +/- (примерная формула)
             const plusMinus = (points + rebounds + assists + blocks) / 4;
             
             // Рассчитываем КПИ (примерная формула)
-            const efficiency = (points + rebounds * 1.2 + assists * 1.5 + blocks * 2) / games || 0;
+            const efficiency = games > 0 ? (points + rebounds * 1.2 + assists * 1.5 + blocks * 2) / games : 0;
             
             // Обновляем поля
             card.querySelector("[data-stat='plusMinus']").value = plusMinus.toFixed(1);
@@ -605,7 +569,8 @@
             player.plusMinus = plusMinus;
             player.efficiency = efficiency;
         }
-    
+
+        // Сохранение статистики игрока
         function savePlayerStats(photoId) {
             const player = playersData.find(p => p.photo === photoId);
             if (!player) return;
@@ -623,8 +588,10 @@
             player.efficiency = parseFloat(card.querySelector("[data-stat='efficiency']").value) || 0;
             
             savePlayers();
+            showStatus("Статистика игрока сохранена", "success");
         }
-    
+
+        // Обмен игроками между командами
         function swapPlayers(player1Id, player2Id) {
             const player1 = playersData.find(p => p.photo === player1Id);
             const player2 = playersData.find(p => p.photo === player2Id);
@@ -641,7 +608,8 @@
             showStatus(`Игроки ${player1.name} и ${player2.name} успешно обменяны`, "success");
             renderTeams();
         }
-    
+
+        // Сохранение данных на GitHub
         async function savePlayers() {
             const token = document.getElementById("githubToken").value || CONFIG.GITHUB_TOKEN;
             if (!token) {
@@ -679,7 +647,7 @@
                         message: "Обновление данных игроков",
                         content: btoa(unescape(encodeURIComponent(
                             JSON.stringify({ players: playersData }, null, 2)
-                        )),
+                        ))),
                         sha: sha
                     })
                 });
@@ -695,19 +663,72 @@
                 showStatus(`Ошибка: ${error.message}`, "error");
             }
         }
-    
-        function showStatus(msg, type) {
-            const status = document.getElementById("playerStatusMsg");
-            if (!status) return;
+
+        // Отрисовка команд и игроков
+        function renderTeams() {
+            const container = document.getElementById("teamsContainer");
+            container.innerHTML = "";
             
-            status.textContent = msg;
-            status.className = `status-message ${type}`;
-            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            teamsData.forEach(team => {
+                const teamPlayers = playersData.filter(p => p.team === (team.team || team.name));
+                
+                const teamSection = document.createElement("div");
+                const teamTitle = document.createElement("h3");
+                teamTitle.className = "team-title";
+                
+                if (team.logo) {
+                    const logo = document.createElement("img");
+                    logo.className = "team-logo";
+                    logo.src = team.logo;
+                    logo.alt = team.team;
+                    teamTitle.appendChild(logo);
+                }
+                
+                teamTitle.innerHTML += `${team.team || team.name} (${teamPlayers.length})`;
+                teamSection.appendChild(teamTitle);
+                
+                if (teamPlayers.length === 0) {
+                    const emptyMsg = document.createElement("p");
+                    emptyMsg.textContent = "Нет игроков в этой команде";
+                    emptyMsg.style.textAlign = "center";
+                    emptyMsg.style.color = "#aaa";
+                    teamSection.appendChild(emptyMsg);
+                } else {
+                    teamPlayers.forEach(player => {
+                        teamSection.appendChild(createPlayerCard(player));
+                    });
+                }
+                
+                container.appendChild(teamSection);
+            });
         }
-    
+
+        // Основная функция загрузки данных
+        async function loadAllData() {
+            showStatus("Загрузка данных...", "info");
+            
+            try {
+                await loadTeamsData();
+                await loadPlayersData();
+                renderTeams();
+                showStatus("Данные успешно загружены", "success");
+            } catch (error) {
+                console.error("Ошибка загрузки:", error);
+                showStatus(`Ошибка: ${error.message}`, "error");
+                
+                // Используем резервные данные
+                teamsData = getFallbackTeams();
+                playersData = [];
+                renderTeams();
+            }
+        }
+
         // Инициализация
         document.addEventListener("DOMContentLoaded", () => {
-            loadAllData();
+            console.log("Страница загружена, начинаем загрузку данных");
+            loadAllData().catch(e => {
+                console.error("Ошибка при загрузке:", e);
+            });
             
             // Обработчики диалога обмена
             document.getElementById("cancelSwapBtn").addEventListener("click", () => {
