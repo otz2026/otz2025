@@ -2,10 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OTZ Управление составами</title>
     <meta name="theme-color" content="#dd4710">
-    <!--<link rel="manifest" href="manifest.json">-->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="../otz2025/img/OTZ3.png">
@@ -26,6 +25,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -42,30 +42,39 @@
         
         .nav-menu {
             background-color: var(--bg-dark);
-            padding: 10px 20px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .nav-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--primary-color);
             font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 50%;
         }
         
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 8px;
         }
         
         .nav-link {
             color: var(--text-color);
             text-decoration: none;
-            padding: 8px 12px;
+            padding: 6px 8px;
             border-radius: 4px;
             transition: all 0.3s;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         
         .nav-link:hover {
@@ -80,16 +89,16 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             flex: 1;
         }
         
         .main-header {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: clamp(1.4rem, 4vw, 2rem);
             color: var(--primary-color);
             text-align: center;
-            margin: 20px 0;
-            padding-bottom: 10px;
+            margin: 15px 0;
+            padding-bottom: 8px;
             position: relative;
         }
         
@@ -99,29 +108,30 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
+            width: 80px;
             height: 3px;
             background-color: var(--primary-color);
         }
         
         .section-title {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
             color: var(--primary-color);
-            margin: 30px 0 15px;
-            padding-left: 10px;
-            border-left: 4px solid var(--primary-color);
+            margin: 20px 0 12px;
+            padding-left: 8px;
+            border-left: 3px solid var(--primary-color);
         }
         
         button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 12px;
             cursor: pointer;
-            font-size: 14px;
-            border-radius: 6px;
+            font-size: 0.9rem;
+            border-radius: 5px;
             transition: all 0.3s;
             font-weight: 500;
+            min-width: 100px;
         }
         
         button:hover {
@@ -129,10 +139,11 @@
         }
         
         .status-message {
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
+            margin: 12px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            word-break: break-word;
         }
         
         .success {
@@ -149,17 +160,18 @@
         
         .player-item {
             background-color: rgba(0, 0, 0, 0.2);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-left: 3px solid var(--primary-color);
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .player-item.collapsed {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
         
         .player-item.expanded {
@@ -167,81 +179,97 @@
         }
         
         .player-photo {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: 2px solid var(--border-color);
             object-fit: cover;
+            flex-shrink: 0;
         }
         
         .player-main-info {
             flex: 1;
+            min-width: 0;
         }
         
         .player-name {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .player-team {
             color: #aaa;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .player-stats {
-            margin-top: 15px;
+            margin-top: 12px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .stats-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 8px;
+            font-size: 0.85rem;
         }
         
         .stats-table th, .stats-table td {
-            padding: 8px;
+            padding: 6px 3px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
         
         .stats-table th {
             background-color: rgba(221, 71, 16, 0.3);
+            font-weight: 500;
+            min-width: 40px;
         }
         
         .stats-table input {
-            width: 60px;
-            padding: 5px;
+            width: 100%;
+            max-width: 55px;
+            padding: 4px;
             background-color: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
             border-radius: 4px;
             color: white;
             text-align: center;
+            font-size: 0.85rem;
         }
         
         .player-actions {
             display: flex;
             gap: 8px;
-            margin-top: 15px;
+            margin-top: 12px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
         
         .team-title {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             color: var(--primary-color);
-            margin: 25px 0 15px;
-            padding-bottom: 5px;
+            margin: 18px 0 10px;
+            padding-bottom: 3px;
             border-bottom: 2px solid var(--primary-color);
             display: flex;
             align-items: center;
         }
         
         .team-logo {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
+            width: 25px;
+            height: 25px;
+            margin-right: 8px;
             border-radius: 50%;
+            object-fit: contain;
         }
         
         .swap-dialog {
@@ -251,69 +279,168 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            padding: 15px;
         }
         
         .swap-form {
             background-color: var(--secondary-color);
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .swap-form h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--primary-color);
+            font-size: 1.1rem;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .form-group label {
             display: block;
             margin-bottom: 5px;
+            font-size: 0.9rem;
         }
         
         .form-group input {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             background-color: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 5px;
             color: white;
+            font-size: 0.95rem;
         }
         
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
-        
+
+        /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
+            .nav-menu {
+                padding: 10px;
             }
             
+            .nav-title {
+                font-size: 1rem;
+            }
+            
+            .nav-link {
+                padding: 5px 6px;
+                font-size: 0.85rem;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            .player-item {
+                padding: 10px;
+            }
+            
+            .player-photo {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .stats-table {
+                font-size: 0.8rem;
+            }
+            
+            .stats-table th, .stats-table td {
+                padding: 4px 2px;
+            }
+            
+            button {
+                padding: 7px 10px;
+                font-size: 0.85rem;
+                min-width: 90px;
+            }
+        }
+        
+        @media (max-width: 480px) {
             .nav-menu {
                 flex-direction: column;
-                gap: 10px;
-                padding: 10px;
+                gap: 8px;
             }
             
             .nav-links {
                 width: 100%;
-                justify-content: space-around;
+                justify-content: space-between;
             }
             
-            .nav-link {
-                padding: 6px 8px;
-                font-size: 14px;
+            .player-name {
+                font-size: 0.95rem;
+            }
+            
+            .player-team {
+                font-size: 0.8rem;
+            }
+            
+            .stats-table {
+                font-size: 0.75rem;
+            }
+            
+            .stats-table input {
+                font-size: 0.75rem;
+                padding: 3px;
+                max-width: 45px;
+            }
+            
+            .player-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+            
+            .player-actions button {
+                width: 100%;
+            }
+            
+            .swap-form {
+                padding: 12px;
+            }
+            
+            .form-group input {
+                padding: 7px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Портретная ориентация */
+        @media (orientation: portrait) {
+            .player-item.collapsed {
+                flex-direction: row;
+            }
+            
+            .stats-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        /* Ландшафтная ориентация */
+        @media (orientation: landscape) and (max-width: 768px) {
+            .player-item.collapsed {
+                flex-direction: row;
+            }
+            
+            .stats-table {
+                display: table;
+                width: 100%;
             }
         }
     </style>
@@ -363,9 +490,10 @@
             GITHUB_USER: "otz2026",
             REPO_NAME: "otz2025",
             TEAMS_FILE_PATH: "SSTimeSS/tournament_data.json",
-            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json"
+            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json",
+            GITHUB_TOKEN: localStorage.getItem('githubToken') || ""
         };
-    
+
         let playersData = [];
         let teamsData = [];
         let currentSwapPlayer = null;
@@ -383,6 +511,7 @@
         // Загрузка данных игроков
         async function loadPlayersData() {
             try {
+                showStatus("Загрузка данных игроков...", "info");
                 const playersUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.PLAYERS_FILE_PATH}?t=${Date.now()}`;
                 const response = await fetch(playersUrl);
                 
@@ -397,6 +526,7 @@
                 console.log("Загружено игроков:", playersData.length);
             } catch (error) {
                 console.error("Ошибка загрузки игроков:", error);
+                showStatus("Ошибка загрузки данных игроков", "error");
                 playersData = [];
             }
         }
@@ -404,6 +534,7 @@
         // Загрузка данных команд
         async function loadTeamsData() {
             try {
+                showStatus("Загрузка данных команд...", "info");
                 const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
                 const response = await fetch(teamsUrl);
                 
@@ -494,15 +625,15 @@
                 e.stopPropagation();
                 currentSwapPlayer = player.photo;
                 document.getElementById("swapPlayerId").value = "";
-                document.getElementById("githubToken").value = "";
+                document.getElementById("githubToken").value = CONFIG.GITHUB_TOKEN || "";
                 document.getElementById("swapDialog").style.display = "flex";
             };
             
             const saveBtn = document.createElement("button");
             saveBtn.textContent = "Сохранить статистику";
-            saveBtn.onclick = (e) => {
+            saveBtn.onclick = async (e) => {
                 e.stopPropagation();
-                savePlayerStats(player.photo);
+                await savePlayerStats(player.photo);
             };
             
             actions.appendChild(moveBtn);
@@ -571,7 +702,18 @@
         }
 
         // Сохранение статистики игрока
-        function savePlayerStats(photoId) {
+        async function savePlayerStats(photoId) {
+            // Запрашиваем токен, если он еще не был введен
+            if (!CONFIG.GITHUB_TOKEN) {
+                const token = prompt("Для сохранения изменений введите GitHub Token:");
+                if (!token) {
+                    showStatus("Сохранение отменено: не введен GitHub Token", "error");
+                    return;
+                }
+                CONFIG.GITHUB_TOKEN = token;
+                localStorage.setItem('githubToken', token);
+            }
+
             const player = playersData.find(p => p.photo === photoId);
             if (!player) return;
             
@@ -587,8 +729,12 @@
             player.plusMinus = parseFloat(card.querySelector("[data-stat='plusMinus']").value) || 0;
             player.efficiency = parseFloat(card.querySelector("[data-stat='efficiency']").value) || 0;
             
-            savePlayers();
-            showStatus("Статистика игрока сохранена", "success");
+            try {
+                await savePlayers();
+                showStatus("Статистика игрока сохранена", "success");
+            } catch (error) {
+                showStatus(`Ошибка сохранения: ${error.message}`, "error");
+            }
         }
 
         // Обмен игроками между командами
@@ -611,9 +757,8 @@
 
         // Сохранение данных на GitHub
         async function savePlayers() {
-            const token = document.getElementById("githubToken").value || CONFIG.GITHUB_TOKEN;
-            if (!token) {
-                return showStatus("GitHub Token не указан", "error");
+            if (!CONFIG.GITHUB_TOKEN) {
+                throw new Error("GitHub Token не указан");
             }
             
             showStatus("Сохранение данных...", "info");
@@ -625,7 +770,7 @@
                 
                 try {
                     const fileInfo = await fetch(apiUrl, {
-                        headers: { "Authorization": `token ${token}` }
+                        headers: { "Authorization": `token ${CONFIG.GITHUB_TOKEN}` }
                     });
                     
                     if (fileInfo.ok) {
@@ -640,11 +785,11 @@
                 const response = await fetch(apiUrl, {
                     method: "PUT",
                     headers: {
-                        "Authorization": `token ${token}`,
+                        "Authorization": `token ${CONFIG.GITHUB_TOKEN}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        message: "Обновление данных игроков",
+                        message: "Обновление статистики игроков",
                         content: btoa(unescape(encodeURIComponent(
                             JSON.stringify({ players: playersData }, null, 2)
                         ))),
@@ -656,11 +801,10 @@
                     throw new Error(await response.text());
                 }
                 
-                showStatus("Данные успешно сохранены!", "success");
-                
+                return true;
             } catch (error) {
                 console.error("Ошибка сохранения:", error);
-                showStatus(`Ошибка: ${error.message}`, "error");
+                throw error;
             }
         }
 
@@ -752,6 +896,7 @@
                 }
                 
                 CONFIG.GITHUB_TOKEN = token;
+                localStorage.setItem('githubToken', token);
                 swapPlayers(currentSwapPlayer, swapPlayerId);
                 document.getElementById("swapDialog").style.display = "none";
                 
