@@ -1,6 +1,5 @@
 {
   "players": [
-
     {
       "name": "Трихук Никита",
       "photo": "21",
@@ -66,8 +65,6 @@
       "plusMinus": 0,
       "efficiency": 0
     },
-
-
     {
       "name": "Кондратьев Ярослав",
       "photo": "1",
@@ -133,8 +130,6 @@
       "plusMinus": 0,
       "efficiency": 0
     },
-
-
     {
       "name": "Симонян Богдан",
       "photo": "11",
@@ -200,8 +195,6 @@
       "plusMinus": 0,
       "efficiency": 0
     },
-
-    
     {
       "name": "Макаров Андрей",
       "photo": "16",
@@ -280,8 +273,6 @@
       "plusMinus": 0,
       "efficiency": 0
     },
-
-
     {
       "name": "Сингатулин Ильдар",
       "photo": "6",
