@@ -12,12 +12,13 @@
     <style>
         :root {
             --primary-color: #dd4710;
-            --secondary-color: #2a2a2a;
+            --secondary-color: #1a1a1a;
             --text-color: #ffffff;
-            --hover-color: #c03d0d;
-            --bg-dark: rgba(0, 0, 0, 0.7);
-            --bg-light: rgba(255, 255, 255, 0.1);
-            --border-color: rgba(255, 255, 255, 0.2);
+            --accent-color: #ff6f00;
+            --bg-dark: #262626;
+            --bg-light: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -28,236 +29,259 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--secondary-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), #2a2a2a);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.5;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
 
-        .nav-menu {
-            background-color: var(--bg-dark);
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
+        .sidebar {
+            width: 250px;
+            background: var(--bg-dark);
+            padding: 20px;
+            position: fixed;
             top: 0;
-            z-index: 100;
+            left: 0;
+            bottom: 0;
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
 
-        .nav-title {
-            font-size: 1.1rem;
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
             color: var(--primary-color);
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 50%;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        .nav-links {
+        .sidebar-links {
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .nav-link {
+        .sidebar-link {
             color: var(--text-color);
             text-decoration: none;
-            padding: 6px 8px;
-            border-radius: 4px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            white-space: nowrap;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            font-size: 0.95rem;
         }
 
-        .nav-link:hover {
-            background-color: rgba(221, 71, 16, 0.2);
+        .sidebar-link:hover {
+            background: var(--bg-light);
         }
 
-        .nav-link.active {
-            background-color: var(--primary-color);
+        .sidebar-link.active {
+            background: var(--primary-color);
+            color: #fff;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px;
+        .menu-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary-color);
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .main-content {
             flex: 1;
+            padding: 20px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.shifted {
+            margin-left: 250px;
         }
 
         .main-header {
-            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             color: var(--primary-color);
             text-align: center;
-            margin: 15px 0;
-            padding-bottom: 8px;
-            position: relative;
-        }
-
-        .main-header::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background-color: var(--primary-color);
-        }
-
-        .section-title {
-            font-size: clamp(1.1rem, 3vw, 1.5rem);
-            color: var(--primary-color);
-            margin: 20px 0 12px;
-            padding-left: 8px;
-            border-left: 3px solid var(--primary-color);
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: 500;
-            min-width: 100px;
-        }
-
-        button:hover {
-            background-color: var(--hover-color);
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .status-message {
-            margin: 12px 0;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
             font-size: 0.9rem;
-            word-break: break-word;
+            text-align: center;
+            transition: opacity 0.3s;
         }
 
-        .success {
-            background-color: rgba(45, 87, 44, 0.7);
+        .success { background: rgba(46, 125, 50, 0.8); }
+        .error { background: rgba(211, 47, 47, 0.8); }
+        .info { background: rgba(66, 165, 245, 0.8); }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .error {
-            background-color: rgba(87, 45, 44, 0.7);
-        }
-
-        .info {
-            background-color: rgba(45, 58, 87, 0.7);
+        .filter-container input {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.95rem;
         }
 
         .player-item {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 12px;
+            background: var(--bg-dark);
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 3px solid var(--primary-color);
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .player-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .player-item.dragging {
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+
+        .player-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
+            align-items: center;
+            gap: 15px;
         }
 
         .player-photo {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            border: 2px solid var(--border-color);
+            border: 2px solid var(--primary-color);
             object-fit: cover;
-            flex-shrink: 0;
         }
 
         .player-main-info {
             flex: 1;
-            min-width: 0;
         }
 
         .player-name {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
         }
 
         .player-team {
-            color: #aaa;
             font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #b0b0b0;
         }
 
         .player-stats {
-            flex: 1 1 100%;
+            display: none;
+            margin-top: 15px;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        }
+
+        .player-item.expanded .player-stats {
+            display: block;
         }
 
         .stats-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
             font-size: 0.85rem;
         }
 
         .stats-table th, .stats-table td {
-            padding: 6px 3px;
+            padding: 8px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
 
         .stats-table th {
-            background-color: rgba(221, 71, 16, 0.3);
+            background: var(--primary-color);
+            color: #fff;
             font-weight: 500;
-            min-width: 40px;
         }
 
         .stats-table input {
-            width: 100%;
-            max-width: 55px;
-            padding: 4px;
-            background-color: rgba(0, 0, 0, 0.3);
+            width: 60px;
+            padding: 5px;
+            background: var(--bg-light);
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            color: white;
+            color: var(--text-color);
             text-align: center;
             font-size: 0.85rem;
         }
 
         .player-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            margin-top: 15px;
             flex-wrap: wrap;
-            justify-content: flex-end;
-            width: 100%;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+        }
+
+        .team-section {
+            margin-bottom: 30px;
         }
 
         .team-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--primary-color);
-            margin: 18px 0 10px;
-            padding-bottom: 3px;
-            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
         .team-logo {
-            width: 25px;
-            height: 25px;
-            margin-right: 8px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             object-fit: contain;
         }
@@ -269,221 +293,154 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 20px;
         }
 
         .swap-form {
-            background-color: var(--secondary-color);
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--bg-dark);
+            padding: 20px;
+            border-radius: 10px;
             width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 450px;
+            box-shadow: var(--shadow);
         }
 
         .swap-form h3 {
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             color: var(--primary-color);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            color: white;
             font-size: 0.95rem;
+            color: var(--text-color);
         }
 
-        .form-group input {
+        .form-group select, .form-group input {
             width: 100%;
-            padding: 8px;
-            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            background: var(--bg-light);
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            color: white;
+            border-radius: 6px;
+            color: var(--text-color);
             font-size: 0.95rem;
         }
 
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .filter-container {
-            display: flex;
             gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-container select {
-            flex: 1;
-            min-width: 120px;
+            margin-top: 20px;
         }
 
         @media (max-width: 768px) {
-            .nav-menu {
-                padding: 10px;
+            .sidebar {
+                width: 200px;
             }
 
-            .nav-title {
-                font-size: 1rem;
-            }
-
-            .nav-link {
-                padding: 5px 6px;
-                font-size: 0.85rem;
-            }
-
-            .container {
-                padding: 12px;
+            .main-content.shifted {
+                margin-left: 200px;
             }
 
             .player-item {
-                padding: 10px;
+                padding: 12px;
             }
 
             .player-photo {
-                width: 45px;
-                height: 45px;
+                width: 50px;
+                height: 50px;
             }
 
             .stats-table {
                 font-size: 0.8rem;
             }
 
-            .stats-table th, .stats-table td {
-                padding: 4px 2px;
+            .stats-table input {
+                width: 50px;
+                padding: 4px;
             }
 
             button {
-                padding: 7px 10px;
+                padding: 8px 12px;
                 font-size: 0.85rem;
-                min-width: 90px;
             }
         }
 
         @media (max-width: 480px) {
-            .nav-menu {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .nav-links {
+            .sidebar {
                 width: 100%;
-                justify-content: space-between;
             }
 
-            .player-name {
-                font-size: 0.95rem;
+            .main-content.shifted {
+                margin-left: 100%;
             }
 
-            .player-team {
-                font-size: 0.8rem;
-            }
-
-            .stats-table {
-                font-size: 0.75rem;
-            }
-
-            .stats-table input {
-                font-size: 0.75rem;
-                padding: 3px;
-                max-width: 45px;
+            .player-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .player-actions {
                 flex-direction: column;
-                gap: 6px;
             }
 
             .player-actions button {
                 width: 100%;
             }
 
-            .swap-form {
-                padding: 12px;
-            }
-
-            .form-group select, .form-group input {
-                padding: 7px;
+            .filter-container input {
                 font-size: 0.9rem;
             }
         }
 
         @media (orientation: portrait) {
-            .player-item {
-                flex-direction: column;
-            }
-
             .stats-table {
                 display: block;
                 overflow-x: auto;
             }
         }
-
-        @media (orientation: landscape) and (max-width: 768px) {
-            .player-item {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-
-            .stats-table {
-                display: table;
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
-    <nav class="nav-menu">
-        <div class="nav-title">OTZ Админ-панель</div>
-        <div class="nav-links">
-            <a href="/otz2025/SSTimeSS" class="nav-link">Главная</a>
-            <a href="/otz2025/SSTimeSS/schedule" class="nav-link">Расписание</a>
-            <a href="/otz2025/SSTimeSS/players" class="nav-link active">Составы</a>
+    <button class="menu-toggle" id="menuToggle">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-title">OTZ Админ-панель</div>
+        <div class="sidebar-links">
+            <a href="/otz2025/SSTimeSS" class="sidebar-link">Главная</a>
+            <a href="/otz2025/SSTimeSS/schedule" class="sidebar-link">Расписание</a>
+            <a href="/otz2025/SSTimeSS/players" class="sidebar-link active">Составы</a>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 class="main-header">Управление составами команд</h1>
+    <div class="main-content" id="mainContent">
+        <h1 class="main-header">Управление составами</h1>
         <div id="playerStatusMsg" class="status-message"></div>
 
         <div class="filter-container">
-            <select id="teamFilter">
-                <option value="">Все команды</option>
-            </select>
+            <input id="teamFilter" type="text" placeholder="Поиск по команде...">
         </div>
 
         <div class="player-list">
-            <h2 class="section-title">Текущие составы команд</h2>
             <div id="teamsContainer"></div>
         </div>
     </div>
 
     <div class="swap-dialog" id="swapDialog">
         <div class="swap-form">
-            <h3>Обмен игроков между командами</h3>
+            <h3>Перемещение игроков</h3>
             <div class="form-group">
                 <label for="player1Select">Игрок 1:</label>
                 <select id="player1Select"></select>
@@ -493,12 +450,12 @@
                 <select id="player2Select"></select>
             </div>
             <div class="form-group">
-                <label for="githubToken">Token:</label>
-                <input type="password" id="githubToken" placeholder="Введите ваш Token">
+                <label for="githubToken">GitHub Token:</label>
+                <input type="password" id="githubToken" placeholder="Введите токен">
             </div>
             <div class="form-actions">
                 <button id="cancelSwapBtn">Отмена</button>
-                <button id="confirmSwapBtn">Подтвердить обмен</button>
+                <button id="confirmSwapBtn">Сохранить</button>
             </div>
         </div>
     </div>
@@ -508,52 +465,49 @@
             GITHUB_USER: "otz2026",
             REPO_NAME: "otz2025",
             TEAMS_FILE_PATH: "SSTimeSS/tournament_data.json",
-            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json",
-            GITHUB_TOKEN: localStorage.getItem('githubToken') || ""
+            PLAYERS_FILE_PATH: "SSTimeSS/players_data.json"
         };
 
         let playersData = [];
         let teamsData = [];
-        let currentPlayerId = null;
 
         function showStatus(msg, type) {
             const status = document.getElementById("playerStatusMsg");
-            if (!status) return;
             status.textContent = msg;
             status.className = `status-message ${type}`;
-            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            status.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => status.style.opacity = '0', 5000);
+            setTimeout(() => status.style.opacity = '1', 6000);
         }
 
         async function loadPlayersData() {
             try {
-                showStatus("Загрузка данных игроков...", "info");
+                showStatus("Загрузка игроков...", "info");
                 const playersUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.PLAYERS_FILE_PATH}?t=${Date.now()}`;
                 const response = await fetch(playersUrl);
                 if (!response.ok) {
-                    console.log("Файл игроков не найден, будет создан новый");
+                    console.log("Файл игроков не найден");
                     playersData = [];
                     return;
                 }
                 const data = await response.json();
                 playersData = data.players || [];
-                console.log("Загружено игроков:", playersData.length);
             } catch (error) {
                 console.error("Ошибка загрузки игроков:", error);
-                showStatus("Ошибка загрузки данных игроков", "error");
+                showStatus("Ошибка загрузки игроков", "error");
                 playersData = [];
             }
         }
 
         async function loadTeamsData() {
             try {
-                showStatus("Загрузка данных команд...", "info");
+                showStatus("Загрузка команд...", "info");
                 const teamsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TEAMS_FILE_PATH}?t=${Date.now()}`;
                 const response = await fetch(teamsUrl);
-                if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP ошибка: ${response.status}`);
                 const rawData = await response.json();
                 teamsData = Array.isArray(rawData) ? rawData : (rawData.teams || []);
                 if (teamsData.length === 0) throw new Error("Файл команд пуст");
-                console.log("Загружено команд:", teamsData.length);
             } catch (error) {
                 console.error("Ошибка загрузки команд:", error);
                 throw error;
@@ -568,17 +522,6 @@
                 { team: "KITTY BOYS", logo: "/otz2025/img/KITTY BOYS.png" },
                 { team: "PAW PATROL", logo: "/otz2025/img/PPATROL.png" }
             ];
-        }
-
-        function populateTeamFilter() {
-            const teamFilter = document.getElementById("teamFilter");
-            teamFilter.innerHTML = '<option value="">Все команды</option>';
-            teamsData.forEach(team => {
-                const option = document.createElement("option");
-                option.value = team.team || team.name;
-                option.textContent = team.team || team.name;
-                teamFilter.appendChild(option);
-            });
         }
 
         function populatePlayerSelects() {
@@ -603,6 +546,10 @@
             const card = document.createElement("div");
             card.className = "player-item";
             card.dataset.photo = player.photo;
+            card.draggable = true;
+
+            const header = document.createElement("div");
+            header.className = "player-header";
 
             const photo = document.createElement("img");
             photo.className = "player-photo";
@@ -622,6 +569,8 @@
 
             info.appendChild(name);
             info.appendChild(meta);
+            header.appendChild(photo);
+            header.appendChild(info);
 
             const stats = document.createElement("div");
             stats.className = "player-stats";
@@ -654,44 +603,49 @@
             const moveBtn = document.createElement("button");
             moveBtn.textContent = "Переместить";
             moveBtn.onclick = () => {
-                currentPlayerId = player.photo;
                 document.getElementById("player1Select").value = player.photo;
                 document.getElementById("player2Select").value = "";
-                document.getElementById("githubToken").value = CONFIG.GITHUB_TOKEN || "";
+                document.getElementById("githubToken").value = "";
                 document.getElementById("swapDialog").style.display = "flex";
             };
 
             const saveBtn = document.createElement("button");
             saveBtn.textContent = "Сохранить статистику";
             saveBtn.onclick = async () => {
-                await savePlayerStats(player.photo);
+                const token = prompt("Введите GitHub Token для сохранения:");
+                if (!token) {
+                    showStatus("Сохранение отменено", "error");
+                    return;
+                }
+                await savePlayerStats(player.photo, token);
             };
 
             actions.appendChild(moveBtn);
             actions.appendChild(saveBtn);
             stats.appendChild(statsTable);
-
-            card.appendChild(photo);
-            card.appendChild(info);
+            card.appendChild(header);
             card.appendChild(stats);
             card.appendChild(actions);
 
+            card.addEventListener("click", () => {
+                card.classList.toggle("expanded");
+            });
+
             const inputs = statsTable.querySelectorAll("input[type='number']:not([readonly])");
             inputs.forEach(input => {
-                input.addEventListener("change", () => {
-                    calculateDerivedStats(player.photo);
-                });
+                input.addEventListener("change", () => calculateDerivedStats(player.photo));
             });
+
+            card.addEventListener("dragstart", () => card.classList.add("dragging"));
+            card.addEventListener("dragend", () => card.classList.remove("dragging"));
 
             return card;
         }
 
         function calculateDerivedStats(photoId) {
             const player = playersData.find(p => p.photo === photoId);
-            if (!player) return;
-
             const card = document.querySelector(`.player-item[data-photo="${photoId}"]`);
-            if (!card) return;
+            if (!player || !card) return;
 
             const games = parseFloat(card.querySelector("[data-stat='games']").value) || 0;
             const points = parseFloat(card.querySelector("[data-stat='points']").value) || 0;
@@ -714,22 +668,10 @@
             player.efficiency = efficiency;
         }
 
-        async function savePlayerStats(photoId) {
-            if (!CONFIG.GITHUB_TOKEN) {
-                const token = prompt("Для сохранения изменений введите Token:");
-                if (!token) {
-                    showStatus("Сохранение отменено: не введен Token", "error");
-                    return;
-                }
-                CONFIG.GITHUB_TOKEN = token;
-                localStorage.setItem('githubToken', token);
-            }
-
+        async function savePlayerStats(photoId, token) {
             const player = playersData.find(p => p.photo === photoId);
-            if (!player) return;
-
             const card = document.querySelector(`.player-item[data-photo="${photoId}"]`);
-            if (!card) return;
+            if (!player || !card) return;
 
             player.games = parseFloat(card.querySelector("[data-stat='games']").value) || 0;
             player.points = parseFloat(card.querySelector("[data-stat='points']").value) || 0;
@@ -740,8 +682,8 @@
             player.efficiency = parseFloat(card.querySelector("[data-stat='efficiency']").value) || 0;
 
             try {
-                await savePlayers();
-                showStatus("Статистика игрока сохранена", "success");
+                await savePlayers(token);
+                showStatus("Статистика сохранена", "success");
             } catch (error) {
                 showStatus(`Ошибка сохранения: ${error.message}`, "error");
             }
@@ -752,7 +694,7 @@
             const player2 = playersData.find(p => p.photo === player2Id);
 
             if (!player1 || !player2) {
-                return showStatus("Один из игроков не найден", "error");
+                return showStatus("Игрок не найден", "error");
             }
 
             if (player1Id === player2Id) {
@@ -763,16 +705,14 @@
             player1.team = player2.team;
             player2.team = tempTeam;
 
-            showStatus(`Игроки ${player1.name} и ${player2.name} успешно обменяны`, "success");
+            showStatus(`Игроки ${player1.name} и ${player2.name} перемещены`, "success");
             renderTeams();
         }
 
-        async function savePlayers() {
-            if (!CONFIG.GITHUB_TOKEN) {
-                throw new Error("Token не указан");
-            }
+        async function savePlayers(token) {
+            if (!token) throw new Error("Токен не указан");
 
-            showStatus("Сохранение данных...", "info");
+            showStatus("Сохранение...", "info");
 
             try {
                 let sha = null;
@@ -780,25 +720,24 @@
 
                 try {
                     const fileInfo = await fetch(apiUrl, {
-                        headers: { "Authorization": `token ${CONFIG.GITHUB_TOKEN}` }
+                        headers: { "Authorization": `token ${token}` }
                     });
-
                     if (fileInfo.ok) {
                         const data = await fileInfo.json();
                         sha = data.sha;
                     }
                 } catch (e) {
-                    console.log("Файл не существует, будет создан новый");
+                    console.log("Файл не существует, будет создан");
                 }
 
                 const response = await fetch(apiUrl, {
                     method: "PUT",
                     headers: {
-                        "Authorization": `token ${CONFIG.GITHUB_TOKEN}`,
+                        "Authorization": `token ${token}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        message: "Обновление статистики игроков",
+                        message: "Обновление данных игроков",
                         content: btoa(unescape(encodeURIComponent(
                             JSON.stringify({ players: playersData }, null, 2)
                         ))),
@@ -806,10 +745,7 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(await response.text());
-                }
-
+                if (!response.ok) throw new Error(await response.text());
                 return true;
             } catch (error) {
                 console.error("Ошибка сохранения:", error);
@@ -817,16 +753,20 @@
             }
         }
 
-        function renderTeams(filterTeam = "") {
+        function renderTeams(filter = "") {
             const container = document.getElementById("teamsContainer");
             container.innerHTML = "";
+            const filterLower = filter.toLowerCase();
 
             teamsData.forEach(team => {
                 const teamName = team.team || team.name;
-                if (filterTeam && teamName !== filterTeam) return;
+                if (filter && !teamName.toLowerCase().includes(filterLower)) return;
 
                 const teamPlayers = playersData.filter(p => p.team === teamName);
                 const teamSection = document.createElement("div");
+                teamSection.className = "team-section";
+                teamSection.dataset.team = teamName;
+
                 const teamTitle = document.createElement("h3");
                 teamTitle.className = "team-title";
 
@@ -843,9 +783,9 @@
 
                 if (teamPlayers.length === 0) {
                     const emptyMsg = document.createElement("p");
-                    emptyMsg.textContent = "Нет игроков в этой команде";
+                    emptyMsg.textContent = "Нет игроков";
                     emptyMsg.style.textAlign = "center";
-                    emptyMsg.style.color = "#aaa";
+                    emptyMsg.style.color = "#b0b0b0";
                     teamSection.appendChild(emptyMsg);
                 } else {
                     teamPlayers.forEach(player => {
@@ -853,34 +793,56 @@
                     });
                 }
 
+                teamSection.addEventListener("dragover", (e) => e.preventDefault());
+                teamSection.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    const draggedCard = document.querySelector(".dragging");
+                    if (draggedCard) {
+                        const playerId = draggedCard.dataset.photo;
+                        const player = playersData.find(p => p.photo === playerId);
+                        if (player && player.team !== teamName) {
+                            document.getElementById("player1Select").value = playerId;
+                            document.getElementById("player2Select").value = "";
+                            document.getElementById("githubToken").value = "";
+                            document.getElementById("swapDialog").style.display = "flex";
+                        }
+                    }
+                });
+
                 container.appendChild(teamSection);
             });
         }
 
         async function loadAllData() {
             showStatus("Загрузка данных...", "info");
-
             try {
                 await loadTeamsData();
                 await loadPlayersData();
-                populateTeamFilter();
                 populatePlayerSelects();
                 renderTeams();
-                showStatus("Данные успешно загружены", "success");
+                showStatus("Данные загружены", "success");
             } catch (error) {
                 console.error("Ошибка загрузки:", error);
                 showStatus(`Ошибка: ${error.message}`, "error");
                 teamsData = getFallbackTeams();
                 playersData = [];
-                populateTeamFilter();
                 renderTeams();
             }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            loadAllData().catch(e => console.error("Ошибка при загрузке:", e));
+            loadAllData().catch(e => console.error("Ошибка:", e));
 
-            document.getElementById("teamFilter").addEventListener("change", (e) => {
+            const sidebar = document.getElementById("sidebar");
+            const mainContent = document.getElementById("mainContent");
+            const menuToggle = document.getElementById("menuToggle");
+
+            menuToggle.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                mainContent.classList.toggle("shifted");
+            });
+
+            document.getElementById("teamFilter").addEventListener("input", (e) => {
                 renderTeams(e.target.value);
             });
 
@@ -898,16 +860,14 @@
                 }
 
                 if (!token) {
-                    return showStatus("Введите Token", "error");
+                    return showStatus("Введите GitHub Token", "error");
                 }
 
-                CONFIG.GITHUB_TOKEN = token;
-                localStorage.setItem('githubToken', token);
                 swapPlayers(player1Id, player2Id);
                 document.getElementById("swapDialog").style.display = "none";
 
                 try {
-                    await savePlayers();
+                    await savePlayers(token);
                 } catch (error) {
                     console.error("Ошибка при сохранении:", error);
                 }
