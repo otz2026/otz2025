@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <base href="https://otz2026.github.io/otz2025/">
+    <!-- Основные метатеги -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Over Time Zvenigorod - Баскетбольная лига</title>
+    <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
+    <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
+    <meta name="author" content="Over Time Zvenigorod">
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/otz2025/manifest.json">
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- iOS Specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="OTZ">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
+    
+    <!-- Иконки -->
+    <link rel="icon" href="/otz2025/img/icon-192x192.png">
+    
+    <!-- Open Graph метатеги -->
+    <meta property="og:title" content="Over Time Zvenigorod - Баскетбольная лига">
+    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
+    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card метатеги -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Over Time Zvenigorod - Баскетбольная лига">
+    <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
+    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
+
+    <!-- Фавиконка -->
+    <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
+
+    <!-- Каноническая ссылка -->
+    <link rel="canonical" href="https://otz2026.github.io/otz2025/">
+
+    <!-- Подтверждение для Google и Яндекс -->
+    <meta name="google-site-verification" content="8HjvCESaYUgIvvERAwoEaYd3x6xdpR_ccWMwwkwgoA4" />
+    <meta name="yandex-verification" content="143713e69ae2928c" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .league-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .basketball-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .basketball {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, #ff4500 0%, #d93b00 70%);
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            animation: bounce-and-shoot 5s ease-in-out infinite;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .basketball::before,
+        .basketball::after {
+            content: '';
+            position: absolute;
+            background: #000;
+            opacity: 0.3;
+        }
+
+        .basketball::before {
+            width: 180px;
+            height: 10px;
+            top: 50%;
+            left: 10px;
+            border-radius: 5px;
+            transform: rotate(-45deg);
+        }
+
+        .basketball::after {
+            width: 180px;
+            height: 10px;
+            top: 50%;
+            left: 10px;
+            border-radius: 5px;
+            transform: rotate(45deg);
+        }
+
+        .hoop {
+            width: 60px;
+            height: 10px;
+            background: #555;
+            position: absolute;
+            top: 50px;
+            right: -80px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            animation: slide-in 5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        .hoop::before {
+            content: '';
+            width: 10px;
+            height: 50px;
+            background: #555;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .hoop::after {
+            content: '';
+            width: 40px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-top: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 5px 5px;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 5px,
+                #ccc 5px,
+                #ccc 10px
+            );
+            animation: swish 5s ease-in-out infinite;
+        }
+
+        .shadow {
+            width: 100px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            animation: shadow-move 5s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .loader-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .update-text {
+            font-size: 1rem;
+            color: #d1d5db;
+            margin-top: 1rem;
+            text-align: center;
+            max-width: 90%;
+            font-style: italic;
+            line-height: 1.5;
+            text-shadow: 0 0 5px rgba(255, 255, 225, 0.1);
+        }
+
+        @keyframes bounce-and-shoot {
+            0%, 100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            10% {
+                transform: translate(0, -60px) scale(1) rotate(30deg);
+            }
+            20% {
+                transform: translate(0, 0) scale(1) rotate(60deg);
+            }
+            30% {
+                transform: translate(0, -50px) scale(1) rotate(90deg);
+            }
+            40% {
+                transform: translate(0, 0) scale(1) rotate(120deg);
+            }
+            50% {
+                transform: translate(50px, -120px) scale(0.8) rotate(150deg);
+            }
+            60% {
+                transform: translate(100px, -180px) scale(0.6) rotate(180deg);
+            }
+            70% {
+                transform: translate(150px, -150px) scale(0.4) rotate(210deg);
+                z-index: 1;
+            }
+            75% {
+                transform: translate(150px, -140px) scale(0.35) rotate(225deg);
+                z-index: 0; /* Ball goes behind the net */
+            }
+            80% {
+                transform: translate(150px, -130px) scale(0.3) rotate(240deg);
+                z-index: 0;
+            }
+            90% {
+                transform: translate(75px, -65px) scale(0.6) rotate(270deg);
+                z-index: 1;
+            }
+            95% {
+                transform: translate(0, 0) scale(1) rotate(360deg);
+            }
+        }
+
+        @keyframes slide-in {
+            0%, 40% {
+                right: -80px;
+            }
+            50% {
+                right: 0;
+            }
+            80%, 100% {
+                right: 0;
+            }
+        }
+
+        @keyframes swish {
+            0%, 70% {
+                transform: translateX(-50%) scaleY(1);
+            }
+            75% {
+                transform: translateX(-50%) scaleY(1.2); /* Net stretches as ball passes */
+            }
+            80% {
+                transform: translateX(-50%) scaleY(0.9); /* Net bounces back */
+            }
+            85% {
+                transform: translateX(-50%) scaleY(1.1);
+            }
+            90%, 100% {
+                transform: translateX(-50%) scaleY(1);
+            }
+        }
+
+        @keyframes shadow-move {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+                left: 50px;
+            }
+            10%, 30% {
+                transform: scale(0.9);
+                opacity: 0.2;
+            }
+            20%, 40% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(0.8);
+                opacity: 0.15;
+                left: 75px;
+            }
+            60% {
+                transform: scale(0.6);
+                opacity: 0.1;
+                left: 100px;
+            }
+            70% {
+                transform: scale(0.4);
+                opacity: 0.05;
+                left: 125px;
+            }
+            80% {
+                transform: scale(0.3);
+                opacity: 0.03;
+                left: 125px;
+            }
+            90% {
+                transform: scale(0.6);
+                opacity: 0.15;
+                left: 75px;
+            }
+            95% {
+                transform: scale(1);
+                opacity: 0.3;
+                left: 50px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .basketball-container {
+                width: 250px;
+                height: 250px;
+            }
+
+            .basketball {
+                width: 150px;
+                height: 150px;
+            }
+
+            .basketball::before,
+            .basketball::after {
+                width: 135px;
+                height: 8px;
+            }
+
+            .hoop {
+                width: 50px;
+                height: 8px;
+                top: 40px;
+            }
+
+            .hoop::before {
+                width: 8px;
+                height: 40px;
+                top: -40px;
+            }
+
+            .hoop::after {
+                width: 30px;
+                height: 15px;
+            }
+
+            .shadow {
+                width: 80px;
+                height: 15px;
+                left: 35px;
+            }
+
+            @keyframes bounce-and-shoot {
+                0%, 100% {
+                    transform: translate(0, 0) scale(1) rotate(0deg);
+                }
+                10% {
+                    transform: translate(0, -50px) scale(1) rotate(30deg);
+                }
+                20% {
+                    transform: translate(0, 0) scale(1) rotate(60deg);
+                }
+                30% {
+                    transform: translate(0, -40px) scale(1) rotate(90deg);
+                }
+                40% {
+                    transform: translate(0, 0) scale(1) rotate(120deg);
+                }
+                50% {
+                    transform: translate(40px, -100px) scale(0.8) rotate(150deg);
+                }
+                60% {
+                    transform: translate(80px, -140px) scale(0.6) rotate(180deg);
+                }
+                70% {
+                    transform: translate(120px, -120px) scale(0.4) rotate(210deg);
+                    z-index: 1;
+                }
+                75% {
+                    transform: translate(120px, -110px) scale(0.35) rotate(225deg);
+                    z-index: 0;
+                }
+                80% {
+                    transform: translate(120px, -100px) scale(0.3) rotate(240deg);
+                    z-index: 0;
+                }
+                90% {
+                    transform: translate(60px, -50px) scale(0.6) rotate(270deg);
+                    z-index: 1;
+                }
+                95% {
+                    transform: translate(0, 0) scale(1) rotate(360deg);
+                }
+            }
+
+            @keyframes shadow-move {
+                0%, 100% {
+                    transform: scale(1);
+                    opacity: 0.3;
+                    left: 35px;
+                }
+                10%, 30% {
+                    transform: scale(0.9);
+                    opacity: 0.2;
+                }
+                20%, 40% {
+                    transform: scale(1);
+                    opacity: 0.3;
+                }
+                50% {
+                    transform: scale(0.8);
+                    opacity: 0.15;
+                    left: 55px;
+                }
+                60% {
+                    transform: scale(0.6);
+                    opacity: 0.1;
+                    left: 75px;
+                }
+                70% {
+                    transform: scale(0.4);
+                    opacity: 0.05;
+                    left: 95px;
+                }
+                80% {
+                    transform: scale(0.3);
+                    opacity: 0.03;
+                    left: 95px;
+                }
+                90% {
+                    transform: scale(0.6);
+                    opacity: 0.15;
+                    left: 50px;
+                }
+                95% {
+                    transform: scale(1);
+                    opacity: 0.3;
+                    left: 35px;
+                }
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .league-title {
+                font-size: 1rem;
+            }
+
+            .loader-text {
+                font-size: 1.25rem;
+            }
+
+            .update-text {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://otz2026.github.io/otz2025/img/OTZ3.png" alt="OTZ Logo" class="logo">
+    <div class="league-title">Over Time Zvenigorod</div>
+    <div class="basketball-container">
+        <div class="hoop"></div>
+        <div class="basketball"></div>
+        <div class="shadow"></div>
+    </div>
+    <div class="loader-text">Идет обновление!</div>
+    <div class="update-text">
+        Мы готовим что-то крутое для баскетбольной лиги OTZ! Новые фичи и стиль уже на подходе, ждите!
+    </div>
+</body>
+</html>
