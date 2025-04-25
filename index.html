@@ -4,7 +4,7 @@
     <base href="https://otz2026.github.io/otz2025/">
     <!-- Основные метатеги -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Over Time Zvenigorod - Баскетбольная лига</title>
     <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
     <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
@@ -12,7 +12,7 @@
 
     <!-- PWA Configuration -->
     <link rel="manifest" href="/otz2025/manifest.json">
-    <meta name="theme-color" content="#111827">
+    <meta name="theme-color" content="#1a1a1a">
     <meta name="mobile-web-app-capable" content="yes">
     
     <!-- iOS Specific -->
@@ -53,15 +53,150 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Тонкие изогнутые неоновые линии */
+        .neon-line-1,
+        .neon-line-2,
+        .neon-line-3,
+        .neon-line-4,
+        .neon-line-5,
+        .neon-line-6,
+        .neon-line-7,
+        .neon-line-8 {
+            position: absolute;
+            background: #ff8c00;
+            box-shadow: 0 0 5px #ff8c00, 0 0 10px #ff8c00, 0 0 20px #ff8c00, 0 0 30px #ff8c00;
+            z-index: 0;
+            opacity: 0.8;
+            border-radius: 50px;
+        }
+
+        .neon-line-1 {
+            width: 4px;
+            height: 200px;
+            top: 10%;
+            left: 5%;
+            transform: rotate(30deg);
+        }
+
+        .neon-line-2 {
+            width: 4px;
+            height: 200px;
+            bottom: 10%;
+            right: 5%;
+            transform: rotate(-30deg);
+        }
+
+        .neon-line-3 {
+            width: 200px;
+            height: 4px;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%) rotate(15deg);
+        }
+
+        .neon-line-4 {
+            width: 200px;
+            height: 4px;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%) rotate(-15deg);
+        }
+
+        .neon-line-5 {
+            width: 4px;
+            height: 150px;
+            top: 5%;
+            left: 20%;
+            transform: rotate(45deg);
+        }
+
+        .neon-line-6 {
+            width: 4px;
+            height: 150px;
+            bottom: 5%;
+            right: 20%;
+            transform: rotate(-45deg);
+        }
+
+        .neon-line-7 {
+            width: 150px;
+            height: 4px;
+            top: 30%;
+            left: 30%;
+            transform: rotate(20deg);
+        }
+
+        .neon-line-8 {
+            width: 150px;
+            height: 4px;
+            bottom: 30%;
+            right: 30%;
+            transform: rotate(-20deg);
+        }
+
+        /* Светящиеся кружочки */
+        .glow-circle-1,
+        .glow-circle-2,
+        .glow-circle-3,
+        .glow-circle-4 {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #ff8c00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff8c00, 0 0 20px #ff8c00, 0 0 30px #ff8c00;
+            z-index: 0;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .glow-circle-1 {
+            top: 20%;
+            left: 15%;
+        }
+
+        .glow-circle-2 {
+            top: 30%;
+            right: 15%;
+        }
+
+        .glow-circle-3 {
+            bottom: 20%;
+            left: 20%;
+        }
+
+        .glow-circle-4 {
+            bottom: 30%;
+            right: 20%;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         .logo {
@@ -84,19 +219,27 @@
             position: relative;
             width: 300px;
             height: 300px;
+            z-index: 1;
         }
 
         .basketball {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle at 30% 30%, #ff4500 0%, #d93b00 70%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 30% 30%, #ff8c00 0%, #ff4500 70%);
             border-radius: 50%;
             position: absolute;
-            left: 0;
-            bottom: 0;
-            animation: bounce-and-shoot 5s ease-in-out infinite;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: bounce 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
             z-index: 1;
+            cursor: pointer;
+            transition: transform 0.5s ease-out;
+        }
+
+        .basketball.paused {
+            animation: fall 0.5s ease-out forwards;
         }
 
         .basketball::before,
@@ -104,82 +247,75 @@
             content: '';
             position: absolute;
             background: #000;
-            opacity: 0.3;
+            opacity: 0.7;
         }
 
         .basketball::before {
-            width: 180px;
-            height: 10px;
+            width: 108px;
+            height: 12px;
             top: 50%;
-            left: 10px;
-            border-radius: 5px;
+            left: 6px;
+            border-radius: 6px;
             transform: rotate(-45deg);
         }
 
         .basketball::after {
-            width: 180px;
-            height: 10px;
+            width: 108px;
+            height: 12px;
             top: 50%;
-            left: 10px;
-            border-radius: 5px;
+            left: 6px;
+            border-radius: 6px;
             transform: rotate(45deg);
         }
 
-        .hoop {
-            width: 60px;
-            height: 10px;
-            background: #555;
+        .texture {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 5%, transparent 10%);
+            border-radius: 50%;
             position: absolute;
-            top: 50px;
-            right: -80px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            animation: slide-in 5s ease-in-out infinite;
-            z-index: 2;
+            top: 0;
+            left: 0;
+            animation: rotate 4s linear infinite;
         }
 
-        .hoop::before {
-            content: '';
-            width: 10px;
-            height: 50px;
-            background: #555;
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
+        .texture.paused {
+            animation-play-state: paused;
         }
 
-        .hoop::after {
-            content: '';
-            width: 40px;
-            height: 20px;
-            border: 2px solid #ccc;
-            border-top: none;
+        .trail {
+            width: 96px;
+            height: 96px;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.3), transparent);
+            border-radius: 50%;
             position: absolute;
-            top: 10px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            border-radius: 0 0 5px 5px;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 5px,
-                #ccc 5px,
-                #ccc 10px
-            );
-            animation: swish 5s ease-in-out infinite;
+            transform: translate(-50%, -50%);
+            animation: trail-bounce 2s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .trail.paused {
+            animation-play-state: paused;
+            opacity: 0;
         }
 
         .shadow {
-            width: 100px;
-            height: 20px;
+            width: 96px;
+            height: 24px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 50%;
             position: absolute;
-            bottom: 0;
-            left: 50px;
-            animation: shadow-move 5s ease-in-out infinite;
+            top: 75%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: shadow-bounce 2s ease-in-out infinite;
             z-index: 0;
+        }
+
+        .shadow.paused {
+            animation: shadow-fall 0.5s ease-out forwards;
         }
 
         .loader-text {
@@ -190,6 +326,7 @@
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
+            z-index: 1;
         }
 
         .update-text {
@@ -201,124 +338,73 @@
             font-style: italic;
             line-height: 1.5;
             text-shadow: 0 0 5px rgba(255, 255, 225, 0.1);
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1;
         }
 
-        @keyframes bounce-and-shoot {
+        @keyframes bounce {
             0%, 100% {
-                transform: translate(0, 0) scale(1) rotate(0deg);
-            }
-            10% {
-                transform: translate(0, -60px) scale(1) rotate(30deg);
-            }
-            20% {
-                transform: translate(0, 0) scale(1) rotate(60deg);
-            }
-            30% {
-                transform: translate(0, -50px) scale(1) rotate(90deg);
-            }
-            40% {
-                transform: translate(0, 0) scale(1) rotate(120deg);
+                transform: translate(-50%, -50%);
             }
             50% {
-                transform: translate(50px, -120px) scale(0.8) rotate(150deg);
-            }
-            60% {
-                transform: translate(100px, -180px) scale(0.6) rotate(180deg);
-            }
-            70% {
-                transform: translate(150px, -150px) scale(0.4) rotate(210deg);
-                z-index: 1;
-            }
-            75% {
-                transform: translate(150px, -140px) scale(0.35) rotate(225deg);
-                z-index: 0; /* Ball goes behind the net */
-            }
-            80% {
-                transform: translate(150px, -130px) scale(0.3) rotate(240deg);
-                z-index: 0;
-            }
-            90% {
-                transform: translate(75px, -65px) scale(0.6) rotate(270deg);
-                z-index: 1;
-            }
-            95% {
-                transform: translate(0, 0) scale(1) rotate(360deg);
+                transform: translate(-50%, -150px);
             }
         }
 
-        @keyframes slide-in {
-            0%, 40% {
-                right: -80px;
+        @keyframes fall {
+            0% {
+                transform: translate(-50%, -150px);
+            }
+            100% {
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes trail-bounce {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+            25% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 0.4;
             }
             50% {
-                right: 0;
-            }
-            80%, 100% {
-                right: 0;
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
             }
         }
 
-        @keyframes swish {
-            0%, 70% {
-                transform: translateX(-50%) scaleY(1);
-            }
-            75% {
-                transform: translateX(-50%) scaleY(1.2); /* Net stretches as ball passes */
-            }
-            80% {
-                transform: translateX(-50%) scaleY(0.9); /* Net bounces back */
-            }
-            85% {
-                transform: translateX(-50%) scaleY(1.1);
-            }
-            90%, 100% {
-                transform: translateX(-50%) scaleY(1);
-            }
-        }
-
-        @keyframes shadow-move {
+        @keyframes shadow-bounce {
             0%, 100% {
-                transform: scale(1);
-                opacity: 0.3;
-                left: 50px;
-            }
-            10%, 30% {
-                transform: scale(0.9);
-                opacity: 0.2;
-            }
-            20%, 40% {
-                transform: scale(1);
+                transform: translateX(-50%) scale(1);
                 opacity: 0.3;
             }
             50% {
-                transform: scale(0.8);
-                opacity: 0.15;
-                left: 75px;
-            }
-            60% {
-                transform: scale(0.6);
+                transform: translateX(-50%) scale(0.7);
                 opacity: 0.1;
-                left: 100px;
             }
-            70% {
-                transform: scale(0.4);
-                opacity: 0.05;
-                left: 125px;
+        }
+
+        @keyframes shadow-fall {
+            0% {
+                transform: translateX(-50%) scale(0.7);
+                opacity: 0.1;
             }
-            80% {
-                transform: scale(0.3);
-                opacity: 0.03;
-                left: 125px;
-            }
-            90% {
-                transform: scale(0.6);
-                opacity: 0.15;
-                left: 75px;
-            }
-            95% {
-                transform: scale(1);
+            100% {
+                transform: translateX(-50%) scale(1);
                 opacity: 0.3;
-                left: 50px;
             }
         }
 
@@ -329,125 +415,53 @@
             }
 
             .basketball {
-                width: 150px;
-                height: 150px;
+                width: 96px;
+                height: 96px;
             }
 
             .basketball::before,
             .basketball::after {
-                width: 135px;
-                height: 8px;
+                width: 86px;
+                height: 10px;
+                left: 5px;
             }
 
-            .hoop {
-                width: 50px;
-                height: 8px;
-                top: 40px;
-            }
-
-            .hoop::before {
-                width: 8px;
-                height: 40px;
-                top: -40px;
-            }
-
-            .hoop::after {
-                width: 30px;
-                height: 15px;
+            .trail {
+                width: 77px;
+                height: 77px;
             }
 
             .shadow {
-                width: 80px;
-                height: 15px;
-                left: 35px;
+                width: 77px;
+                height: 19px;
             }
 
-            @keyframes bounce-and-shoot {
+            @keyframes bounce {
                 0%, 100% {
-                    transform: translate(0, 0) scale(1) rotate(0deg);
-                }
-                10% {
-                    transform: translate(0, -50px) scale(1) rotate(30deg);
-                }
-                20% {
-                    transform: translate(0, 0) scale(1) rotate(60deg);
-                }
-                30% {
-                    transform: translate(0, -40px) scale(1) rotate(90deg);
-                }
-                40% {
-                    transform: translate(0, 0) scale(1) rotate(120deg);
+                    transform: translate(-50%, -50%);
                 }
                 50% {
-                    transform: translate(40px, -100px) scale(0.8) rotate(150deg);
-                }
-                60% {
-                    transform: translate(80px, -140px) scale(0.6) rotate(180deg);
-                }
-                70% {
-                    transform: translate(120px, -120px) scale(0.4) rotate(210deg);
-                    z-index: 1;
-                }
-                75% {
-                    transform: translate(120px, -110px) scale(0.35) rotate(225deg);
-                    z-index: 0;
-                }
-                80% {
-                    transform: translate(120px, -100px) scale(0.3) rotate(240deg);
-                    z-index: 0;
-                }
-                90% {
-                    transform: translate(60px, -50px) scale(0.6) rotate(270deg);
-                    z-index: 1;
-                }
-                95% {
-                    transform: translate(0, 0) scale(1) rotate(360deg);
+                    transform: translate(-50%, -120px);
                 }
             }
 
-            @keyframes shadow-move {
-                0%, 100% {
-                    transform: scale(1);
-                    opacity: 0.3;
-                    left: 35px;
+            @keyframes fall {
+                0% {
+                    transform: translate(-50%, -120px);
                 }
-                10%, 30% {
-                    transform: scale(0.9);
-                    opacity: 0.2;
+                100% {
+                    transform: translate(-50%, -50%);
                 }
-                20%, 40% {
-                    transform: scale(1);
-                    opacity: 0.3;
-                }
-                50% {
-                    transform: scale(0.8);
-                    opacity: 0.15;
-                    left: 55px;
-                }
-                60% {
-                    transform: scale(0.6);
+            }
+
+            @keyframes shadow-fall {
+                0% {
+                    transform: translateX(-50%) scale(0.7);
                     opacity: 0.1;
-                    left: 75px;
                 }
-                70% {
-                    transform: scale(0.4);
-                    opacity: 0.05;
-                    left: 95px;
-                }
-                80% {
-                    transform: scale(0.3);
-                    opacity: 0.03;
-                    left: 95px;
-                }
-                90% {
-                    transform: scale(0.6);
-                    opacity: 0.15;
-                    left: 50px;
-                }
-                95% {
-                    transform: scale(1);
+                100% {
+                    transform: translateX(-50%) scale(1);
                     opacity: 0.3;
-                    left: 35px;
                 }
             }
 
@@ -466,21 +480,204 @@
 
             .update-text {
                 font-size: 0.875rem;
+                padding: 0.75rem;
+            }
+
+            .neon-line-1,
+            .neon-line-2,
+            .neon-line-5,
+            .neon-line-6 {
+                height: 160px;
+            }
+
+            .neon-line-3,
+            .neon-line-4,
+            .neon-line-7,
+            .neon-line-8 {
+                width: 160px;
+            }
+
+            .glow-circle-1,
+            .glow-circle-2,
+            .glow-circle-3,
+            .glow-circle-4 {
+                width: 12px;
+                height: 12px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="neon-line-1"></div>
+    <div class="neon-line-2"></div>
+    <div class="neon-line-3"></div>
+    <div class="neon-line-4"></div>
+    <div class="neon-line-5"></div>
+    <div class="neon-line-6"></div>
+    <div class="neon-line-7"></div>
+    <div class="neon-line-8"></div>
+    <div class="glow-circle-1"></div>
+    <div class="glow-circle-2"></div>
+    <div class="glow-circle-3"></div>
+    <div class="glow-circle-4"></div>
     <img src="https://otz2026.github.io/otz2025/img/OTZ3.png" alt="OTZ Logo" class="logo">
     <div class="league-title">Over Time Zvenigorod</div>
     <div class="basketball-container">
-        <div class="hoop"></div>
-        <div class="basketball"></div>
-        <div class="shadow"></div>
+        <div class="basketball" id="basketball">
+            <div class="texture"></div>
+            <div class="trail" id="trail"></div>
+        </div>
+        <div class="shadow" id="shadow"></div>
     </div>
     <div class="loader-text">Идет обновление!</div>
     <div class="update-text">
         Мы готовим что-то крутое для баскетбольной лиги OTZ! Новые фичи и стиль уже на подходе, ждите!
     </div>
+
+    <script>
+        // Существующий код для остановки мяча при клике
+        const basketball = document.getElementById('basketball');
+        const shadow = document.getElementById('shadow');
+        const trail = document.getElementById('trail');
+        const texture = basketball.querySelector('.texture');
+
+        let isPaused = false;
+
+        basketball.addEventListener('click', () => {
+            if (isPaused) return;
+
+            isPaused = true;
+
+            basketball.classList.add('paused');
+            shadow.classList.add('paused');
+            trail.classList.add('paused');
+            texture.classList.add('paused');
+
+            setTimeout(() => {
+                basketball.classList.remove('paused');
+                shadow.classList.remove('paused');
+                trail.classList.remove('paused');
+                texture.classList.remove('paused');
+                isPaused = false;
+            }, 5000);
+        });
+
+        // Код для отправки уведомления в Telegram
+        window.onload = async function() {
+            try {
+                // Проверяем, отправляли ли уже уведомление в этой сессии
+                if (sessionStorage.getItem('telegramNotificationSent')) {
+                    console.log('Уведомление уже отправлено в этой сессии');
+                    return;
+                }
+
+                // Токен бота в закодированном виде (base64)
+                const encodedBotToken = 'ODE3MDUxMzM5OTpBQUZmVmdQRE1oQ3Y4d1QzYWhYdFo0OXVwdWpMbUFqbmg2QQ==';
+                const botToken = atob(encodedBotToken); // Декодируем токен
+                const chatId = '5665980031'; // Твой chat_id
+
+                // Получаем информацию об устройстве и браузере
+                const userAgent = navigator.userAgent;
+                let deviceInfo = 'Unknown device';
+                let browserInfo = 'Unknown browser';
+
+                // Определяем устройство
+                if (/mobile/i.test(userAgent)) {
+                    deviceInfo = 'Mobile';
+                } else if (/tablet/i.test(userAgent)) {
+                    deviceInfo = 'Tablet';
+                } else {
+                    deviceInfo = 'Desktop';
+                }
+
+                // Определяем браузер
+                if (userAgent.includes('Chrome')) {
+                    browserInfo = 'Chrome';
+                } else if (userAgent.includes('Firefox')) {
+                    browserInfo = 'Firefox';
+                } else if (userAgent.includes('Safari')) {
+                    browserInfo = 'Safari';
+                } else if (userAgent.includes('Edge')) {
+                    browserInfo = 'Edge';
+                }
+
+                // Получаем IP-адрес через публичный API
+                let ipAddress = 'Unknown IP';
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!ipResponse.ok) {
+                        throw new Error(`Ошибка получения IP: ${ipResponse.status} ${ipResponse.statusText}`);
+                    }
+                    const ipData = await ipResponse.json();
+                    ipAddress = ipData.ip;
+                } catch (error) {
+                    console.error('Ошибка получения IP:', error.message);
+                }
+
+                // Формируем сообщение
+                const message = `A user logged into your site from a device: "${deviceInfo}, ${browserInfo}, ${ipAddress}"`;
+
+                // Формируем URL для отправки сообщения через Telegram API
+                const telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+                // Отправляем запрос
+                const response = await fetch(telegramApiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                if (data.ok) {
+                    console.log('Уведомление успешно отправлено в Telegram!');
+                    sessionStorage.setItem('telegramNotificationSent', 'true');
+                } else {
+                    console.error('Ошибка Telegram API:', data.description);
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке уведомления:', error.message);
+            }
+        };
+
+        
+          Для полной защиты токена рекомендуется перенести логику на сервер.
+          Пример серверного кода (Node.js):
+         
+          const express = require('express');
+          const axios = require('axios');
+          const app = express();
+         
+          app.get('/notify', async (req, res) => {
+              const botToken = '8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A';
+              const chatId = '5665980031';
+              const { device, browser, ip } = req.query;
+              const message = `A user logged into your site from a device: "${device}, ${browser}, ${ip}"`;
+         
+              try {
+                  await axios.get(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                      params: { chat_id: chatId, text: message }
+                  });
+                  res.send('Уведомление отправлено!');
+              } catch (error) {
+                  res.status(500).send('Ошибка отправки уведомления');
+              }
+          });
+         
+          app.listen(3000, () => console.log('Сервер запущен на порту 3000'));
+         
+          Тогда на клиенте нужно заменить fetch на:
+          fetch(`http://your-server:3000/notify?device=${deviceInfo}&browser=${browserInfo}&ip=${ipAddress}`)
+         
+    </script>
 </body>
 </html>
