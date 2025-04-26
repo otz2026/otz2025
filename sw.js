@@ -26,6 +26,7 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Кэширование основных ресурсов');
         return cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })))
       .catch(err => console.error('[SW] Ошибка кэширования:', err))
+    })
   );
 });
 
@@ -35,7 +36,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then(cacheNames => 
       Promise.all(cacheNames.map(cacheName => 
         [CACHE_NAME, API_CACHE].includes(cacheName) ? null : caches.delete(cacheName)
-      )
+      ))
     )
   );
 });
@@ -69,6 +70,26 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Обработка push-уведомлений
+self.addEventListener('push', event => {
+  const data = event.data ? event.data.json() : { title: 'OTZ Notification', body: 'Новое сообщение' };
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/otz2025/img/icon-192x192.png',
+      badge: '/otz2025/img/icon-192x192.png'
+    })
+  );
+});
+
+// Обработка клика по уведомлению
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('https://otz2026.github.io/otz2025/')
+  );
+});
+
 // Фоновая синхронизация
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-data') {
@@ -82,10 +103,8 @@ async function syncPendingData() {
   if (pendingResponse) {
     const pendingData = await pendingResponse.json();
     try {
-      await fetch('/otz2025/api/sync', {
-        method: 'POST',
-        body: JSON.stringify(pendingData)
-      });
+      // Без сервера синхронизация ограничена
+      console.log('Синхронизация данных:', pendingData);
       await cache.delete('/otz2025/pending');
     } catch (err) {
       console.error('Ошибка синхронизации:', err);
