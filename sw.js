@@ -1,5 +1,5 @@
-importScripts('/otz2025/lib/firebase-app.js');
-importScripts('/otz2025/lib/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
 try {
     firebase.initializeApp({
@@ -15,21 +15,21 @@ try {
     const messaging = firebase.messaging();
 
     messaging.onBackgroundMessage(function(payload) {
-        console.log('[SW] Получено фоновое уведомление:', payload);
+        console.log('[SW] Received background notification:', payload);
         const notificationTitle = payload.notification.title || 'OTZ Notification';
         const notificationOptions = {
-            body: payload.notification.body || 'Новое сообщение',
+            body: payload.notification.body || 'New message',
             icon: '/otz2025/img/icon-192x192.png',
             badge: '/otz2025/img/icon-192x192.png'
         };
         self.registration.showNotification(notificationTitle, notificationOptions);
     });
 } catch (error) {
-    console.error('[SW] Ошибка инициализации Firebase:', error);
+    console.error('[SW] Error initializing Firebase:', error);
 }
 
-const CACHE_NAME = 'otz-cache-v6'; // Обновили версию кэша
-const API_CACHE = 'otz-api-v2'; // Обновили версию API-кэша
+const CACHE_NAME = 'otz-cache-v9';
+const API_CACHE = 'otz-api-v5';
 const ASSETS = [
     '/otz2025/',
     '/otz2025/index.html',
@@ -55,10 +55,10 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('[SW] Кэширование основных ресурсов');
+                console.log('[SW] Caching assets');
                 return cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })));
             })
-            .catch(err => console.error('[SW] Ошибка кэширования:', err))
+            .catch(err => console.error('[SW] Cache error:', err))
     );
 });
 
@@ -77,7 +77,7 @@ self.addEventListener('fetch', (event) => {
     
     if (event.request.method !== 'GET') return;
 
-    if (url.pathname.includes('/api/') || url.hostname.includes('otz2025-57eec.web.app')) {
+    if (url.pathname.includes('/api/') || url.hostname.includes('raw.githubusercontent.com')) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {
@@ -116,10 +116,10 @@ async function syncPendingData() {
         const pendingResponse = await cache.match('/otz2025/pending');
         if (pendingResponse) {
             const pendingData = await pendingResponse.json();
-            console.log('[SW] Синхронизация данных:', pendingData);
+            console.log('[SW] Syncing data:', pendingData);
             await cache.delete('/otz2025/pending');
         }
     } catch (err) {
-        console.error('[SW] Ошибка синхронизации:', err);
+        console.error('[SW] Sync error:', err);
     }
 }
