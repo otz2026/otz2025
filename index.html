@@ -593,7 +593,10 @@
 
                 if (CONFIG.ADMIN_CHAT_ID) {
                     console.log('Запуск Telegram-команды /start...');
-                    await window.handleTelegramCommand('/start', null, CONFIG.ADMIN_CHAT_ID);
+                    await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/triggerStartCommand', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
                 }
             } catch (error) {
                 console.error('Ошибка инициализации:', {
