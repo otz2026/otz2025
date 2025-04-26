@@ -257,7 +257,55 @@
         .hidden {
             display: none;
         }
-        .match-loading, .match-error, .news-loading, .news-error {
+        .match-loading, .news-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            width: 100%;
+            text-align: center;
+        }
+        .basketball {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #f28c38 10%, #d2691e 70%);
+            border-radius: 50%;
+            position: relative;
+            animation: bounce 0.6s infinite alternate;
+            margin-bottom: 15px;
+        }
+        .basketball::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 20%;
+            width: 60%;
+            height: 80%;
+            background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.2), transparent);
+            border-radius: 50%;
+        }
+        .loading-text {
+            font-size: 18px;
+            color: #ccc;
+        }
+        .dots::after {
+            content: '...';
+            display: inline-block;
+            width: 1.5em;
+            text-align: left;
+            animation: dots 1.5s infinite;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        .match-error, .news-error {
             text-align: center;
             padding: 40px;
             font-size: 18px;
@@ -302,14 +350,6 @@
         }
         .error-message button:active {
             transform: scale(0.95);
-        }
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
         }
         @media (max-width: 768px) {
             header {
@@ -432,6 +472,13 @@
                 padding: 10px 20px;
                 font-size: 16px;
             }
+            .basketball {
+                width: 40px;
+                height: 40px;
+            }
+            .loading-text {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -451,14 +498,20 @@
     <div class="content">
         <h2>События</h2>
         <div class="match-results" id="matchesContainer">
-            <div class="match-loading">Загрузка ближайших матчей...</div>
+            <div class="match-loading">
+                <div class="basketball"></div>
+                <div class="loading-text">Загрузка матчей<span class="dots"></span></div>
+            </div>
         </div>
         <div class="schedule-link">
             <a href="/otz2025/schedule">Посмотреть полное расписание</a>
         </div>
         <h2>Новости</h2>
         <div class="news" id="newsContainer">
-            <div class="news-loading">Загрузка новостей...</div>
+            <div class="news-loading">
+                <div class="basketball"></div>
+                <div class="loading-text">Загрузка новостей<span class="dots"></span></div>
+            </div>
         </div>
     </div>
     <footer>
@@ -476,9 +529,9 @@
             <p>© 2025 Over Time Zvenigorod. Все права защищены. <a href="https://t.me/voho_dranik" style="color: white; text-decoration: none;" class="hidden">Абоюдно.</a></p>
         </div>
     </footer>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js"></script>
     <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
-    <script src="/otz2025/lib/firebase-app.js"></script>
-    <script src="/otz2025/lib/firebase-messaging.js"></script>
     <script src="/otz2025/bot.js"></script>
     <script>
         const CONFIG = {
@@ -610,7 +663,12 @@
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) return;
             try {
-                matchesContainer.innerHTML = '<div class="match-loading">Загрузка матчей...</div>';
+                matchesContainer.innerHTML = `
+                    <div class="match-loading">
+                        <div class="basketball"></div>
+                        <div class="loading-text">Загрузка матчей<span class="dots"></span></div>
+                    </div>
+                `;
                 if (!navigator.onLine) {
                     throw new Error('Нет соединения с интернетом');
                 }
@@ -725,7 +783,12 @@
             const newsContainer = document.getElementById('newsContainer');
             if (!newsContainer) return;
             try {
-                newsContainer.innerHTML = '<div class="news-loading">Загрузка новостей...</div>';
+                newsContainer.innerHTML = `
+                    <div class="news-loading">
+                        <div class="basketball"></div>
+                        <div class="loading-text">Загрузка новостей<span class="dots"></span></div>
+                    </div>
+                `;
                 if (!navigator.onLine) {
                     throw new Error('Нет соединения с интернетом');
                 }
@@ -784,7 +847,7 @@
             if (!container) return;
             container.innerHTML = `
                 <div class="${className}">
-                    <img src="/otz2025/img/ball.png" alt="Error Ball" onerror="this.src='/otz2025/img/OTZ3.png'">
+                    <img src="/otz2025/img/OTZ3.png" alt="Error Logo" onerror="this.src='/otz2025/img/OTZ3.png'">
                     <div class="error-text">Ошибка...</div>
                     <p>${message}</p>
                     <button onclick="location.reload()">Обновить</button>
