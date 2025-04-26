@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTZ Админ-панель</title>
+    <meta name="theme-color" content="#dd4710">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../otz2025/img/OTZ3.png">
+    <!-- Фавиконка -->
+    <link rel="icon" type="image/png" href="/otz2025/img/icon3-512x512.png">
+
+    <!-- Open Graph метатеги для соцсетей и поисковиков -->
+    <meta property="og:title" content="OTZ Админ - панель">
+    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
+    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card метатеги -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OTZ Админ - панель">
+    <meta name="twitter:description" content="Админ-панель для управления сайтом Over Time Zwenigorod.">
+    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/icon2-512x512.png">
+
+
+
+    
+    <style>
+        /* Основные стили (оставлены без изменений) */
+        :root {
+            --primary-color: #dd4710;
+            --secondary-color: #2a2a2a;
+            --text-color: #ffffff;
+            --hover-color: #c03d0d;
+            --bg-dark: rgba(0, 0, 0, 0.7);
+            --bg-light: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Добавленные стили для наград */
+        .awards-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .awards-editor {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .award-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .award-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .image-upload-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        /* Навигационное меню */
+        .nav-menu {
+            background-color: var(--bg-dark);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(221, 71, 16, 0.2);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .main-header {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: var(--primary-color);
+            text-align: center;
+            margin: 20px 0;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .main-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .section-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--primary-color);
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+            background-color: var(--bg-light);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: rgba(221, 71, 16, 0.1);
+        }
+        
+        .team-logo {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+            margin-right: 8px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .editable {
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .editable:hover {
+            background-color: rgba(221, 71, 16, 0.2);
+        }
+        
+        .editable::after {
+            content: "✎";
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            font-size: 10px;
+            opacity: 0.5;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .delete-btn {
+            background-color: #572d2c;
+        }
+        
+        .status-message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .success {
+            background-color: rgba(45, 87, 44, 0.7);
+        }
+        
+        .error {
+            background-color: rgba(87, 45, 44, 0.7);
+        }
+        
+        .info {
+            background-color: rgba(45, 58, 87, 0.7);
+        }
+        
+        .news-editor {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ddd;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            display: block;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .news-list {
+            margin-top: 30px;
+        }
+        
+        .news-item {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .news-item h3 {
+            margin: 0 0 10px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .news-item p {
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+        
+        .news-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .nav-link {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 14px;
+            }
+            
+            .team-logo {
+                width: 24px;
+                height: 24px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .news-editor {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .button-group, .news-item-actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <nav class="nav-menu">
+        <div class="nav-title">OTZ Админ-панель</div>
+        <div class="nav-links">
+            <a href="/otz2025/SSTimeSS" class="nav-link active">Главная</a>
+            <a href="/otz2025/SSTimeSS/schedule" class="nav-link">Расписание</a>
+            <a href="/otz2025/SSTimeSS/players" class="nav-link">Составы</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="main-header">Турнирная таблица и новости</h1>
+        
+        <h2 class="section-title">Турнирная таблица</h2>
+        
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Команда</th>
+                        <th>И</th>
+                        <th>В</th>
+                        <th>П</th>
+                        <th>%</th>
+                        <th>З</th>
+                        <th>П</th>
+                        <th>+/-</th>
+                        <th>О</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="button-group">
+            <button id="saveBtn">Сохранить таблицу</button>
+            <button id="refreshBtn">Обновить данные</button>
+        </div>
+        
+        <div id="statusMsg" class="status-message"></div>
+        
+        <h2 class="section-title">Редактор новостей</h2>
+        
+        <div class="news-editor">
+            <div class="form-group">
+                <label for="newsAction">Действие:</label>
+                <select id="newsAction">
+                    <option value="add">Добавить новость</option>
+                    <option value="edit">Редактировать</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="newsSelectContainer" style="display: none;">
+                <label for="newsSelect">Выберите новость:</label>
+                <select id="newsSelect"></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="newsTitle">Заголовок:</label>
+                <input type="text" id="newsTitle" placeholder="Заголовок новости">
+            </div>
+            
+            <div class="form-group">
+                <label for="newsImage">Изображение:</label>
+                <div class="image-upload-container">
+                    <input type="text" id="newsImage" placeholder="https://example.com/image.jpg">
+                    <button class="upload-btn" onclick="document.getElementById('newsImageFileInput').click()">Выбрать файл</button>
+                    <input type="file" id="newsImageFileInput" accept="image/*" style="display: none;">
+                </div>
+                <img id="imagePreview" class="preview-image" style="display: none;">
+            </div>
+            
+            <div class="form-group">
+                <label for="newsContent">Краткое описание:</label>
+                <textarea id="newsContent" placeholder="Краткий текст для списка новостей"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="newsFullContent">Полный текст:</label>
+                <textarea id="newsFullContent" placeholder="Подробное содержание новости"></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button id="saveNewsBtn">Сохранить новость</button>
+                <button id="deleteNewsBtn" class="delete-btn">Удалить новость</button>
+            </div>
+            
+            <div id="newsStatusMsg" class="status-message"></div>
+        </div>
+        
+        <div class="news-list">
+            <h3>Список новостей:</h3>
+            <div id="newsListContainer"></div>
+        </div>
+
+        <h2 class="section-title">Настройки наград</h2>    
+        <!-- Блок управления наградами -->
+        <div id="awardsContainer" class="awards-section"></div>
+
+
+
+    </div>
+
+    <script>
+        // Конфигурация
+        const CONFIG = {
+            GITHUB_USER: "otz2026",
+            REPO_NAME: "otz2025",
+            TABLE_FILE_PATH: "SSTimeSS/tournament_data.json",
+            NEWS_FILE_PATH: "SSTimeSS/news_data.json",
+            SCHEDULE_FILE_PATH: "SSTimeSS/schedule_data.json",
+            AWARDS_FILE_PATH: "SSTimeSS/awards_data.json",
+            IMAGES_PATH: "SSTimeSS/img/",
+            GITHUB_TOKEN: ""
+        };
+
+        let tableData = [];
+        let newsData = [];
+        let awardsData = {
+            mvp: { name: "Не определен", image: "/otz2025/img/MVP.png" },
+            dpoy: { name: "Не определен", image: "/otz2025/img/DPOY.png" }
+        };
+
+        // ========== Table Functions ========== //
+        function calculateFIBAStats(team) {
+            if (team.wins + team.losses > team.games) {
+                team.losses = team.games - team.wins;
+            }
+            
+            team.percentage = team.games > 0 ? (team.wins / team.games * 100).toFixed(1) : 0;
+            team.difference = (team.scored || 0) - (team.conceded || 0);
+            team.points = team.wins * 2 + team.losses * 1;
+            
+            return team;
+        }
+
+        async function loadData() {
+            showStatus("Загрузка таблицы...", "info");
+            
+            try {
+                const dataUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.TABLE_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(dataUrl);
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
+                
+                tableData = await response.json();
+                
+                if (!Array.isArray(tableData)) {
+                    throw new Error("Неверный формат данных");
+                }
+                
+                prepareData();
+                renderTable();
+                showStatus("Таблица загружена", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showStatus(`Ошибка: ${error.message}`, "error");
+                tableData = getDefaultData();
+                renderTable();
+            }
+        }
+
+        function prepareData() {
+            tableData.forEach(team => {
+                calculateFIBAStats(team);
+            });
+            sortTeams();
+        }
+
+        function sortTeams() {
+            tableData.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.difference !== a.difference) return b.difference - a.difference;
+                return b.scored - a.scored;
+            });
+            
+            tableData.forEach((team, index) => {
+                team.place = index + 1;
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
+            
+            if (tableData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 20px;">Нет данных</td></tr>`;
+                return;
+            }
+            
+            tableData.forEach(team => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td class="non-editable">${team.place}</td>
+                    <td class="non-editable">
+                        ${team.logo ? `<img src="${team.logo}" class="team-logo">` : ''}
+                        ${team.team}
+                    </td>
+                    <td class="editable" data-field="games">${team.games || 0}</td>
+                    <td class="editable" data-field="wins">${team.wins || 0}</td>
+                    <td class="editable" data-field="losses">${team.losses || 0}</td>
+                    <td class="non-editable">${team.percentage || 0}</td>
+                    <td class="editable" data-field="scored">${team.scored || 0}</td>
+                    <td class="editable" data-field="conceded">${team.conceded || 0}</td>
+                    <td class="non-editable">${team.difference || 0}</td>
+                    <td class="non-editable">${team.points || 0}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            setupEditableCells();
+        }
+
+        function setupEditableCells() {
+            document.querySelectorAll(".editable").forEach(cell => {
+                cell.addEventListener("click", function() {
+                    const field = this.dataset.field;
+                    const teamIndex = this.parentNode.sectionRowIndex;
+                    const currentValue = this.textContent.trim();
+                    
+                    const input = document.createElement("input");
+                    input.type = "number";
+                    input.value = currentValue;
+                    input.style.width = "100%";
+                    input.style.textAlign = "center";
+                    input.style.border = "1px solid var(--primary-color)";
+                    input.style.borderRadius = "4px";
+                    input.style.padding = "4px";
+                    input.style.backgroundColor = "rgba(0,0,0,0.3)";
+                    input.style.color = "white";
+                    
+                    this.textContent = "";
+                    this.appendChild(input);
+                    input.focus();
+                    
+                    const saveValue = () => {
+                        const newValue = parseInt(input.value) || 0;
+                        tableData[teamIndex][field] = newValue;
+                        
+                        calculateFIBAStats(tableData[teamIndex]);
+                        sortTeams();
+                        renderTable();
+                    };
+                    
+                    input.addEventListener("blur", saveValue);
+                    input.addEventListener("keypress", e => e.key === "Enter" && saveValue());
+                });
+            });
+        }
+
+        async function saveData() {
+            let token = CONFIG.GITHUB_TOKEN;
+            
+            if (!token) {
+                token = prompt("Введите Token для сохранения:"); // Введите GitHub Token для сохранения: 
+                if (!token) {
+                    showStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showStatus("Сохранение...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.TABLE_FILE_PATH}`;
+                
+                const fileInfo = await fetch(apiUrl, {
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+                
+                let sha = null;
+                if (fileInfo.ok) {
+                    const fileData = await fileInfo.json();
+                    sha = fileData.sha;
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление турнирной таблицы",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(tableData, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения");
+                
+                showStatus("Таблица сохранена!", "success");
+                setTimeout(loadData, 1500);
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+
+        // ========== News Functions ========== //
+        async function loadNews() {
+            showNewsStatus("Загрузка новостей...", "info");
+            
+            try {
+                const newsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.NEWS_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(newsUrl);
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
+                
+                newsData = await response.json();
+                
+                if (!Array.isArray(newsData)) {
+                    throw new Error("Неверный формат новостей");
+                }
+                
+                updateNewsSelect();
+                renderNewsList();
+                showNewsStatus("Новости загружены", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showNewsStatus(`Ошибка: ${error.message}`, "error");
+                newsData = [];
+                updateNewsSelect();
+                renderNewsList();
+            }
+        }
+
+        function updateNewsSelect() {
+            const newsSelect = document.getElementById("newsSelect");
+            newsSelect.innerHTML = "";
+            
+            newsData.forEach((news, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = news.title || `Новость ${index + 1}`;
+                newsSelect.appendChild(option);
+            });
+        }
+
+        function renderNewsList() {
+            const container = document.getElementById("newsListContainer");
+            container.innerHTML = "";
+            
+            if (newsData.length === 0) {
+                container.innerHTML = `
+                    <div class="news-item">
+                        <p style="text-align: center; color: #aaa;">Новостей пока нет</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            newsData.forEach((news, index) => {
+                const shortContent = news.content.length > 100 
+                    ? news.content.substring(0, 100) + "..." 
+                    : news.content;
+                
+                const newsItem = document.createElement("div");
+                newsItem.className = "news-item";
+                newsItem.innerHTML = `
+                    <h3>${news.title || "Без названия"}</h3>
+                    ${news.image ? `<img src="${news.image}" class="preview-image">` : ''}
+                    <p>${shortContent}</p>
+                    <div class="news-item-actions">
+                        <button onclick="editNews(${index})">Редактировать</button>
+                        <button onclick="deleteNews(${index})" class="delete-btn">Удалить</button>
+                    </div>
+                `;
+                container.appendChild(newsItem);
+            });
+        }
+
+        function editNews(index) {
+            document.getElementById("newsAction").value = "edit";
+            document.getElementById("newsSelectContainer").style.display = "block";
+            document.getElementById("newsSelect").value = index;
+            
+            const news = newsData[index];
+            document.getElementById("newsTitle").value = news.title || "";
+            document.getElementById("newsImage").value = news.image || "";
+            document.getElementById("newsContent").value = news.content || "";
+            document.getElementById("newsFullContent").value = news.full_content || news.content || "";
+            
+            updateImagePreview();
+        }
+
+        function deleteNews(index) {
+            if (confirm("Вы уверены, что хотите удалить эту новость?")) {
+                newsData.splice(index, 1);
+                saveNews();
+            }
+        }
+
+        function saveNewsItem() {
+            const action = document.getElementById("newsAction").value;
+            const title = document.getElementById("newsTitle").value.trim();
+            const image = document.getElementById("newsImage").value.trim();
+            const content = document.getElementById("newsContent").value.trim();
+            const fullContent = document.getElementById("newsFullContent").value.trim();
+            
+            if (!title) {
+                showNewsStatus("Введите заголовок новости", "error");
+                return;
+            }
+            
+            if (!content) {
+                showNewsStatus("Введите краткий текст новости", "error");
+                return;
+            }
+            
+            const newsItem = {
+                title: title,
+                image: image,
+                content: content,
+                full_content: fullContent || content,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            if (action === "add") {
+                newsData.unshift(newsItem);
+            } else {
+                const index = document.getElementById("newsSelect").value;
+                newsData[index] = newsItem;
+            }
+            
+            saveNews();
+            resetNewsForm();
+        }
+
+        async function saveNews() {
+            let token = CONFIG.GITHUB_TOKEN;
+            
+            if (!token) {
+                token = prompt("Введите Token для сохранения:");// Введите GitHub Token для сохранения:
+                if (!token) {
+                    showNewsStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showNewsStatus("Сохранение новостей...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.NEWS_FILE_PATH}`;
+                
+                let sha = null;
+                try {
+                    const fileInfo = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    
+                    if (fileInfo.ok) {
+                        const fileData = await fileInfo.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log("Файл новостей не существует, будет создан новый");
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление новостей",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(newsData, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения новостей");
+                
+                showNewsStatus("Новости сохранены!", "success");
+                setTimeout(loadNews, 1500);
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showNewsStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+
+        function resetNewsForm() {
+            document.getElementById("newsTitle").value = "";
+            document.getElementById("newsImage").value = "";
+            document.getElementById("newsContent").value = "";
+            document.getElementById("newsFullContent").value = "";
+            document.getElementById("newsAction").value = "add";
+            document.getElementById("newsSelectContainer").style.display = "none";
+            document.getElementById("imagePreview").style.display = "none";
+        }
+
+        function updateImagePreview() {
+            const imageUrl = document.getElementById("newsImage").value;
+            const preview = document.getElementById("imagePreview");
+            
+            if (imageUrl) {
+                preview.src = imageUrl;
+                preview.style.display = "block";
+            } else {
+                preview.style.display = "none";
+            }
+        }
+
+        // ========== Awards Functions ========== //
+        async function loadAwards() {
+            try {
+                const awardsUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${CONFIG.AWARDS_FILE_PATH}?t=${Date.now()}`;
+                const response = await fetch(awardsUrl);
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки наград: ${response.status}`);
+                
+                const data = await response.json();
+                if (data.mvp) awardsData.mvp = data.mvp;
+                if (data.dpoy) awardsData.dpoy = data.dpoy;
+                
+                renderAwards();
+                
+            } catch (error) {
+                console.error("Ошибка загрузки наград:", error);
+                renderAwards();
+            }
+        }
+
+        function renderAwards() {
+            const awardsContainer = document.getElementById("awardsContainer");
+            if (!awardsContainer) return;
+            
+            awardsContainer.innerHTML = `
+                <div class="awards-editor">
+
+                    
+                    <div class="award-item">
+                        <h4>MVP сезона</h4>
+                        <div class="form-group">
+                            <label for="mvpName">Игрок:</label>
+                            <input type="text" id="mvpName" value="${awardsData.mvp.name}">
+                        </div>
+                        <div class="form-group">
+                            <label for="mvpImage">Изображение:</label>
+                            <div class="image-upload-container">
+                                <input type="text" id="mvpImageUrl" value="${awardsData.mvp.image}" placeholder="URL изображения">
+                                <button class="upload-btn" onclick="document.getElementById('mvpImageInput').click()">Выбрать файл</button>
+                                <input type="file" id="mvpImageInput" accept="image/*" style="display: none;">
+                            </div>
+                            <img src="${awardsData.mvp.image}" id="mvpImagePreview" class="preview-image">
+                        </div>
+                    </div>
+                    
+                    <div class="award-item">
+                        <h4>Лучший защитник (DPOY)</h4>
+                        <div class="form-group">
+                            <label for="dpoyName">Игрок:</label>
+                            <input type="text" id="dpoyName" value="${awardsData.dpoy.name}">
+                        </div>
+                        <div class="form-group">
+                            <label for="dpoyImage">Изображение:</label>
+                            <div class="image-upload-container">
+                                <input type="text" id="dpoyImageUrl" value="${awardsData.dpoy.image}" placeholder="URL изображения">
+                                <button class="upload-btn" onclick="document.getElementById('dpoyImageInput').click()">Выбрать файл</button>
+                                <input type="file" id="dpoyImageInput" accept="image/*" style="display: none;">
+                            </div>
+                            <img src="${awardsData.dpoy.image}" id="dpoyImagePreview" class="preview-image">
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="saveAwardsBtn">Сохранить награды</button>
+                    </div>
+                    <div id="awardsStatusMsg" class="status-message"></div>
+                </div>
+            `;
+            
+            // Настройка обработчиков событий для загрузки изображений
+            document.getElementById('mvpImageInput').addEventListener('change', function(e) {
+                handleImageUpload(e, 'mvpImagePreview', 'mvpImageUrl', 'mvp');
+            });
+            
+            document.getElementById('dpoyImageInput').addEventListener('change', function(e) {
+                handleImageUpload(e, 'dpoyImagePreview', 'dpoyImageUrl', 'dpoy');
+            });
+            
+            document.getElementById('mvpImageUrl').addEventListener('input', function() {
+                const preview = document.getElementById('mvpImagePreview');
+                preview.src = this.value;
+            });
+            
+            document.getElementById('dpoyImageUrl').addEventListener('input', function() {
+                const preview = document.getElementById('dpoyImagePreview');
+                preview.src = this.value;
+            });
+            
+            document.getElementById('saveAwardsBtn').addEventListener('click', saveAwards);
+        }
+
+        async function handleImageUpload(event, previewId, urlInputId, awardType) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Проверяем тип файла
+            if (!file.type.match('image.*')) {
+                showAwardsStatus('Пожалуйста, выберите файл изображения', 'error');
+                return;
+            }
+            
+            // Проверяем размер файла (максимум 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showAwardsStatus('Размер файла не должен превышать 2MB', 'error');
+                return;
+            }
+            
+            showAwardsStatus('Загрузка изображения...', 'info');
+            
+            try {
+                // Читаем файл как Data URL
+                const imageDataUrl = await readFileAsDataURL(file);
+                
+                // Формируем имя файла
+                const fileName = `${awardType}_${Date.now()}.${file.name.split('.').pop()}`;
+                const imagePath = `${CONFIG.IMAGES_PATH}${fileName}`;
+                
+                // Загружаем изображение на GitHub
+                const imageUrl = await uploadImageToGitHub(file, fileName, imagePath);
+                
+                // Обновляем превью и URL
+                document.getElementById(previewId).src = imageUrl;
+                document.getElementById(urlInputId).value = imageUrl;
+                
+                showAwardsStatus('Изображение загружено', 'success');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки изображения:', error);
+                showAwardsStatus(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadImageToGitHub(file, fileName, imagePath) {
+            let token = CONFIG.GITHUB_TOKEN;
+            if (!token) {
+                token = prompt("Введите GitHub Token для загрузки изображения:");// Введите GitHub Token для загрузки изображения:
+                if (!token) {
+                    throw new Error('Загрузка отменена');
+                }
+            }
+            
+            // Читаем файл как ArrayBuffer
+            const fileBuffer = await readFileAsArrayBuffer(file);
+            
+            // Кодируем в base64
+            const base64Content = arrayBufferToBase64(fileBuffer);
+            
+            const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${imagePath}`;
+            
+            // Проверяем, существует ли файл
+            let sha = null;
+            try {
+                const fileInfo = await fetch(apiUrl, {
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+                
+                if (fileInfo.ok) {
+                    const fileData = await fileInfo.json();
+                    sha = fileData.sha;
+                }
+            } catch (e) {
+                console.log("Файл не существует, будет создан новый");
+            }
+            
+            const response = await fetch(apiUrl, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `token ${token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/vnd.github.v3+json"
+                },
+                body: JSON.stringify({
+                    message: `Загрузка изображения для награды: ${fileName}`,
+                    content: base64Content,
+                    sha: sha
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Ошибка загрузки изображения');
+            }
+            
+            // Возвращаем URL изображения
+            return `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/main/${imagePath}`;
+        }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        async function saveAwards() {
+            const newAwardsData = {
+                mvp: {
+                    name: document.getElementById('mvpName').value.trim(),
+                    image: document.getElementById('mvpImageUrl').value.trim()
+                },
+                dpoy: {
+                    name: document.getElementById('dpoyName').value.trim(),
+                    image: document.getElementById('dpoyImageUrl').value.trim()
+                }
+            };
+            
+            let token = CONFIG.GITHUB_TOKEN;
+            if (!token) {
+                token = prompt("Введите Token для сохранения:");//Введите GitHub Token для сохранения:
+                if (!token) {
+                    showAwardsStatus("Сохранение отменено", "error");
+                    return;
+                }
+            }
+            
+            showAwardsStatus("Сохранение наград...", "info");
+            
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.REPO_NAME}/contents/${CONFIG.AWARDS_FILE_PATH}`;
+                
+                let sha = null;
+                try {
+                    const fileInfo = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    
+                    if (fileInfo.ok) {
+                        const fileData = await fileInfo.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log("Файл наград не существует, будет создан новый");
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify({
+                        message: "Обновление наград",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(newAwardsData, null, 2)))),
+                        sha: sha
+                    })
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сохранения наград");
+                
+                awardsData = newAwardsData;
+                showAwardsStatus("Награды сохранены!", "success");
+                
+            } catch (error) {
+                console.error("Ошибка:", error);
+                showAwardsStatus(`Ошибка: ${error.message}`, "error");
+                CONFIG.GITHUB_TOKEN = "";
+            }
+        }
+
+        function showAwardsStatus(msg, type) {
+            const status = document.getElementById("awardsStatusMsg");
+            if (!status) return;
+            
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ========== Utility Functions ========== //
+        function getDefaultData() {
+            return [
+                {
+                    "id": 1,
+                    "team": "BULLDOGS",
+                    "logo": "/otz2025/img/BULLDOGS.png",
+                    "games": 0,
+                    "wins": 0,
+                    "losses": 0,
+                    "scored": 0,
+                    "conceded": 0
+                },
+                {
+                    "id": 2,
+                    "team": "TEXAS NERS",
+                    "logo": "/otz2025/img/TN.png",
+                    "games": 0,
+                    "wins": 0,
+                    "losses": 0,
+                    "scored": 0,
+                    "conceded": 0
+                }
+            ];
+        }
+
+        function showStatus(msg, type) {
+            const status = document.getElementById("statusMsg");
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showNewsStatus(msg, type) {
+            const status = document.getElementById("newsStatusMsg");
+            status.textContent = msg;
+            status.className = `status-message ${type}`;
+            status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ========== Initialization ========== //
+        document.addEventListener("DOMContentLoaded", () => {
+            loadData();
+            loadNews();
+            loadAwards();
+            
+            // Table Event Listeners
+            document.getElementById("saveBtn").addEventListener("click", saveData);
+            document.getElementById("refreshBtn").addEventListener("click", () => {
+                loadData();
+                loadNews();
+                loadAwards();
+            });
+            
+            // News Event Listeners
+            document.getElementById("newsAction").addEventListener("change", function() {
+                document.getElementById("newsSelectContainer").style.display = 
+                    this.value === "edit" ? "block" : "none";
+            });
+            
+            document.getElementById("newsImage").addEventListener("input", updateImagePreview);
+            document.getElementById("saveNewsBtn").addEventListener("click", saveNewsItem);
+            document.getElementById("deleteNewsBtn").addEventListener("click", function() {
+                const index = document.getElementById("newsSelect").value;
+                deleteNews(index);
+            });
+            
+            // Настройка загрузки изображений для новостей
+            document.getElementById('newsImageFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('newsImage').value = e.target.result;
+                    updateImagePreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Global functions
+        window.editNews = editNews;
+        window.deleteNews = deleteNews;
+    </script>
+</body>
+</html>
