@@ -1,17 +1,11 @@
-const TELEGRAM_API_URL = 'https://api.telegram.org/bot';
-
 async function sendTelegramMessage(message, chatId) {
     try {
-        const response = await fetch(`${TELEGRAM_API_URL}${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/triggerStartCommand', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message,
-                parse_mode: 'HTML'
-            })
+            body: JSON.stringify({ message, chatId })
         });
-        if (!response.ok) throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+        if (!response.ok) throw new Error(`Error triggering start command: ${response.status} ${response.statusText}`);
         return await response.json();
     } catch (error) {
         console.error('Error sending Telegram message:', error);
@@ -52,49 +46,5 @@ async function subscribeToPush() {
     }
 }
 
-async function handleTelegramCommand(command, message, chatId) {
-    try {
-        let responseText;
-        switch (command) {
-            case '/start':
-                responseText = 'Send the message that needs to be sent here. To cancel, press /cancel.';
-                await sendTelegramMessage(responseText, chatId);
-                break;
-            case '/send':
-                if (!message) {
-                    responseText = 'Please provide a message after /send. For example: /send Hello!';
-                    await sendTelegramMessage(responseText, chatId);
-                    break;
-                }
-                try {
-                    const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendNotification', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message })
-                    });
-                    if (!response.ok) {
-                        throw new Error(`Failed to send notification: ${response.status} ${response.statusText}`);
-                    }
-                    responseText = 'Notification sent successfully!';
-                } catch (error) {
-                    responseText = `Failed to send notification: ${error.message}`;
-                }
-                await sendTelegramMessage(responseText, chatId);
-                break;
-            case '/cancel':
-                responseText = 'Action cancelled.';
-                await sendTelegramMessage(responseText, chatId);
-                break;
-            default:
-                responseText = 'Unknown command. Use /start, /send, or /cancel.';
-                await sendTelegramMessage(responseText, chatId);
-        }
-    } catch (error) {
-        console.error('Error handling command:', error);
-        await sendTelegramMessage(`An error occurred: ${error.message}. Try again.`, chatId);
-    }
-}
-
 window.sendTelegramMessage = sendTelegramMessage;
 window.requestNotificationPermission = requestNotificationPermission;
-window.handleTelegramCommand = handleTelegramCommand;
