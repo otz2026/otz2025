@@ -264,23 +264,52 @@
             color: #ccc;
             width: 100%;
         }
+        .error-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .error-message img {
+            width: 100px;
+            height: 100px;
+            animation: bounce 2s infinite;
+        }
+        .error-message .error-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
         .error-message button {
-            background-color: #333;
+            background-color: #dd4710;
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 10px;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .error-message button:hover {
-            background-color: #555;
+            background-color: #ff6b3b;
             transform: scale(1.05);
         }
         .error-message button:active {
             transform: scale(0.95);
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
         }
         @media (max-width: 768px) {
             header {
@@ -392,6 +421,17 @@
                 width: 24px;
                 height: 24px;
             }
+            .error-message img {
+                width: 80px;
+                height: 80px;
+            }
+            .error-message .error-text {
+                font-size: 20px;
+            }
+            .error-message button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -442,9 +482,9 @@
     <script src="/otz2025/bot.js"></script>
     <script>
         const CONFIG = {
-            NEWS_DATA_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json",
-            SCHEDULE_DATA_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
-            FEATURED_MATCHES_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
+            NEWS_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json",
+            SCHEDULE_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
+            FEATURED_MATCHES_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
             SUBSCRIPTIONS_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/subscriptions.json",
             TELEGRAM_BOT_TOKEN: "8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A",
             ADMIN_CHAT_ID: "5665980031",
@@ -741,7 +781,9 @@
             if (!container) return;
             container.innerHTML = `
                 <div class="${className}">
-                    ${message}
+                    <img src="/otz2025/img/ball.png" alt="Error Ball" onerror="this.src='/otz2025/img/OTZ3.png'">
+                    <div class="error-text">Ошибка...</div>
+                    <p>${message}</p>
                     <button onclick="location.reload()">Обновить</button>
                 </div>
             `;
@@ -768,5 +810,6 @@
         }
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9366d346cf57c5aa',t:'MTc0NTY3ODMyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9367ba00cec9badd',t:'MTc0NTY4Nzc3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
