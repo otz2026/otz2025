@@ -39,6 +39,10 @@ async function sendTelegramMessage(message, chatId) {
 
 // Webhook для обработки Telegram-команд
 exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    
     try {
         const update = req.body;
         if (!update.message || !update.message.text) {
@@ -106,6 +110,10 @@ exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
 
 // Сохранение подписки
 exports.saveSubscription = functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    
     try {
         const subscription = req.body;
         await db.collection('subscriptions').add(subscription);
@@ -116,8 +124,12 @@ exports.saveSubscription = functions.https.onRequest(async (req, res) => {
     }
 });
 
-// Отправка уведомления (для совместимости с клиентским вызовом)
+// Отправка уведомления
 exports.sendNotification = functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    
     try {
         const { message } = req.body;
         if (!message) {
@@ -148,6 +160,10 @@ exports.sendNotification = functions.https.onRequest(async (req, res) => {
 
 // Вызов /start при посещении сайта
 exports.triggerStartCommand = functions.https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    
     try {
         await sendTelegramMessage('Send the message that needs to be sent here. To cancel, press /cancel.', ADMIN_CHAT_ID);
         res.status(200).send('Start command triggered');
