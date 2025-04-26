@@ -257,6 +257,31 @@
         .hidden {
             display: none;
         }
+        .match-loading, .match-error, .news-loading, .news-error {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #ccc;
+            width: 100%;
+        }
+        .error-message button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .error-message button:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+        .error-message button:active {
+            transform: scale(0.95);
+        }
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -368,13 +393,6 @@
                 height: 24px;
             }
         }
-        .match-loading, .match-error {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #ccc;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -419,46 +437,49 @@
         </div>
     </footer>
     <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
+    <script src="/otz2025/lib/firebase-app.js"></script>
+    <script src="/otz2025/lib/firebase-messaging.js"></script>
+    <script src="/otz2025/bot.js"></script>
     <script>
         const CONFIG = {
-            NEWS_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json",
-            SCHEDULE_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
-            FEATURED_MATCHES_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
+            NEWS_DATA_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json",
+            SCHEDULE_DATA_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
+            FEATURED_MATCHES_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
+            SUBSCRIPTIONS_URL: "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/subscriptions.json",
             TELEGRAM_BOT_TOKEN: "8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A",
-            TELEGRAM_CHAT_ID: "5665980031", // Замените на реальный chat_id
-            USE_CACHE: false
-        };
-        async function sendTelegramMessage(message) {
-            try {
-                const url = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CONFIG.TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-                if (!response.ok) throw new Error(`Ошибка Telegram API: ${response.status}`);
-                console.log('Сообщение отправлено в Telegram');
-            } catch (error) {
-                console.error('Ошибка отправки сообщения в Telegram:', error);
+            GITHUB_TOKEN: "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN", // Замените на ваш токен
+            ADMIN_CHAT_ID: "5665980031",
+            FIREBASE_CONFIG: {
+                apiKey: "AIzaSyCGseAeqdXPeasq16eG7XrDYwpiDPz790c",
+                authDomain: "otz2025-57eec.firebaseapp.com",
+                projectId: "otz2025-57eec",
+                storageBucket: "otz2025-57eec.firebasestorage.app",
+                messagingSenderId: "742102106188",
+                appId: "1:742102106188:web:22864fd63b92dd3ceb74e9",
+                measurementId: "G-R5M9V208PY"
             }
-        }
+        };
+
         async function getUserInfo() {
             try {
+                console.log('Получение информации о пользователе...');
                 const parser = new UAParser();
                 const result = parser.getResult();
                 const device = result.device.type || 'Desktop';
                 const deviceModel = result.device.model || result.os.name || 'Unknown';
-                const browser = `${result.browser.name} ${result.browser.version || ''}`;
-                const response = await fetch('https://ipapi.co/json/');
-                if (!response.ok) throw new Error(`Ошибка ipapi.co: ${response.status}`);
-                const geoData = await response.json();
-                const city = geoData.city || 'Unknown';
-                const country = geoData.country_name || 'Unknown';
-                const ip = geoData.ip || 'Unknown';
+                const browser = `${result.browser.name || 'Unknown'} ${result.browser.version || ''}`;
+                let city = 'Unknown', country = 'Unknown', ip = 'Unknown';
+                try {
+                    const response = await fetch('https://ipapi.co/json/', { timeout: 5000 });
+                    if (response.ok) {
+                        const geoData = await response.json();
+                        city = geoData.city || 'Unknown';
+                        country = geoData.country_name || 'Unknown';
+                        ip = geoData.ip || 'Unknown';
+                    }
+                } catch (geoError) {
+                    console.warn('Ошибка получения геоданных:', geoError);
+                }
                 const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
                 return {
                     device: `${device}, ${deviceModel}`,
@@ -478,38 +499,99 @@
                 };
             }
         }
+
+        function isPwaMode() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        }
+
+        async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                throw error;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                console.log('Инициализация приложения...');
+                if ('serviceWorker' in navigator) {
+                    console.log('Регистрация Service Worker...');
+                    try {
+                        await navigator.serviceWorker.register('/otz2025/sw.js');
+                        console.log('Service Worker зарегистрирован');
+                    } catch (swError) {
+                        console.error('Ошибка регистрации Service Worker:', swError);
+                    }
+                } else {
+                    console.warn('Service Worker не поддерживается');
+                }
+
+                console.log('Получение информации о пользователе...');
                 const userInfo = await getUserInfo();
-                const message = `A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`;
-                await sendTelegramMessage(message);
+                console.log('Отправка Telegram-сообщения...');
+                await window.sendTelegramMessage(`A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`, CONFIG.ADMIN_CHAT_ID);
+
+                console.log('Загрузка данных...');
                 await Promise.all([
                     loadNews(),
                     loadFeaturedMatches()
                 ]);
+
+                if (isPwaMode()) {
+                    console.log('Запрос разрешения на уведомления...');
+                    await window.requestNotificationPermission();
+                }
+
+                console.log('Инициализация UI...');
                 initScrollHeader();
                 initFooterEasterEgg();
+
+                if (CONFIG.ADMIN_CHAT_ID) {
+                    console.log('Запуск Telegram-команды /start...');
+                    await window.handleTelegramCommand('/start', null, CONFIG.ADMIN_CHAT_ID);
+                }
             } catch (error) {
-                console.error('Ошибка инициализации:', error);
+                console.error('Ошибка инициализации:', {
+                    message: error.message,
+                    stack: error.stack
+                });
             }
         });
+
         async function loadFeaturedMatches() {
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) return;
             try {
                 matchesContainer.innerHTML = '<div class="match-loading">Загрузка матчей...</div>';
-                const featuredResponse = await fetch(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`);
-                if (!featuredResponse.ok) throw new Error(`Ошибка загрузки featured_matches: ${featuredResponse.status}`);
+                if (!navigator.onLine) {
+                    throw new Error('Нет соединения с интернетом');
+                }
+                console.log('Загрузка featured_matches:', CONFIG.FEATURED_MATCHES_URL);
+                const featuredResponse = await fetchWithTimeout(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                if (!featuredResponse.ok) throw new Error(`Ошибка загрузки featured_matches: ${featuredResponse.status} ${featuredResponse.statusText}`);
                 const featuredData = await featuredResponse.json();
-                const scheduleResponse = await fetch(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`);
-                if (!scheduleResponse.ok) throw new Error(`Ошибка загрузки расписания: ${scheduleResponse.status}`);
+                console.log('Загрузка расписания:', CONFIG.SCHEDULE_DATA_URL);
+                const scheduleResponse = await fetchWithTimeout(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                if (!scheduleResponse.ok) throw new Error(`Ошибка загрузки расписания: ${scheduleResponse.status} ${scheduleResponse.statusText}`);
                 const scheduleData = await scheduleResponse.json();
                 displayFeaturedMatches(featuredData.featured, scheduleData.schedule);
             } catch (error) {
-                console.error('Ошибка загрузки матчей:', error);
-                showError(matchesContainer, 'Не удалось загрузить матчи. Пожалуйста, попробуйте позже.');
+                console.error('Ошибка загрузки матчей:', {
+                    message: error.message,
+                    stack: error.stack,
+                    url: CONFIG.FEATURED_MATCHES_URL
+                });
+                const message = !navigator.onLine ? 'Нет соединения с интернетом. Пожалуйста, проверьте подключение.' : `Не удалось загрузить матчи: ${error.message}`;
+                showError(matchesContainer, message, 'match-error');
             }
         }
+
         function displayFeaturedMatches(featuredMatches, scheduleData) {
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) return;
@@ -593,61 +675,79 @@
                 `).join('');
             } catch (error) {
                 console.error('Ошибка отображения матчей:', error);
-                showError(matchesContainer, 'Ошибка обработки данных матчей');
+                showError(matchesContainer, 'Ошибка обработки данных матчей', 'match-error');
             }
         }
+
         async function loadNews() {
             const newsContainer = document.getElementById('newsContainer');
             if (!newsContainer) return;
             try {
                 newsContainer.innerHTML = '<div class="news-loading">Загрузка новостей...</div>';
-                const response = await fetch(`${CONFIG.NEWS_DATA_URL}?t=${Date.now()}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!navigator.onLine) {
+                    throw new Error('Нет соединения с интернетом');
+                }
+                console.log('Загрузка новостей:', CONFIG.NEWS_DATA_URL);
+                const response = await fetchWithTimeout(`${CONFIG.NEWS_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Ошибка загрузки новостей: ${response.status} ${response.statusText}`);
                 const newsData = await response.json();
                 displayNews(newsData);
             } catch (error) {
-                console.error('Ошибка загрузки новостей:', error);
-                showError(newsContainer, 'Не удалось загрузить новости. Пожалуйста, попробуйте позже.');
+                console.error('Ошибка загрузки новостей:', {
+                    message: error.message,
+                    stack: error.stack,
+                    url: CONFIG.NEWS_DATA_URL
+                });
+                const message = !navigator.onLine ? 'Нет соединения с интернетом. Пожалуйста, проверьте подключение.' : `Не удалось загрузить новости: ${error.message}`;
+                showError(newsContainer, message, 'news-error');
             }
         }
+
         function displayNews(newsData) {
             const newsContainer = document.getElementById('newsContainer');
             if (!newsContainer) return;
-            if (!newsData || newsData.length === 0) {
-                newsContainer.innerHTML = `
-                    <div class="news-empty">
-                        Новостей пока нет. Следите за обновлениями!
+            try {
+                if (!newsData || newsData.length === 0) {
+                    newsContainer.innerHTML = `
+                        <div class="news-empty">
+                            Новостей пока нет. Следите за обновлениями!
+                        </div>
+                    `;
+                    return;
+                }
+                const sortedNews = [...newsData]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 2);
+                newsContainer.innerHTML = sortedNews.map(news => `
+                    <div class="news-item">
+                        <img src="${news.image || 'img/NEWS_NO.png'}" 
+                             alt="${news.title}" 
+                             onerror="this.src='img/NEWS_NO.png'">
+                        <div class="text">
+                            <h3>${news.title}</h3>
+                            <p>${news.content.length > 200 ? 
+                                news.content.substring(0, 200) + '...' : 
+                                news.content}</p>
+                            <a href="/otz2025/news" class="read-more">Читать далее</a>
+                        </div>
                     </div>
-                `;
-                return;
+                `).join('');
+            } catch (error) {
+                console.error('Ошибка отображения новостей:', error);
+                showError(newsContainer, 'Ошибка обработки данных новостей', 'news-error');
             }
-            const sortedNews = [...newsData]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 2);
-            newsContainer.innerHTML = sortedNews.map(news => `
-                <div class="news-item">
-                    <img src="${news.image || 'img/NEWS_NO.png'}" 
-                         alt="${news.title}" 
-                         onerror="this.src='img/NEWS_NO.png'">
-                    <div class="text">
-                        <h3>${news.title}</h3>
-                        <p>${news.content.length > 200 ? 
-                            news.content.substring(0, 200) + '...' : 
-                            news.content}</p>
-                        <a href="/otz2025/news" class="read-more">Читать далее</a>
-                    </div>
-                </div>
-            `).join('');
         }
-        function showError(container, message) {
+
+        function showError(container, message, className = 'error-message') {
             if (!container) return;
             container.innerHTML = `
-                <div class="error-message">
+                <div class="${className}">
                     ${message}
                     <button onclick="location.reload()">Обновить</button>
                 </div>
             `;
         }
+
         function initScrollHeader() {
             const header = document.getElementById('header');
             if (header) {
@@ -656,6 +756,7 @@
                 });
             }
         }
+
         function initFooterEasterEgg() {
             const footerText = document.querySelector('footer p');
             const hiddenLink = document.querySelector('footer .hidden');
@@ -667,5 +768,6 @@
             }
         }
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9366d346cf57c5aa',t:'MTc0NTY3ODMyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
