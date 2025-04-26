@@ -1,0 +1,107 @@
+[
+  {
+    "id": 3,
+    "team": "CRUMBL BISHES",
+    "logo": "/otz2025/img/CRUMBL BISHES.png",
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "scored": 0,
+    "conceded": 0,
+    "headToHead": {
+      "1": 0,
+      "2": 0,
+      "4": 1,
+      "5": 1
+    },
+    "percentage": 0,
+    "difference": 0,
+    "points": 0,
+    "place": 1,
+    "urlname": "CrumblBishes"
+  },
+  {
+    "id": 2,
+    "team": "BULLDOGS",
+    "logo": "/otz2025/img/BULLDOGS.png",
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "scored": 0,
+    "conceded": 0,
+    "headToHead": {
+      "2": 1,
+      "3": 1,
+      "4": 1,
+      "5": 1
+    },
+    "percentage": 0,
+    "difference": 0,
+    "points": 0,
+    "place": 2,
+    "urlname": "Bulldogs"
+  },
+  {
+    "id": 4,
+    "team": "KITTY BOYS",
+    "logo": "/otz2025/img/KITTY BOYS.png",
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "scored": 0,
+    "conceded": 0,
+    "headToHead": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "5": 1
+    },
+    "percentage": 0,
+    "difference": 0,
+    "points": 0,
+    "place": 3,
+    "urlname": "KittyBoys"
+  },
+  {
+    "id": 3,
+    "team": "Noname",
+    "logo": "/otz2025/img/Noname.png",
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "scored": 0,
+    "conceded": 0,
+    "headToHead": {
+      "1": 0,
+      "3": 1,
+      "4": 1,
+      "5": 1
+    },
+    "percentage": 0,
+    "difference": 0,
+    "points": 0,
+    "place": 4,
+    "urlname": "Noname"
+  },
+  {
+    "id": 5,
+    "team": "PAW PATROL",
+    "logo": "/otz2025/img/PPATROL.png",
+    "games": 0,
+    "wins": 0,
+    "losses": 0,
+    "scored": 0,
+    "conceded": 0,
+    "headToHead": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    "percentage": 0,
+    "difference": 0,
+    "points": 0,
+    "place": 5,
+    "urlname": "PawPatrol"
+  }
+]
