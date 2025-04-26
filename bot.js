@@ -47,46 +47,16 @@
 
     async function saveSubscription(subscription) {
         try {
-            console.log('Сохранение подписки:', CONFIG.SUBSCRIPTIONS_URL);
-            const response = await fetch(`${window.CONFIG.SUBSCRIPTIONS_URL}?t=${Date.now()}`, { cache: 'no-store' });
-            if (!response.ok) throw new Error(`Не удалось загрузить subscriptions.json: ${response.status}`);
-            const data = await response.json();
-            const subscriptions = data.subscriptions || [];
-            const subscriptionStr = JSON.stringify(subscription);
-            if (!subscriptions.includes(subscriptionStr)) {
-                subscriptions.push(subscriptionStr);
-                const content = btoa(JSON.stringify({ subscriptions }, null, 2));
-                const updateResponse = await fetch('https://api.github.com/repos/otz2026/otz2025/contents/SSTimeSS/subscriptions.json', {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${window.CONFIG.GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Update subscriptions.json',
-                        content,
-                        sha: await getFileSha('subscriptions.json')
-                    })
-                });
-                if (!updateResponse.ok) throw new Error(`Не удалось обновить subscriptions.json: ${updateResponse.status}`);
-                console.log('Подписка сохранена в subscriptions.json');
-            }
+            console.log('Сохранение подписки через Cloud Function...');
+            const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subscription })
+            });
+            if (!response.ok) throw new Error(`Не удалось сохранить подписку: ${response.status}`);
+            console.log('Подписка сохранена в GitHub');
         } catch (error) {
             console.error('Ошибка сохранения подписки:', error);
-        }
-    }
-
-    async function getFileSha(file) {
-        try {
-            const response = await fetch(`https://api.github.com/repos/otz2026/otz2025/contents/SSTimeSS/${file}`, {
-                headers: { 'Authorization': `token ${window.CONFIG.GITHUB_TOKEN}` }
-            });
-            if (!response.ok) throw new Error(`Не удалось получить SHA для ${file}`);
-            const data = await response.json();
-            return data.sha;
-        } catch (error) {
-            console.error('Ошибка получения SHA:', error);
-            return null;
         }
     }
 
@@ -135,5 +105,9 @@
         } catch (error) {
             console.error('Ошибка отправки уведомления:', error);
         }
+    }
+
+    function isPwaMode() {
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     }
 })();
