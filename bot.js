@@ -1,114 +1,89 @@
-(function() {
-    let pendingNewsletter = null;
+const TELEGRAM_API_URL = 'https://api.telegram.org/bot';
 
-    window.sendTelegramMessage = async function(message, chatId, options = {}) {
-        try {
-            const url = `https://api.telegram.org/bot${window.CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message,
-                    parse_mode: 'Markdown',
-                    ...options
-                })
-            });
-            if (!response.ok) throw new Error(`Ошибка Telegram API: ${response.status}`);
-            console.log(`Сообщение отправлено в Telegram: ${chatId}`);
-        } catch (error) {
-            console.error('Ошибка отправки сообщения в Telegram:', error);
-        }
-    };
+async function sendTelegramMessage(message, chatId) {
+    try {
+        const response = await fetch(`${TELEGRAM_API_URL}${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+        if (!response.ok) throw new Error(`Ошибка Telegram API: ${response.status} ${response.statusText}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка отправки сообщения в Telegram:', error);
+        throw error;
+    }
+}
 
-    window.requestNotificationPermission = async function() {
-        if (!isPwaMode()) return;
-        if (!('Notification' in window) || !('ServiceWorkerRegistration' in window)) {
-            console.warn('Уведомления не поддерживаются в этом браузере');
-            return;
-        }
-        try {
+async function requestNotificationPermission() {
+    try {
+        if ('Notification' in window && Notification.permission !== 'granted') {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 console.log('Разрешение на уведомления получено');
-                const app = firebase.initializeApp(window.CONFIG.FIREBASE_CONFIG);
-                const messaging = firebase.messaging();
-                const registration = await navigator.serviceWorker.ready;
-                const token = await messaging.getToken({ serviceWorkerRegistration: registration });
-                await saveSubscription({ token });
-                console.log('FCM-токен зарегистрирован:', token);
-            } else {
-                console.warn('Разрешение на уведомления отклонено');
+                await subscribeToPush();
             }
-        } catch (error) {
-            console.error('Ошибка регистрации FCM-токена:', error);
         }
-    };
-
-    async function saveSubscription(subscription) {
-        try {
-            console.log('Сохранение подписки через Cloud Function...');
-            const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subscription })
-            });
-            if (!response.ok) throw new Error(`Не удалось сохранить подписку: ${response.status}`);
-            console.log('Подписка сохранена в GitHub');
-        } catch (error) {
-            console.error('Ошибка сохранения подписки:', error);
-        }
+    } catch (error) {
+        console.error('Ошибка запроса разрешения на уведомления:', error);
     }
+}
 
-    window.handleTelegramCommand = async function(command, text, chatId) {
-        if (chatId !== window.CONFIG.ADMIN_CHAT_ID) {
-            await window.sendTelegramMessage('У вас нет доступа к этой команде.', chatId);
-            return;
-        }
-        if (command === '/start') {
-            await window.sendTelegramMessage('Добро пожаловать! Выберите команду:', chatId, {
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'Отправить рассылку', callback_data: '/send' }],
-                        [{ text: 'Отменить рассылку', callback_data: '/cancel' }]
-                    ]
+async function subscribeToPush() {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // Замените на ваш VAPID ключ
+        });
+        await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+        });
+        console.log('Подписка сохранена');
+    } catch (error) {
+        console.error('Ошибка подписки на push-уведомления:', error);
+    }
+}
+
+async function handleTelegramCommand(command, message, chatId) {
+    try {
+        let responseText;
+        switch (command) {
+            case '/start':
+                responseText = 'Добро пожаловать в OTZ Bot! Используйте /send для отправки уведомлений или /cancel для отмены.';
+                await sendTelegramMessage(responseText, chatId);
+                break;
+            case '/send':
+                responseText = message ? 'Уведомление отправлено!' : 'Пожалуйста, укажите сообщение после /send';
+                if (message) {
+                    await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendNotification', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message })
+                    });
                 }
-            });
-        } else if (command === '/send' || command === '@send') {
-            pendingNewsletter = true;
-            await window.sendTelegramMessage('Введите текст для рассылки. Для отмены используйте /cancel.', chatId);
-        } else if (command === '/cancel') {
-            pendingNewsletter = null;
-            await window.sendTelegramMessage('Рассылка отменена.', chatId);
-        } else if (pendingNewsletter) {
-            pendingNewsletter = null;
-            await sendNotification(text);
-            await window.sendTelegramMessage('Рассылка отправлена!', chatId);
+                await sendTelegramMessage(responseText, chatId);
+                break;
+            case '/cancel':
+                responseText = 'Действие отменено.';
+                await sendTelegramMessage(responseText, chatId);
+                break;
+            default:
+                responseText = 'Неизвестная команда. Используйте /start, /send или /cancel.';
+                await sendTelegramMessage(responseText, chatId);
         }
-    };
-
-    window.handleCallbackQuery = async function(data, chatId) {
-        if (data === '/send' || data === '/cancel') {
-            await window.handleTelegramCommand(data, null, chatId);
-        }
-    };
-
-    async function sendNotification(message) {
-        try {
-            console.log('Отправка уведомления через Cloud Function...');
-            const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendNotification', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
-            });
-            if (!response.ok) throw new Error(`Не удалось отправить уведомление: ${response.status}`);
-            console.log('Уведомление отправлено через Cloud Function');
-        } catch (error) {
-            console.error('Ошибка отправки уведомления:', error);
-        }
+    } catch (error) {
+        console.error('Ошибка обработки команды:', error);
+        await sendTelegramMessage('Произошла ошибка. Попробуйте снова.', chatId);
     }
+}
 
-    function isPwaMode() {
-        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    }
-})();
+window.sendTelegramMessage = sendTelegramMessage;
+window.requestNotificationPermission = requestNotificationPermission;
+window.handleTelegramCommand = handleTelegramCommand;
