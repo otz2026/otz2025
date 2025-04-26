@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Paw Patrol - Over Time Zvenigorod</title>
     <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Команда 'Paw Patrol'.">
     <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, Paw Patrol">
@@ -18,6 +18,12 @@
     <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ2.png">
     <link rel="icon" type="image/png" href="/otz2025/img/OTZ2.png">
     <link rel="canonical" href="https://otz2026.github.io/otz2025/teams/PawPatrol/">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="OTZ">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,6 +47,7 @@
             padding: 10px 20px;
             z-index: 1000;
             transition: background-color 0.3s ease;
+            box-sizing: border-box;
         }
         header.scrolled {
             background-color: rgba(0, 0, 0, 0.7);
@@ -300,6 +307,7 @@
             header {
                 flex-direction: column;
                 padding: 10px;
+                padding-top: env(safe-area-inset-top, 10px);
             }
             header .logo {
                 position: static;
@@ -315,6 +323,8 @@
             }
             .content {
                 margin-top: 120px;
+                padding: 15px;
+                padding-bottom: env(safe-area-inset-bottom, 15px);
             }
             .team-info {
                 flex-direction: row;
@@ -323,20 +333,20 @@
                 text-align: left;
             }
             .team-info img {
-                width: 150px;
-                height: 150px;
+                width: 100px;
+                height: 100px;
             }
             .team-info .team-name {
-                font-size: 30px;
+                font-size: 28px;
             }
             .team-info .team-name::after {
-                margin: 10px 0;
+                margin: 8px 0;
             }
             .team-info .team-description {
                 font-size: 16px;
             }
             .table-header h3 {
-                font-size: 30px;
+                font-size: 22px;
             }
             th, td {
                 padding: 12px;
@@ -371,6 +381,19 @@
             .refresh-button {
                 padding: 8px 16px;
                 font-size: 16px;
+            }
+            footer {
+                padding: 30px 15px;
+                padding-bottom: env(safe-area-inset-bottom, 30px);
+            }
+        }
+        @media (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top, 0);
+                padding-bottom: env(safe-area-inset-bottom, 0);
+            }
+            .content {
+                margin-top: calc(80px + env(safe-area-inset-top, 0));
             }
         }
     </style>
@@ -447,8 +470,8 @@
             TOURNAMENT_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/tournament_data.json",
             PLAYERS_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/players_data.json",
             UPDATE_INTERVAL: 30000,
-            TEAM_ID: "PawPatrol",
-            DEFAULT_LOGO: "/otz2025/img/PPATROL.png"
+            TEAM_ID: "PAW PATROL",
+            DEFAULT_LOGO: "/otz2025/img/OTZ2.png"
         };
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -475,7 +498,7 @@
         }
         function getDefaultTeamData() {
             return {
-                team: "PAW PATROL",
+                team: "Paw Patrol",
                 logo: "/otz2025/img/PPATROL.png",
                 games: 0,
                 wins: 0,
@@ -485,7 +508,7 @@
                 percentage: "0.0",
                 difference: 0,
                 points: 0,
-                place: 5
+                place: 1
             };
         }
         async function updateTeamStats() {
@@ -512,7 +535,10 @@
         }
         async function loadPlayers() {
             const playerContainer = document.getElementById('playerContainer');
-            if (!playerContainer) return;
+            if (!playerContainer) {
+                console.error('playerContainer не найден');
+                return;
+            }
             try {
                 playerContainer.innerHTML = `
                     <div class="loading-animation">
@@ -522,18 +548,18 @@
                 `;
                 const response = await fetch(CONFIG.PLAYERS_DATA_URL + `?t=${Date.now()}`);
                 if (!response.ok) throw new Error(`Ошибка загрузки игроков: ${response.status}`);
-                const playerData = await response.json();
-                displayPlayers(playerData, CONFIG.TEAM_ID);
+                const data = await response.json();
+                displayPlayers(data.players, CONFIG.TEAM_ID);
             } catch (error) {
                 console.error('Ошибка загрузки игроков:', error);
                 showError(playerContainer, 'Не удалось загрузить состав команды.');
             }
         }
-        function displayPlayers(playerData, teamUrlname) {
+        function displayPlayers(players, teamId) {
             const playerContainer = document.getElementById('playerContainer');
             if (!playerContainer) return;
-            const team = playerData.find(t => t.urlname === teamUrlname);
-            if (!team || !team.players || team.players.length === 0) {
+            const teamPlayers = players.filter(player => player.team === teamId);
+            if (!teamPlayers || teamPlayers.length === 0) {
                 playerContainer.innerHTML = `
                     <div class="player-empty">
                         Состав команды пока не доступен.
@@ -541,12 +567,12 @@
                 `;
                 return;
             }
-            playerContainer.innerHTML = team.players.map(player => `
+            playerContainer.innerHTML = teamPlayers.map(player => `
                 <div class="player-card">
-                    <img src="${player.photo || '/otz2025/img/PLAYER_NO.png'}" alt="${player.name}">
+                    <img src="/otz2025/img/teams/${player.photo}.jpg" alt="${player.name}" onerror="this.src='/otz2025/img/PLAYER_NO.png'">
                     <div class="player-info">
                         <div class="player-name">${player.name}</div>
-                        <div class="player-stats">Рост: ${player.height || 'Не указан'}</div>
+                        <div class="player-stats">Рост: ${player.height} см</div>
                     </div>
                 </div>
             `).join('');
