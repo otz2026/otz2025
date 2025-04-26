@@ -11,10 +11,10 @@ async function sendTelegramMessage(message, chatId) {
                 parse_mode: 'HTML'
             })
         });
-        if (!response.ok) throw new Error(`Ошибка Telegram API: ${response.status} ${response.statusText}`);
+        if (!response.ok) throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
         return await response.json();
     } catch (error) {
-        console.error('Ошибка отправки сообщения в Telegram:', error);
+        console.error('Error sending Telegram message:', error);
         throw error;
     }
 }
@@ -24,12 +24,12 @@ async function requestNotificationPermission() {
         if ('Notification' in window && Notification.permission !== 'granted') {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-                console.log('Разрешение на уведомления получено');
+                console.log('Notification permission granted');
                 await subscribeToPush();
             }
         }
     } catch (error) {
-        console.error('Ошибка запроса разрешения на уведомления:', error);
+        console.error('Error requesting notification permission:', error);
     }
 }
 
@@ -38,16 +38,17 @@ async function subscribeToPush() {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ' 
+            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ' // Замените на ваш VAPID ключ
         });
-        await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
+        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(subscription)
         });
-        console.log('Подписка сохранена');
+        if (!response.ok) throw new Error(`Failed to save subscription: ${response.status}`);
+        console.log('Subscription saved');
     } catch (error) {
-        console.error('Ошибка подписки на push-уведомления:', error);
+        console.error('Error subscribing to push notifications:', error);
     }
 }
 
@@ -56,31 +57,41 @@ async function handleTelegramCommand(command, message, chatId) {
         let responseText;
         switch (command) {
             case '/start':
-                responseText = 'Добро пожаловать в OTZ Bot! Используйте /send для отправки уведомлений или /cancel для отмены.';
+                responseText = 'Send the message that needs to be sent here. To cancel, press /cancel.';
                 await sendTelegramMessage(responseText, chatId);
                 break;
             case '/send':
-                responseText = message ? 'Уведомление отправлено!' : 'Пожалуйста, укажите сообщение после /send';
-                if (message) {
-                    await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendNotification', {
+                if (!message) {
+                    responseText = 'Please provide a message after /send. For example: /send Hello!';
+                    await sendTelegramMessage(responseText, chatId);
+                    break;
+                }
+                try {
+                    const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendNotification', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message })
                     });
+                    if (!response.ok) {
+                        throw new Error(`Failed to send notification: ${response.status} ${response.statusText}`);
+                    }
+                    responseText = 'Notification sent successfully!';
+                } catch (error) {
+                    responseText = `Failed to send notification: ${error.message}`;
                 }
                 await sendTelegramMessage(responseText, chatId);
                 break;
             case '/cancel':
-                responseText = 'Действие отменено.';
+                responseText = 'Action cancelled.';
                 await sendTelegramMessage(responseText, chatId);
                 break;
             default:
-                responseText = 'Неизвестная команда. Используйте /start, /send или /cancel.';
+                responseText = 'Unknown command. Use /start, /send, or /cancel.';
                 await sendTelegramMessage(responseText, chatId);
         }
     } catch (error) {
-        console.error('Ошибка обработки команды:', error);
-        await sendTelegramMessage('Произошла ошибка. Попробуйте снова.', chatId);
+        console.error('Error handling command:', error);
+        await sendTelegramMessage(`An error occurred: ${error.message}. Try again.`, chatId);
     }
 }
 
