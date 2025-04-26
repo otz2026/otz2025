@@ -28,8 +28,8 @@ try {
     console.error('[SW] Ошибка инициализации Firebase:', error);
 }
 
-const CACHE_NAME = 'otz-cache-v5';
-const API_CACHE = 'otz-api-v1';
+const CACHE_NAME = 'otz-cache-v6'; // Обновили версию кэша
+const API_CACHE = 'otz-api-v2'; // Обновили версию API-кэша
 const ASSETS = [
     '/otz2025/',
     '/otz2025/index.html',
@@ -77,7 +77,7 @@ self.addEventListener('fetch', (event) => {
     
     if (event.request.method !== 'GET') return;
 
-    if (url.pathname.includes('/api/')) {
+    if (url.pathname.includes('/api/') || url.hostname.includes('otz2025-57eec.web.app')) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {
