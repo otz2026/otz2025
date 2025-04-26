@@ -68,15 +68,16 @@
         if (command === '/start') {
             await window.sendTelegramMessage('Добро пожаловать! Выберите команду:', chatId, {
                 reply_markup: {
-                    inline_keyboard: [[
-                        { text: 'Отправить рассылку', callback_data: '/send' }
-                    ]]
+                    inline_keyboard: [
+                        [{ text: 'Отправить рассылку', callback_data: '/send' }],
+                        [{ text: 'Отменить рассылку', callback_data: '/cancel' }]
+                    ]
                 }
             });
         } else if (command === '/send' || command === '@send') {
             pendingNewsletter = true;
-            await window.sendTelegramMessage('Введите текст для рассылки. Для отмены напишите @emty.', chatId);
-        } else if (pendingNewsletter && text === '@emty') {
+            await window.sendTelegramMessage('Введите текст для рассылки. Для отмены используйте /cancel.', chatId);
+        } else if (command === '/cancel') {
             pendingNewsletter = null;
             await window.sendTelegramMessage('Рассылка отменена.', chatId);
         } else if (pendingNewsletter) {
@@ -87,8 +88,8 @@
     };
 
     window.handleCallbackQuery = async function(data, chatId) {
-        if (data === '/send') {
-            await window.handleTelegramCommand('/send', null, chatId);
+        if (data === '/send' || data === '/cancel') {
+            await window.handleTelegramCommand(data, null, chatId);
         }
     };
 
