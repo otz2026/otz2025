@@ -38,7 +38,7 @@ async function subscribeToPush() {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // Замените на ваш VAPID ключ
+            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ' 
         });
         await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
             method: 'POST',
