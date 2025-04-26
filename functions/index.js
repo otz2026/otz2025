@@ -1,90 +1,47 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const fetch = require('node-fetch');
+const webpush = require('web-push');
 
 admin.initializeApp();
+const db = admin.firestore();
 
-const GITHUB_TOKEN = functions.config().github.token;
-const REPO_URL = 'https://api.github.com/repos/otz2026/otz2025/contents/SSTimeSS/subscriptions.json';
+// Установите VAPID ключи
+webpush.setVapidDetails(
+    'mailto:your-email@example.com',
+    'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ',
+    '6NCh2AynP94T9NovPHo6iARGV7sw-ln6bqqZiMspftg'
+);
 
-exports.sendNotification = functions.https.onRequest(async (req, res) => {
-    const { message } = req.body;
+exports.saveSubscription = functions.https.onRequest(async (req, res) => {
     try {
-        const response = await fetch(`${REPO_URL}?t=${Date.now()}`, {
-            headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
-        if (!response.ok) throw new Error(`Не удалось загрузить subscriptions.json: ${response.status}`);
-        const subscriptionsData = await response.json();
-        const subscriptions = JSON.parse(Buffer.from(subscriptionsData.content, 'base64').toString()).subscriptions || [];
-
-        const promises = subscriptions.map(sub => {
-            try {
-                const { token } = JSON.parse(sub);
-                return admin.messaging().send({
-                    token,
-                    notification: {
-                        title: 'OTZ Notification',
-                        body: message
-                    }
-                }).catch(error => {
-                    console.error(`Ошибка отправки уведомления для токена ${token}:`, error);
-                });
-            } catch (parseError) {
-                console.error('Ошибка парсинга подписки:', parseError);
-                return Promise.resolve();
-            }
-        });
-
-        await Promise.all(promises);
-        res.status(200).json({ success: true });
+        const subscription = req.body;
+        await db.collection('subscriptions').add(subscription);
+        res.status(200).send('Subscription saved');
     } catch (error) {
-        console.error('Ошибка в Cloud Function:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Error saving subscription:', error);
+        res.status(500).send('Error saving subscription');
     }
 });
 
-exports.saveSubscription = functions.https.onRequest(async (req, res) => {
-    const { subscription } = req.body;
+exports.sendNotification = functions.https.onRequest(async (req, res) => {
     try {
-        // Получить текущий файл subscriptions.json
-        const getResponse = await fetch(REPO_URL, {
-            headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
+        const { message } = req.body;
+        const subscriptions = await db.collection('subscriptions').get();
+        const pushPromises = subscriptions.docs.map(async (doc) => {
+            const subscription = doc.data();
+            try {
+                await webpush.sendNotification(subscription, JSON.stringify({
+                    title: 'OTZ Notification',
+                    body: message
+                }));
+            } catch (error) {
+                console.error('Error sending notification:', error);
             }
         });
-        if (!getResponse.ok) throw new Error(`Не удалось получить subscriptions.json: ${getResponse.status}`);
-        const fileData = await getResponse.json();
-        const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString());
-        const subscriptions = currentContent.subscriptions || [];
-
-        // Добавить новую подписку, если её нет
-        const subscriptionStr = JSON.stringify(subscription);
-        if (!subscriptions.includes(subscriptionStr)) {
-            subscriptions.push(subscriptionStr);
-            const updatedContent = JSON.stringify({ subscriptions }, null, 2);
-            const updateResponse = await fetch(REPO_URL, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Update subscriptions.json',
-                    content: Buffer.from(updatedContent).toString('base64'),
-                    sha: fileData.sha
-                })
-            });
-            if (!updateResponse.ok) throw new Error(`Не удалось обновить subscriptions.json: ${updateResponse.status}`);
-            console.log('Подписка сохранена в GitHub');
-        }
-        res.status(200).json({ success: true });
+        await Promise.all(pushPromises);
+        res.status(200).send('Notifications sent');
     } catch (error) {
-        console.error('Ошибка сохранения подписки:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Error sending notifications:', error);
+        res.status(500).send('Error sending notifications');
     }
 });
