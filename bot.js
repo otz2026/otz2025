@@ -1,12 +1,18 @@
 async function sendTelegramMessage(message, chatId) {
     try {
-        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendTelegramMessage', {
+        const TELEGRAM_BOT_TOKEN = '8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A';
+        const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        const response = await fetch(TELEGRAM_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, chatId }),
-            mode: 'no-cors'
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
         });
-        console.log('Telegram message sent:', response);
+        if (!response.ok) throw new Error(`Error sending Telegram message: ${response.status}`);
+        console.log('Telegram message sent');
         return response;
     } catch (error) {
         console.error('Error sending Telegram message:', error);
@@ -24,32 +30,10 @@ async function requestNotificationPermission() {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 console.log('Notification permission granted');
-                if (isPwaMode()) {
-                    await subscribeToPush();
-                }
             }
         }
     } catch (error) {
         console.error('Error requesting notification permission:', error);
-    }
-}
-
-async function subscribeToPush() {
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ'
-        });
-        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscription),
-            mode: 'no-cors'
-        });
-        console.log('Subscription saved');
-    } catch (error) {
-        console.error('Error subscribing to push notifications:', error);
     }
 }
 
