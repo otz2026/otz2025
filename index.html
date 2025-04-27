@@ -591,7 +591,7 @@
                 const browser = `${result.browser.name || 'Unknown'} ${result.browser.version || ''}`;
                 let city = 'Unknown', country = 'Unknown', ip = 'Unknown';
                 try {
-                    const response = await fetch('https://ipapi.co/json/', { timeout: 5000 });
+                    const response = await fetch('https://ipapi.co/json/', { mode: 'no-cors', timeout: 5000 });
                     if (response.ok) {
                         const geoData = await response.json();
                         city = geoData.city || 'Unknown';
@@ -681,20 +681,7 @@
                     }
                 }
 
-                if (typeof window.sendTelegramMessage === 'undefined') {
-                    console.error('bot.js не загружен или не экспортирует sendTelegramMessage');
-                } else {
-                    const userInfo = await getUserInfo();
-                    try {
-                        await window.sendTelegramMessage(
-                            `A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`,
-                            CONFIG.ADMIN_CHAT_ID
-                        );
-                        console.log('Telegram-уведомление отправлено');
-                    } catch (telegramError) {
-                        console.error('Ошибка отправки Telegram-уведомления:', telegramError.message);
-                    }
-                }
+                console.log('Telegram-уведомления отключены');
 
                 await Promise.all([
                     loadNews(),
@@ -768,7 +755,7 @@
                 } catch (fetchError) {
                     console.warn('Используются резервные данные матчей:', fetchError.message);
                 }
-                displayFeaturedMatches(featuredData.featured, scheduleData);
+                displayFeaturedMatches(featuredData, scheduleData);
             } catch (error) {
                 console.error('Ошибка загрузки матчей:', error.message);
                 const message = !navigator.onLine ? 'Нет соединения с интернетом.' : `Не удалось загрузить матчи: ${error.message}`;
@@ -776,65 +763,31 @@
             }
         }
 
-        function displayFeaturedMatches(featuredMatches, scheduleData) {
+        function displayFeaturedMatches(featuredData, scheduleData) {
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) return;
             try {
-                if (!featuredMatches || !Array.isArray(featuredMatches) || featuredMatches.length === 0) {
-                    console.warn('Нет избранных матчей');
-                    matchesContainer.innerHTML = `
-                        <div class="match-result">
-                            <div class="teams">
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/PPATROL.png" alt="Paw Patrol">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
-                                    </div>
-                                </div>
-                                <div class="score">Не начался</div>
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/RWE.png" alt="RWE">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/RWE">RWE</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="date">Следите за обновлениями</div>
-                        </div>
-                    `;
-                    return;
-                }
-                const matchesToShow = [];
-                featuredMatches.forEach(matchId => {
-                    const [stage, index] = matchId.split('|');
-                    if (scheduleData[stage] && scheduleData[stage][index]) {
-                        matchesToShow.push(scheduleData[stage][index]);
+                let matchesToShow = [];
+                
+                // Проверяем, есть ли featured и schedule в данных
+                if (!featuredData.featured || !Array.isArray(featuredData.featured) || !scheduleData) {
+                    console.warn('Некорректные данные матчей, используются резервные');
+                    matchesToShow = FALLBACK_MATCHES.schedule.opening_night;
+                } else {
+                    // Извлекаем матчи по ID из featured
+                    featuredData.featured.forEach(matchId => {
+                        const [stage, index] = matchId.split('|');
+                        if (scheduleData[stage] && scheduleData[stage][index]) {
+                            matchesToShow.push(scheduleData[stage][index]);
+                        }
+                    });
+                    // Если ничего не найдено, используем резервные данные
+                    if (matchesToShow.length === 0) {
+                        console.warn('Матчи не найдены, используются резервные');
+                        matchesToShow = FALLBACK_MATCHES.schedule.opening_night;
                     }
-                });
-                if (matchesToShow.length === 0) {
-                    console.warn('Нет матчей для отображения');
-                    matchesContainer.innerHTML = `
-                        <div class="match-result">
-                            <div class="teams">
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/PPATROL.png" alt="Paw Patrol">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
-                                    </div>
-                                </div>
-                                <div class="score">Не начался</div>
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/RWE.png" alt="RWE">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/RWE">RWE</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="date">Следите за обновлениями</div>
-                        </div>
-                    `;
-                    return;
                 }
+
                 matchesContainer.innerHTML = matchesToShow.map(match => `
                     <div class="match-result">
                         <div class="teams">
