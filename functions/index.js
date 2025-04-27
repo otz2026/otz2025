@@ -32,8 +32,12 @@ async function sendTelegramMessage(message, chatId) {
 
 exports.sendTelegramMessage = functions.https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
-    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
 
     try {
         const { message, chatId } = req.body;
@@ -50,8 +54,12 @@ exports.sendTelegramMessage = functions.https.onRequest(async (req, res) => {
 
 exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
-    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
 
     try {
         const update = req.body;
@@ -120,8 +128,12 @@ exports.telegramWebhook = functions.https.onRequest(async (req, res) => {
 
 exports.saveSubscription = functions.https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
-    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
 
     try {
         const subscription = req.body;
@@ -135,8 +147,12 @@ exports.saveSubscription = functions.https.onRequest(async (req, res) => {
 
 exports.sendNotification = functions.https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
-    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
 
     try {
         const { message } = req.body;
@@ -168,8 +184,12 @@ exports.sendNotification = functions.https.onRequest(async (req, res) => {
 
 exports.triggerStartCommand = functions.https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', 'https://otz2026.github.io');
-    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
 
     try {
         const { message, chatId } = req.body;
