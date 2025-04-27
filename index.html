@@ -531,7 +531,7 @@
     </footer>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js"></script>
-    <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
+    <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js" defer></script>
     <script src="/otz2025/bot.js" defer></script>
     <script>
         const CONFIG = {
@@ -552,824 +552,32 @@
             }
         };
 
-        async function getUserInfo() {
-            try {
-                console.log('Получение информации о пользователе...');
-                const parser = new UAParser();
-                const result = parser.getResult();
-                const device = result.device.type || 'Desktop';
-                const deviceModel = result.device.model || result.os.name || 'Unknown';
-                const browser = `${result.browser.name || 'Unknown'} ${result.browser.version || ''}`;
-                let city = 'Unknown', country = 'Unknown', ip = 'Unknown';
-                try {
-                    const response = await fetch('https://ipapi.co/json/', { timeout: 5000 });
-                    if (response.ok) {
-                        const geoData = await response.json();
-                        city = geoData.city || 'Unknown';
-                        country = geoData.country_name || 'Unknown';
-                        ip = geoData.ip || 'Unknown';
-                    } else {
-                        console.warn('Ошибка ответа от ipapi.co:', response.status);
+        const FALLBACK_NEWS = [
+            {
+                title: "Команды готовятся к сезону: OVER TIME ZWENIGOROD стартует летом!",
+                image: "https://otz2026.github.io/otz2025/img/NEWS_NO.png",
+                content: "Сезон в лиге OVER TIME ZWENIGOROD начнется только летом, но уже сейчас команды активно тренируются, чтобы показать лучшие результаты на турнире.",
+                date: "2025-04-01"
+            }
+        ];
+
+        const FALLBACK_MATCHES = {
+            featured: ["opening_night|0", "opening_night|1"],
+            schedule: {
+                opening_night: [
+                    {
+                        team1: { name: "Paw Patrol", logo: "/otz2025/img/PPATROL.png", link: "/otz2025/teams/PawPatrol" },
+                        team2: { name: "RWE", logo: "/otz2025/img/RWE.png", link: "/otz2025/teams/RWE" },
+                        score: "Не начался",
+                        date: "10 июня в 16:00"
+                    },
+                    {
+                        team1: { name: "Bulldogs", logo: "/otz2025/img/BULLDOGS.png", link: "/otz2025/teams/Bulldogs" },
+                        team2: { name: "Kitty Boys", logo: "/otz2025/img/KITTY BOYS.png", link: "/otz2025/teams/KittyBoys" },
+                        score: "Не начался",
+                        date: "10 июня 18:00"
                     }
-                } catch (geoError) {
-                    console.warn('Ошибка получения геоданных:', geoError.message);
-                }
-                const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-                return {
-                    device: `${device}, ${deviceModel}`,
-                    browser,
-                    location: `${city}, ${country}`,
-                    ip,
-                    extra: timestamp
-                };
-            } catch (error) {
-                console.error('Ошибка получения информации о пользователе:', error.message);
-                return {
-                    device: 'Unknown',
-                    browser: 'Unknown',
-                    location: 'Unknown',
-                    ip: 'Unknown',
-                    extra: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC'
-                };
-            }
-        }
-
-        async function fetchWithTimeout(url, options = {}, timeout = 10000) {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            try {
-                console.log(`Запрос к ${url}`);
-                const response = await fetch(url, { ...options, signal: controller.signal });
-                clearTimeout(id);
-                if (!response.ok) throw new Error(`HTTP ошибка: ${response.status}`);
-                return response;
-            } catch (error) {
-                clearTimeout(id);
-                console.error(`Ошибка загрузки ${url}:`, error.message);
-                throw error;
-            } finally {
-                clearTimeout(id);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                console.log('Инициализация приложения...');
-
-                if ('serviceWorker' in navigator) {
-                    try {
-                        const registration = await navigator.serviceWorker.register('/otz2025/sw.js');
-                        console.log('Service Worker зарегистрирован:', registration);
-                    } catch (swError) {
-                        console.error('Ошибка регистрации Service Worker:', swError.message);
-                    }
-                } else {
-                    console.warn('Service Worker не поддерживается');
-                }
-
-                if (typeof firebase === 'undefined') {
-                    console.error('Firebase SDK не загружен');
-                    return;
-                }
-                try {
-                    firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
-                    console.log('Firebase инициализирован');
-                } catch (firebaseError) {
-                    console.error('Ошибка инициализации Firebase:', firebaseError.message);
-                }
-
-                if (typeof window.sendTelegramMessage === 'undefined') {
-                    console.error('bot.js не загружен или не экспортирует sendTelegramMessage');
-                    return;
-                }
-                const userInfo = await getUserInfo();
-                try {
-                    await window.sendTelegramMessage(
-                        `A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`,
-                        CONFIG.ADMIN_CHAT_ID
-                    );
-                    console.log('Telegram-уведомление отправлено');
-                } catch (telegramError) {
-                    console.error('Ошибка отправки Telegram-уведомления:', telegramError.message);
-                }
-
-                await Promise.all([
-                    loadNews(),
-                    loadFeaturedMatches()
-                ]);
-
-                if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-                    try {
-                        await window.requestNotificationPermission();
-                        console.log('Запрос разрешений на уведомления выполнен');
-                    } catch (notificationError) {
-                        console.error('Ошибка запроса уведомлений:', notificationError.message);
-                    }
-                }
-
-                initScrollHeader();
-                initFooterEasterEgg();
-            } catch (error) {
-                console.error('Ошибка инициализации приложения:', error.message);
-            }
-        });
-
-        async function loadFeaturedMatches() {
-            const matchesContainer = document.getElementById('matchesContainer');
-            if (!matchesContainer) {
-                console.error('Контейнер matchesContainer не найден');
-                return;
-            }
-            try {
-                matchesContainer.innerHTML = `
-                    <div class="match-loading">
-                        <div class="basketball"></div>
-                        <div class="loading-text">Загрузка матчей<span class="dots"></span></div>
-                    </div>
-                `;
-                if (!navigator.onLine) throw new Error('Нет соединения с интернетом');
-                const featuredResponse = await fetchWithTimeout(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                const featuredData = await featuredResponse.json();
-                const scheduleResponse = await fetchWithTimeout(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                const scheduleData = await scheduleResponse.json();
-                console.log('Матчи загружены:', featuredData);
-                displayFeaturedMatches(featuredData.featured, scheduleData.schedule);
-            } catch (error) {
-                console.error('Ошибка загрузки матчей:', error.message);
-                const message = !navigator.onLine ? 'Нет соединения с интернетом.' : `Не удалось загрузить матчи: ${error.message}`;
-                showError(matchesContainer, message, 'match-error');
-            }
-        }
-
-        function displayFeaturedMatches(featuredMatches, scheduleData) {
-            const matchesContainer = document.getElementById('matchesContainer');
-            if (!matchesContainer) return;
-            try {
-                if (!featuredMatches || featuredMatches.length === 0) {
-                    console.warn('Нет избранных матчей');
-                    matchesContainer.innerHTML = `
-                        <div class="match-result">
-                            <div class="teams">
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/PPATROL.png" alt="Paw Patrol">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
-                                    </div>
-                                </div>
-                                <div class="score">Не начался</div>
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/RWE.png" alt="RWE">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/RWE">RWE</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="date">Следите за обновлениями</div>
-                        </div>
-                    `;
-                    return;
-                }
-                const matchesToShow = [];
-                featuredMatches.forEach(matchId => {
-                    const [stage, index] = matchId.split('|');
-                    if (scheduleData[stage] && scheduleData[stage][index]) {
-                        matchesToShow.push(scheduleData[stage][index]);
-                    }
-                });
-                if (matchesToShow.length === 0) {
-                    console.warn('Нет матчей для отображения');
-                    matchesContainer.innerHTML = `
-                        <div class="match-result">
-                            <div class="teams">
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/PPATROL.png" alt="Paw Patrol">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/PawPatrol">Paw Patrol</a>
-                                    </div>
-                                </div>
-                                <div class="score">Не начался</div>
-                                <div class="team-logo">
-                                    <img src="/otz2025/img/RWE.png" alt="RWE">
-                                    <div class="team-name">
-                                        <a href="/otz2025/teams/RWE">RWE</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="date">Следите за обновлениями</div>
-                        </div>
-                    `;
-                    return;
-                }
-                matchesContainer.innerHTML = matchesToShow.slice(0, 2).map(match => `
-                    <div class="match-result">
-                        <div class="teams">
-                            <div class="team-logo">
-                                <img src="${match.team1?.logo || '/otz2025/img/PPATROL.png'}" 
-                                     alt="${match.team1?.name || 'Team 1'}"
-                                     onerror="this.src='/otz2025/img/PPATROL.png'">
-                                <div class="team-name">
-                                    <a href="${match.team1?.link || '/otz2025/teams/PawPatrol'}">${match.team1?.name || 'Team 1'}</a>
-                                </div>
-                            </div>
-                            <div class="score">${match.score || 'vs'}</div>
-                            <div class="team-logo">
-                                <img src="${match.team2?.logo || '/otz2025/img/RWE.png'}" 
-                                     alt="${match.team2?.name || 'Team 2'}"
-                                     onerror="this.src='/otz2025/img/RWE.png'">
-                                <div class="team-name">
-                                    <a href="${match.team2?.link || '/otz2025/teams/RWE'}">${match.team2?.name || 'Team 2'}</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="date">${match.date || 'Дата уточняется'}</div>
-                    </div>
-                `).join('');
-                console.log('Матчи отображены:', matchesToShow);
-            } catch (error) {
-                console.error('Ошибка отображения матчей:', error.message);
-                showError(matchesContainer, 'Ошибка обработки данных матчей', 'match-error');
-            }
-        }
-
-        async function loadNews() {
-            const newsContainer = document.getอาหาร
-
-System: Похоже, что ваш запрос обрывается на середине кода (`index.html`). Я продолжу с исправленным `index.html`, завершив недостающую часть, и учту указанные ошибки ("Script error", "Ошибка регистрации Service Worker", "Ошибка инициализации"). Также я проверю, что анимация загрузки работает корректно, данные загружаются, и пути к файлам правильные.
-
----
-
-### Исправления в `index.html`
-1. **Script error**:
-   - Добавлен атрибут `defer` для скриптов, чтобы гарантировать их загрузку после DOM.
-   - Проверены пути к `bot.js` и Firebase CDN.
-   - Добавлена проверка загрузки `bot.js` перед использованием `sendTelegramMessage`.
-2. **Ошибка регистрации Service Worker**:
-   - Убедимся, что `sw.js` регистрируется только если он существует.
-   - Добавлены подробные логи для отладки.
-3. **Ошибка инициализации**:
-   - Добавлена обработка ошибок для Firebase и Telegram-уведомлений.
-   - Увеличен таймаут для `fetchWithTimeout` до 15 секунд, чтобы учесть возможные задержки GitHub Pages.
-4. **Анимация и загрузка данных**:
-   - Анимация мяча в `.match-loading` и `.news-loading` отображается только во время загрузки.
-   - После успешной загрузки данные заменяют анимацию.
-   - Если данные не загружаются, отображается сообщение об ошибке.
-
----
-
-### Обновлённый `index.html`
-
-<xaiArtifact artifact_id="f0f697c4-018c-496a-943e-faceb9aa2bc7" artifact_version_id="0911bfcb-04fc-4dfb-8caa-4d61444a9454" title="index.html" contentType="text/html">
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <base href="https://otz2026.github.io/otz2025/">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Over Time Zvenigorod - Баскетбольная лига</title>
-    <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
-    <meta name="author" content="Over Time Zvenigorod">
-    <link rel="manifest" href="/otz2025/manifest.json">
-    <meta name="theme-color" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="OTZ">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
-    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
-    <link rel="icon" href="/otz2025/img/icon-192x192.png">
-    <meta property="og:title" content="Over Time Zvenigorod - Баскетбольная лига">
-    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
-    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Over Time Zvenigorod - Баскетбольная лига">
-    <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
-    <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
-    <link rel="canonical" href="https://otz2026.github.io/otz2025/">
-    <meta name="google-site-verification" content="8HjvCESaYUgIvvERAwoEaYd3x6xdpR_ccWMwwkwgoA4" />
-    <meta name="yandex-verification" content="143713e69ae2928c" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #2a2a2a;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 20px;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
-        header.scrolled {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        header .logo {
-            position: absolute;
-            left: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-        }
-        header nav {
-            display: flex;
-            gap: 20px;
-        }
-        header nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            transition: color 0.3s ease;
-        }
-        header nav a:hover {
-            color: #ccc;
-        }
-        .hero {
-            height: 540px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: url('/otz2025/img/OTZ.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin-top: 60px;
-            position: relative;
-        }
-        .hero h1 {
-            position: absolute;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 48px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-        .content {
-            padding: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-            flex: 1;
-            box-sizing: border-box;
-            text-align: left;
-            padding-bottom: 80px;
-        }
-        .content h2 {
-            font-size: 28px;
-            margin-bottom: 25px;
-            text-align: left;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .match-results {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        .match-result {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .teams {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .team-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .team-name a {
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-        .team-logo img {
-            width: 70px;
-            height: 70px;
-        }
-        .score {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 0 30px;
-            flex: 1;
-            text-align: center;
-        }
-        .date {
-            font-size: 20px;
-            color: #ccc;
-            margin-top: 15px;
-            text-align: center;
-        }
-        .news {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 50px;
-            margin-top: 80px;
-            margin-bottom: 60px;
-            justify-content: center;
-        }
-        .news-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            width: calc(50% - 25px);
-            box-sizing: border-box;
-            position: relative;
-            margin-bottom: 30px;
-        }
-        .news-item img {
-            width: 100%;
-            height: 250px;
-            border-radius: 12px;
-            border: 2px solid white;
-            object-fit: cover;
-            margin-top: -50px;
-            margin-bottom: 25px;
-        }
-        .news-item .text h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-        .news-item .text p {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .read-more {
-            color: #dd4710;
-            text-decoration: none;
-            font-size: 20px;
-            transition: color 0.3s ease;
-            display: inline-block;
-            margin-top: 15px;
-        }
-        .read-more:hover {
-            color: #ff6b3b;
-        }
-        .schedule-link {
-            margin-top: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .schedule-link a {
-            color: #dd4710;
-            text-decoration: none;
-            font-size: 20px;
-            transition: color 0.3s ease;
-        }
-        .schedule-link a:hover {
-            color: #ff6b3b;
-        }
-        footer {
-            background-color: #000;
-            padding: 50px 20px;
-            margin-top: auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-            text-align: center;
-        }
-        .social-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
-        .social-links a {
-            color: white;
-            text-decoration: none;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .social-links a:hover {
-            transform: scale(1.1);
-            opacity: 0.8;
-        }
-        .social-links img {
-            width: 30px;
-            height: 30px;
-        }
-        .hidden {
-            display: none;
-        }
-        .match-loading, .news-loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            width: 100%;
-            text-align: center;
-        }
-        .basketball {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #f28c38 10%, #d2691e 70%);
-            border-radius: 50%;
-            position: relative;
-            animation: bounce 0.6s infinite alternate;
-            margin-bottom: 15px;
-        }
-        .basketball::before {
-            content: '';
-            position: absolute;
-            top: 10%;
-            left: 20%;
-            width: 60%;
-            height: 80%;
-            background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.2), transparent);
-            border-radius: 50%;
-        }
-        .loading-text {
-            font-size: 18px;
-            color: #ccc;
-        }
-        .dots::after {
-            content: '...';
-            display: inline-block;
-            width: 1.5em;
-            text-align: left;
-            animation: dots 1.5s infinite;
-        }
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-20px); }
-        }
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-        .match-error, .news-error {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #ccc;
-            width: 100%;
-        }
-        .error-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 40px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .error-message img {
-            width: 100px;
-            height: 100px;
-            animation: bounce 2s infinite;
-        }
-        .error-message .error-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        .error-message button {
-            background-color: #dd4710;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .error-message button:hover {
-            background-color: #ff6b3b;
-            transform: scale(1.05);
-        }
-        .error-message button:active {
-            transform: scale(0.95);
-        }
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                padding: 10px;
-            }
-            header .logo {
-                position: static;
-                margin-bottom: 10px;
-                text-align: center;
-            }
-            header nav {
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            .hero {
-                height: 300px;
-                background-size: contain;
-            }
-            .news-item {
-                width: 100%;
-            }
-            .social-links {
-                flex-direction: row;
-                gap: 20px;
-            }
-            .content {
-                padding: 20px;
-                max-width: 1200px;
-                padding-bottom: 60px;
-            }
-            .content h2 {
-                font-size: 24px;
-                margin-bottom: 20px;
-                padding: 10px 0;
-            }
-            .match-results {
-                gap: 20px;
-                margin-top: 20px;
-            }
-            .match-result {
-                padding: 20px;
-                border-radius: 10px;
-            }
-            .team-name a {
-                font-size: inherit;
-            }
-            .team-logo img {
-                width: 50px;
-                height: 50px;
-            }
-            .score {
-                font-size: 24px;
-                margin: 0 20px;
-            }
-            .date {
-                font-size: 18px;
-                margin-top: 10px;
-            }
-            .news {
-                gap: 40px;
-                margin-top: 60px;
-                margin-bottom: 40px;
-            }
-            .news-item {
-                padding: 20px;
-                margin-bottom: 20px;
-                border-radius: 10px;
-            }
-            .news-item img {
-                height: 200px;
-                margin-top: -40px;
-                margin-bottom: 20px;
-                border-radius: 10px;
-            }
-            .news-item .text h3 {
-                font-size: inherit;
-                margin-bottom: inherit;
-            }
-            .news-item .text p {
-                font-size: inherit;
-                margin-bottom: inherit;
-            }
-            .read-more {
-                font-size: 18px;
-                margin-top: 10px;
-            }
-            .schedule-link {
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-            .schedule-link a {
-                font-size: 18px;
-            }
-            footer {
-                padding: 40px 20px;
-            }
-            .footer-content {
-                max-width: 1200px;
-                gap: 20px;
-            }
-            .social-links {
-                gap: 20px;
-            }
-            .social-links img {
-                width: 24px;
-                height: 24px;
-            }
-            .error-message img {
-                width: 80px;
-                height: 80px;
-            }
-            .error-message .error-text {
-                font-size: 20px;
-            }
-            .error-message button {
-                padding: 10px 20px;
-                font-size: 16px;
-            }
-            .basketball {
-                width: 40px;
-                height: 40px;
-            }
-            .loading-text {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header id="header">
-        <div class="logo">OVER TIME ZWENIGOROD</div>
-        <nav>
-            <a href="/otz2025/">Главная</a>
-            <a href="/otz2025/news">Новости</a>
-            <a href="/otz2025/table">Соревнования</a>
-            <a href="/otz2025/reward">Награды</a>
-        </nav>
-    </header>
-    <div class="hero">
-        <h1>OVER TIME ZWENIGOROD</h1>
-    </div>
-    <div class="content">
-        <h2>События</h2>
-        <div class="match-results" id="matchesContainer">
-            <div class="match-loading">
-                <div class="basketball"></div>
-                <div class="loading-text">Загрузка матчей<span class="dots"></span></div>
-            </div>
-        </div>
-        <div class="schedule-link">
-            <a href="/otz2025/schedule">Посмотреть полное расписание</a>
-        </div>
-        <h2>Новости</h2>
-        <div class="news" id="newsContainer">
-            <div class="news-loading">
-                <div class="basketball"></div>
-                <div class="loading-text">Загрузка новостей<span class="dots"></span></div>
-            </div>
-        </div>
-    </div>
-    <footer>
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="https://www.tiktok.com/@otz.summer.league" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="white">
-                        <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
-                    </svg>
-                </a>
-                <a href="https://t.me/pisunapidora" target="_blank">
-                    <img src="/otz2025/img/TG.png" alt="Telegram">
-                </a>
-            </div>
-            <p>© 2025 Over Time Zvenigorod. Все права защищены. <a href="https://t.me/voho_dranik" style="color: white; text-decoration: none;" class="hidden">Абоюдно.</a></p>
-        </div>
-    </footer>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js"></script>
-    <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js" defer></script>
-    <script src="/otz2025/bot.js" defer></script>
-    <script>
-        const CONFIG = {
-            NEWS_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/news_data.json",
-            SCHEDULE_DATA_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/schedule_data.json",
-            FEATURED_MATCHES_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/featured_matches.json",
-            SUBSCRIPTIONS_URL: "https://raw.githubusercontent.com/otz2026/otz2025/main/SSTimeSS/subscriptions.json",
-            TELEGRAM_BOT_TOKEN: "8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A",
-            ADMIN_CHAT_ID: "5665980031",
-            FIREBASE_CONFIG: {
-                apiKey: "AIzaSyCGseAeqdXPeasq16eG7XrDYwpiDPz790c",
-                authDomain: "otz2025-57eec.firebaseapp.com",
-                projectId: "otz2025-57eec",
-                storageBucket: "otz2025-57eec.firebasestorage.app",
-                messagingSenderId: "742102106188",
-                appId: "1:742102106188:web:22864fd63b92dd3ceb74e9",
-                measurementId: "G-R5M9V208PY"
+                ]
             }
         };
 
@@ -1419,14 +627,17 @@ System: Похоже, что ваш запрос обрывается на се�
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
             try {
-                console.log(`Запрос к ${url}`);
+                console.log(`[Fetch] Запрос к ${url}`);
                 const response = await fetch(url, { ...options, signal: controller.signal });
                 clearTimeout(id);
-                if (!response.ok) throw new Error(`HTTP ошибка: ${response.status}`);
-                return response;
+                if (!response.ok) {
+                    throw new Error(`HTTP ошибка: ${response.status} ${response.statusText}`);
+                }
+                console.log(`[Fetch] Успешно загружено: ${url}`);
+                return responseFile>response;
             } catch (error) {
                 clearTimeout(id);
-                console.error(`Ошибка загрузки ${url}:`, error.message);
+                console.error(`[Fetch] Ошибка загрузки ${url}:`, error.message);
                 throw error;
             } finally {
                 clearTimeout(id);
@@ -1449,29 +660,30 @@ System: Похоже, что ваш запрос обрывается на се�
                 }
 
                 if (typeof firebase === 'undefined') {
-                    console.error('Firebase SDK не загружен');
-                    return;
-                }
-                try {
-                    firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
-                    console.log('Firebase инициализирован');
-                } catch (firebaseError) {
-                    console.error('Ошибка инициализации Firebase:', firebaseError.message);
+                    console.error('Firebase SDK не загружен. Попытка загрузки резервного варианта...');
+                    await loadFallbackFirebase();
+                } else {
+                    try {
+                        firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+                        console.log('Firebase инициализирован');
+                    } catch (firebaseError) {
+                        console.error('Ошибка инициализации Firebase:', firebaseError.message);
+                    }
                 }
 
                 if (typeof window.sendTelegramMessage === 'undefined') {
                     console.error('bot.js не загружен или не экспортирует sendTelegramMessage');
-                    return;
-                }
-                const userInfo = await getUserInfo();
-                try {
-                    await window.sendTelegramMessage(
-                        `A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`,
-                        CONFIG.ADMIN_CHAT_ID
-                    );
-                    console.log('Telegram-уведомление отправлено');
-                } catch (telegramError) {
-                    console.error('Ошибка отправки Telegram-уведомления:', telegramError.message);
+                } else {
+                    const userInfo = await getUserInfo();
+                    try {
+                        await window.sendTelegramMessage(
+                            `A user logged into "OTZ-site" from a device: "${userInfo.device}, ${userInfo.browser}, ${userInfo.location}, ${userInfo.ip}, ${userInfo.extra}"`,
+                            CONFIG.ADMIN_CHAT_ID
+                        );
+                        console.log('Telegram-уведомление отправлено');
+                    } catch (telegramError) {
+                        console.error('Ошибка отправки Telegram-уведомления:', telegramError.message);
+                    }
                 }
 
                 await Promise.all([
@@ -1495,6 +707,32 @@ System: Похоже, что ваш запрос обрывается на се�
             }
         });
 
+        async function loadFallbackFirebase() {
+            try {
+                const scriptApp = document.createElement('script');
+                scriptApp.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+                scriptApp.type = 'module';
+                document.head.appendChild(scriptApp);
+                const scriptMessaging = document.createElement('script');
+                scriptMessaging.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js';
+                scriptMessaging.type = 'module';
+                document.head.appendChild(scriptMessaging);
+                await Promise.all([
+                    new Promise((resolve, reject) => {
+                        scriptApp.onload = resolve;
+                        scriptApp.onerror = () => reject(new Error('Не удалось загрузить Firebase App SDK'));
+                    }),
+                    new Promise((resolve, reject) => {
+                        scriptMessaging.onload = resolve;
+                        scriptMessaging.onerror = () => reject(new Error('Не удалось загрузить Firebase Messaging SDK'));
+                    })
+                ]);
+                console.log('Firebase SDK загружен резервно');
+            } catch (error) {
+                console.error('Ошибка загрузки резервного Firebase SDK:', error.message);
+            }
+        }
+
         async function loadFeaturedMatches() {
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) {
@@ -1509,12 +747,18 @@ System: Похоже, что ваш запрос обрывается на се�
                     </div>
                 `;
                 if (!navigator.onLine) throw new Error('Нет соединения с интернетом');
-                const featuredResponse = await fetchWithTimeout(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                const featuredData = await featuredResponse.json();
-                const scheduleResponse = await fetchWithTimeout(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                const scheduleData = await scheduleResponse.json();
-                console.log('Матчи загружены:', featuredData);
-                displayFeaturedMatches(featuredData.featured, scheduleData.schedule);
+                let featuredData = FALLBACK_MATCHES;
+                let scheduleData = FALLBACK_MATCHES.schedule;
+                try {
+                    const featuredResponse = await fetchWithTimeout(`${CONFIG.FEATURED_MATCHES_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                    featuredData = await featuredResponse.json();
+                    const scheduleResponse = await fetchWithTimeout(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                    scheduleData = await scheduleResponse.json();
+                    console.log('Матчи загружены:', featuredData);
+                } catch (fetchError) {
+                    console.warn('Используются резервные данные матчей:', fetchError.message);
+                }
+                displayFeaturedMatches(featuredData.featured, scheduleData);
             } catch (error) {
                 console.error('Ошибка загрузки матчей:', error.message);
                 const message = !navigator.onLine ? 'Нет соединения с интернетом.' : `Не удалось загрузить матчи: ${error.message}`;
@@ -1626,9 +870,14 @@ System: Похоже, что ваш запрос обрывается на се�
                     </div>
                 `;
                 if (!navigator.onLine) throw new Error('Нет соединения с интернетом');
-                const response = await fetchWithTimeout(`${CONFIG.NEWS_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                const newsData = await response.json();
-                console.log('Новости загружены:', newsData);
+                let newsData = FALLBACK_NEWS;
+                try {
+                    const response = await fetchWithTimeout(`${CONFIG.NEWS_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                    newsData = await response.json();
+                    console.log('Новости загружены:', newsData);
+                } catch (fetchError) {
+                    console.warn('Используются резервные данные новостей:', fetchError.message);
+                }
                 displayNews(newsData);
             } catch (error) {
                 console.error('Ошибка загрузки новостей:', error.message);
@@ -1706,6 +955,5 @@ System: Похоже, что ваш запрос обрывается на се�
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9367ba00cec9badd',t:'MTc0NTY4Nzc3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
