@@ -29,8 +29,8 @@ try {
     console.error('[SW] Error initializing Firebase:', error);
 }
 
-const CACHE_NAME = 'otz-cache-v10';
-const API_CACHE = 'otz-api-v6';
+const CACHE_NAME = 'otz-cache-v14';
+const API_CACHE = 'otz-api-v10';
 const ASSETS = [
     '/otz2025/',
     '/otz2025/index.html',
@@ -42,8 +42,6 @@ const ASSETS = [
     '/otz2025/img/OTZ3.png',
     '/otz2025/img/PPATROL.png',
     '/otz2025/img/RWE.png',
-    '/otz2025/img/BULLDOGS.png',
-    '/otz2025/img/KITTY BOYS.png',
     '/otz2025/img/NEWS_NO.png',
     '/otz2025/img/TG.png'
 ];
@@ -53,7 +51,23 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('[SW] Caching assets');
-                return cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })));
+                return Promise.all(
+                    ASSETS.map(url => 
+                        fetch(url, { cache: 'reload' })
+                            .then(response => {
+                                if (!response.ok) {
+                                    console.warn(`[SW] Failed to cache ${url}: ${response.status}`);
+                                    return null;
+                                }
+                                console.log(`[SW] Cached ${url}`);
+                                return cache.put(url, response);
+                            })
+                            .catch(err => {
+                                console.warn(`[SW] Error caching ${url}:`, err);
+                                return null;
+                            })
+                    )
+                );
             })
             .catch(err => console.error('[SW] Cache error:', err))
     );
