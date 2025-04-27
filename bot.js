@@ -3,10 +3,11 @@ async function sendTelegramMessage(message, chatId) {
         const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendTelegramMessage', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, chatId })
+            body: JSON.stringify({ message, chatId }),
+            mode: 'no-cors'
         });
-        if (!response.ok) throw new Error(`Error sending Telegram message: ${response.status} ${response.statusText}`);
-        return await response.json();
+        console.log('Telegram message sent:', response);
+        return response;
     } catch (error) {
         console.error('Error sending Telegram message:', error);
         throw error;
@@ -43,9 +44,9 @@ async function subscribeToPush() {
         const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscription)
+            body: JSON.stringify(subscription),
+            mode: 'no-cors'
         });
-        if (!response.ok) throw new Error(`Failed to save subscription: ${response.status}`);
         console.log('Subscription saved');
     } catch (error) {
         console.error('Error subscribing to push notifications:', error);
