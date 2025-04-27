@@ -16,11 +16,12 @@ try {
 
     messaging.onBackgroundMessage(function(payload) {
         console.log('[SW] Received background notification:', payload);
-        const notificationTitle = payload.notification.title || 'OTZ Notification';
+        const notificationTitle = payload.notification?.title || 'OTZ Notification';
         const notificationOptions = {
-            body: payload.notification.body || 'New message',
+            body: payload.notification?.body || 'New message',
             icon: '/otz2025/img/icon-192x192.png',
-            badge: '/otz2025/img/icon-192x192.png'
+            badge: '/otz2025/img/icon-192x192.png',
+            data: { url: 'https://otz2026.github.io/otz2025/' }
         };
         self.registration.showNotification(notificationTitle, notificationOptions);
     });
@@ -28,16 +29,12 @@ try {
     console.error('[SW] Error initializing Firebase:', error);
 }
 
-const CACHE_NAME = 'otz-cache-v9';
-const API_CACHE = 'otz-api-v5';
+const CACHE_NAME = 'otz-cache-v10';
+const API_CACHE = 'otz-api-v6';
 const ASSETS = [
     '/otz2025/',
     '/otz2025/index.html',
-    '/otz2025/styles.css',
-    '/otz2025/app.js',
     '/otz2025/bot.js',
-    '/otz2025/lib/firebase-app.js',
-    '/otz2025/lib/firebase-messaging.js',
     '/otz2025/manifest.json',
     '/otz2025/img/icon-192x192.png',
     '/otz2025/img/icon-512x512.png',
@@ -60,6 +57,7 @@ self.addEventListener('install', (event) => {
             })
             .catch(err => console.error('[SW] Cache error:', err))
     );
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -68,7 +66,7 @@ self.addEventListener('activate', (event) => {
             Promise.all(cacheNames.map(cacheName => 
                 [CACHE_NAME, API_CACHE].includes(cacheName) ? null : caches.delete(cacheName)
             ))
-        )
+        ).then(() => self.clients.claim())
     );
 });
 
@@ -100,7 +98,17 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow('https://otz2026.github.io/otz2025/')
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientsArr => {
+            const url = event.notification.data?.url || 'https://otz2026.github.io/otz2025/';
+            for (const client of clientsArr) {
+                if (client.url === url && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(url);
+            }
+        })
     );
 });
 
