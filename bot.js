@@ -1,11 +1,11 @@
 async function sendTelegramMessage(message, chatId) {
     try {
-        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/triggerStartCommand', {
+        const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/sendTelegramMessage', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message, chatId })
         });
-        if (!response.ok) throw new Error(`Error triggering start command: ${response.status} ${response.statusText}`);
+        if (!response.ok) throw new Error(`Error sending Telegram message: ${response.status} ${response.statusText}`);
         return await response.json();
     } catch (error) {
         console.error('Error sending Telegram message:', error);
@@ -15,11 +15,17 @@ async function sendTelegramMessage(message, chatId) {
 
 async function requestNotificationPermission() {
     try {
-        if ('Notification' in window && Notification.permission !== 'granted') {
+        if (!('Notification' in window)) {
+            console.warn('Notifications not supported');
+            return;
+        }
+        if (Notification.permission !== 'granted') {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 console.log('Notification permission granted');
-                await subscribeToPush();
+                if (isPwaMode()) {
+                    await subscribeToPush();
+                }
             }
         }
     } catch (error) {
@@ -32,7 +38,7 @@ async function subscribeToPush() {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ' // Замените на ваш VAPID ключ
+            applicationServerKey: 'BOggY0HhFla2fEHn3W8VLiC9i-u4L8v9X3BUjKlRiiWHVTXN1r8aDl2Md5xCjog1PcyMxSBnHmBm6hY2fzp98iQ'
         });
         const response = await fetch('https://us-central1-otz2025-57eec.cloudfunctions.net/saveSubscription', {
             method: 'POST',
@@ -44,6 +50,10 @@ async function subscribeToPush() {
     } catch (error) {
         console.error('Error subscribing to push notifications:', error);
     }
+}
+
+function isPwaMode() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 }
 
 window.sendTelegramMessage = sendTelegramMessage;
