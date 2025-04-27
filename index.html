@@ -572,8 +572,8 @@
                         date: "10 июня в 16:00"
                     },
                     {
-                        team1: { name: "Bulldogs", logo: "/otz2025/img/BULLDOGS.png", link: "/otz2025/teams/Bulldogs" },
-                        team2: { name: "Kitty Boys", logo: "/otz2025/img/KITTY BOYS.png", link: "/otz2025/teams/KittyBoys" },
+                        team1: { name: "Bulldogs", logo: "/otz2025/img/PPATROL.png", link: "/otz2025/teams/Bulldogs" },
+                        team2: { name: "Kitty Boys", logo: "/otz2025/img/RWE.png", link: "/otz2025/teams/KittyBoys" },
                         score: "Не начался",
                         date: "10 июня 18:00"
                     }
@@ -634,7 +634,7 @@
                     throw new Error(`HTTP ошибка: ${response.status} ${response.statusText}`);
                 }
                 console.log(`[Fetch] Успешно загружено: ${url}`);
-                return responseFile>response;
+                return response;
             } catch (error) {
                 clearTimeout(id);
                 console.error(`[Fetch] Ошибка загрузки ${url}:`, error.message);
@@ -662,6 +662,16 @@
                 if (typeof firebase === 'undefined') {
                     console.error('Firebase SDK не загружен. Попытка загрузки резервного варианта...');
                     await loadFallbackFirebase();
+                    if (typeof firebase !== 'undefined') {
+                        try {
+                            firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+                            console.log('Firebase инициализирован после резервной загрузки');
+                        } catch (firebaseError) {
+                            console.error('Ошибка инициализации Firebase после резервной загрузки:', firebaseError.message);
+                        }
+                    } else {
+                        console.error('Firebase SDK не удалось загрузить даже резервно');
+                    }
                 } else {
                     try {
                         firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
@@ -754,7 +764,7 @@
                     featuredData = await featuredResponse.json();
                     const scheduleResponse = await fetchWithTimeout(`${CONFIG.SCHEDULE_DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
                     scheduleData = await scheduleResponse.json();
-                    console.log('Матчи загружены:', featuredData);
+                    console.log('Матчи загружены:', featuredData, scheduleData);
                 } catch (fetchError) {
                     console.warn('Используются резервные данные матчей:', fetchError.message);
                 }
@@ -770,7 +780,7 @@
             const matchesContainer = document.getElementById('matchesContainer');
             if (!matchesContainer) return;
             try {
-                if (!featuredMatches || featuredMatches.length === 0) {
+                if (!featuredMatches || !Array.isArray(featuredMatches) || featuredMatches.length === 0) {
                     console.warn('Нет избранных матчей');
                     matchesContainer.innerHTML = `
                         <div class="match-result">
@@ -825,7 +835,7 @@
                     `;
                     return;
                 }
-                matchesContainer.innerHTML = matchesToShow.slice(0, 2).map(match => `
+                matchesContainer.innerHTML = matchesToShow.map(match => `
                     <div class="match-result">
                         <div class="teams">
                             <div class="team-logo">
