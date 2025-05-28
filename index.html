@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e1e1e">
     <meta name="description" content="Welcome to Over Time Zwenigorod (OTZ) Summer Basketball League">
     <meta property="og:title" content="Главная - OTZ">
@@ -23,6 +23,13 @@
             padding: 0; 
             box-sizing: border-box; 
             font-family: 'Arial', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
         }
         
         body {
@@ -31,7 +38,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            position: relative;
         }
 
         /* Навигационное меню */
@@ -39,6 +46,12 @@
             background-color: #2a2a2a;
             padding: 1rem;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
         }
 
         .nav-container {
@@ -75,6 +88,10 @@
             align-items: center;
             padding: 2rem;
             text-align: center;
+            margin-top: 80px; /* Отступ для фиксированного меню */
+            padding-bottom: 2rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Логотип OTZ */
@@ -245,36 +262,6 @@
             transform: scale(1.2);
         }
 
-        /* Подвал */
-        footer {
-            background-color: #2a2a2a;
-            padding: 2rem;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .footer-links a {
-            color: #cccccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: #00ccff;
-        }
-
-        .copyright {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
         /* Анимации */
         @keyframes bounce {
             0%, 100% {
@@ -359,6 +346,11 @@
                     transform: translate(-50%, -120px);
                 }
             }
+            
+            .main-content {
+                margin-top: 70px; /* Меньший отступ для мобильных */
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -402,13 +394,5 @@
             </a>
         </div>
     </div>
-
-    <!-- Подвал -->
-    <footer>
-        <div class="footer-links">
-            <a href="/otz2025/">Главная</a>
-        </div>
-        <p class="copyright">© 2025 Over Time Zwenigorod. Все права защищены.</p>
-    </footer>
 </body>
 </html>
