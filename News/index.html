@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1e1e1e"> <!-- Устанавливаем цвет фона для PWA -->
+    <meta name="theme-color" content="#1e1e1e">
     <meta name="description" content="Latest news from Over Time Zwenigorod (OTZ) Summer Basketball League">
     <meta property="og:title" content="Новости - OTZ">
     <meta property="og:description" content="Latest news from Over Time Zwenigorod (OTZ) Summer Basketball League">
@@ -21,6 +21,7 @@
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
         }
+        
         body {
             background-color: #1e1e1e;
             color: #ffffff;
@@ -28,6 +29,8 @@
             display: flex;
             flex-direction: column;
         }
+
+        /* Навигация */
         nav {
             background-color: #2a2a2a;
             padding: 1rem;
@@ -36,6 +39,7 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -43,122 +47,183 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .logo img {
             height: 50px;
         }
+
         .nav-links {
             display: flex;
             gap: 2rem;
         }
+
         .nav-links a {
             color: #ffffff;
             text-decoration: none;
             font-size: 1.1rem;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
         }
+
         .nav-links a:hover {
-            color: #cccccc;
+            background-color: rgba(0, 204, 255, 0.2);
         }
+
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
             color: #ffffff;
             cursor: pointer;
         }
+
+        /* Основной контент */
         .news-section {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
+            flex: 1;
         }
+
         .news-section h1 {
             text-align: center;
             margin-bottom: 2rem;
             font-size: 2.5rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        /* Карточки новостей */
         .news-card {
             background-color: #2a2a2a;
             border-radius: 10px;
             padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: transform 0.3s ease;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
             display: flex;
-            gap: 1rem;
+            gap: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .news-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 204, 255, 0.1);
         }
+
         .news-card img {
-            width: 480px;
-            height: 270px;
+            width: 400px;
+            height: 225px;
             object-fit: cover;
             border-radius: 5px;
+            flex-shrink: 0;
         }
+
         .news-content {
             flex: 1;
         }
+
         .news-content h3 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            color: #ffffff;
+            font-size: 1.5rem;
         }
+
+        .news-date {
+            color: #00ccff;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
         .news-content p {
             color: #cccccc;
+            line-height: 1.6;
         }
+
+        /* Лоадер */
         .loader {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 200px;
         }
+
         .loader::after {
             content: '';
             width: 40px;
             height: 40px;
-            border: 5px solid #ffffff;
+            border: 5px solid #00ccff;
             border-top: 5px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+
+        /* Ошибка */
         .error {
             text-align: center;
             padding: 2rem;
             color: #ff5555;
             animation: shake 0.5s ease;
         }
+
+        /* Подвал */
         footer {
             background-color: #2a2a2a;
-            padding: 1rem;
+            padding: 2rem;
             margin-top: auto;
             text-align: center;
         }
-        footer p {
-            margin-top: 0.5rem;
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
         }
+
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: #333;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #00ccff;
+            transform: translateY(-3px);
+        }
+
         .social-links img {
             width: 30px;
-            filter: grayscale(100%);
-            transition: transform 0.3s ease;
         }
-        .social-links img:hover {
-            transform: scale(1.1);
+
+        .copyright {
+            color: #888;
+            font-size: 0.9rem;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+
+        /* Анимации */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             50% { transform: translateX(10px); }
             75% { transform: translateX(-10px); }
         }
+
         @keyframes circleReveal {
             from {
                 clip-path: circle(0% at 90% 10%);
@@ -169,6 +234,15 @@
                 opacity: 1;
             }
         }
+
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            .news-card img {
+                width: 300px;
+                height: 170px;
+            }
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -181,19 +255,48 @@
                 padding: 1rem;
                 animation: circleReveal 0.5s ease forwards;
             }
+            
             .nav-links.active {
                 display: flex;
             }
+            
             .menu-toggle {
                 display: block;
             }
+            
             .news-card {
                 flex-direction: column;
                 padding: 1rem;
             }
+            
             .news-card img {
                 width: 100%;
                 height: auto;
+                max-height: 200px;
+                margin-bottom: 1rem;
+            }
+            
+            .news-section h1 {
+                font-size: 2rem;
+            }
+            
+            .news-content h3 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .news-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .social-links a {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .social-links img {
+                width: 25px;
             }
         }
     </style>
@@ -211,19 +314,25 @@
             </div>
         </div>
     </nav>
+    
     <section class="news-section">
         <h1>Новости</h1>
         <div id="news-container" class="loader"></div>
     </section>
+    
     <footer>
-        <div class="social-links">
-            <a href="https://vk.com/club230329098"><img src="https://img.icons8.com/ios-filled/50/ffffff/vk-circled.png" alt="VK"></a>
-	    <a href="https://t.me/pisunapidora"><img src="https://img.icons8.com/ios-filled/50/ffffff/telegram-app.png" alt="Telegram"></a>
-            <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1"><img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok.png" alt="TikTok"></a>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://vk.com/club230329098"><img src="https://img.icons8.com/ios-filled/50/ffffff/vk-circled.png" alt="VK"></a>
+                <a href="https://t.me/pisunapidora"><img src="https://img.icons8.com/ios-filled/50/ffffff/telegram-app.png" alt="Telegram"></a>
+                <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1"><img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok.png" alt="TikTok"></a>
+            </div>
+            <p class="copyright">© 2025 Over Time Zvenigorod. Все права защищены.</p>
         </div>
-        <p>© 2025 Over Time Zvenigorod. Все права защищены.</p>
     </footer>
+    
     <script>
+        // Меню для мобильных устройств
         document.querySelector('.menu-toggle').addEventListener('click', () => {
             const navLinks = document.querySelector('.nav-links');
             navLinks.classList.toggle('active');
@@ -234,22 +343,30 @@
             }
         });
 
+        // Загрузка новостей
         async function loadNews() {
             try {
                 const response = await fetch('/database/Database/news_data.json');
                 if (!response.ok) throw new Error('Network response was not ok');
+                
                 const data = await response.json();
                 const container = document.getElementById('news-container');
                 container.className = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p>Новостей пока нет</p>';
+                    return;
+                }
+                
                 data.forEach(news => {
                     const card = document.createElement('div');
                     card.className = 'news-card';
                     card.innerHTML = `
-                        <img src="${news.image || '/otz2026/img/icon-512x512.png'}" alt="${news.title}">
+                        <img src="${news.image || '/otz2026/img/default-news.jpg'}" alt="${news.title}">
                         <div class="news-content">
                             <h3>${news.title}</h3>
-                            <p>${news.date}</p>
-                            <p>${news.full_content}</p>
+                            <p class="news-date">${news.date}</p>
+                            <p>${news.full_content || news.content}</p>
                         </div>
                     `;
                     container.appendChild(card);
@@ -257,10 +374,12 @@
             } catch (error) {
                 const container = document.getElementById('news-container');
                 container.className = 'error';
-                container.innerHTML = 'Ошибка загрузки новостей';
+                container.innerHTML = '<p>Ошибка загрузки новостей. Пожалуйста, попробуйте позже.</p>';
+                console.error('Error loading news:', error);
             }
         }
 
+        // Загружаем новости при открытии страницы
         loadNews();
     </script>
 </body>
