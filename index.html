@@ -1,245 +1,129 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <base href="https://otz2026.github.io/otz2025/">
-    <!-- Основные метатеги -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Over Time Zvenigorod - Баскетбольная лига</title>
-    <meta name="description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="keywords" content="Over Time Zvenigorod, OTZ, баскетбол, расписание матчей, турнирная таблица, новости, результаты, баскетбольная лига">
-    <meta name="author" content="Over Time Zvenigorod">
-
-    <!-- PWA Configuration -->
-    <link rel="manifest" href="/otz2025/manifest.json">
-    <meta name="theme-color" content="#1a1a1a">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- iOS Specific -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="OTZ">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/otz2025/img/icon-192x192.png">
-    <link rel="apple-touch-startup-image" href="/otz2025/img/icon-512x512.png">
-    
-    <!-- Иконки -->
-    <link rel="icon" href="/otz2025/img/icon-192x192.png">
-    
-    <!-- Open Graph метатеги -->
-    <meta property="og:title" content="Over Time Zvenigorod - Баскетбольная лига">
-    <meta property="og:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
-    <meta property="og:url" content="https://otz2026.github.io/otz2025/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card метатеги -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e1e1e">
+    <meta name="description" content="Welcome to Over Time Zwenigorod (OTZ) Summer Basketball League">
+    <meta property="og:title" content="Главная - OTZ">
+    <meta property="og:description" content="Welcome to Over Time Zwenigorod (OTZ) Summer Basketball League">
+    <meta property="og:image" content="/otz2025/img/logo.png">
+    <meta property="og:url" content="/otz2025/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Over Time Zvenigorod - Баскетбольная лига">
-    <meta name="twitter:description" content="Официальный сайт баскетбольной лиги Over Time Zvenigorod. Расписание матчей, турнирная таблица, новости и результаты.">
-    <meta name="twitter:image" content="https://otz2026.github.io/otz2025/img/OTZ3.png">
-
-    <!-- Фавиконка -->
-    <link rel="icon" type="image/png" href="/otz2025/img/OTZ3.png">
-
-    <!-- Каноническая ссылка -->
-    <link rel="canonical" href="https://otz2026.github.io/otz2025/">
-
-    <!-- Подтверждение для Google и Яндекс -->
-    <meta name="google-site-verification" content="8HjvCESaYUgIvvERAwoEaYd3x6xdpR_ccWMwwkwgoA4" />
-    <meta name="yandex-verification" content="143713e69ae2928c" />
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <meta name="twitter:title" content="Главная - OTZ">
+    <meta name="twitter:description" content="Welcome to Over Time Zwenigorod (OTZ) Summer Basketball League">
+    <meta name="twitter:image" content="/otz2025/img/icon-512x512.png">
+    <link rel="manifest" href="/otz2025/manifest.json">
+    <link rel="apple-touch-icon" href="/otz2025/img/icon-512x512.png">
+    <link rel="icon" href="/otz2025/img/icon-512x512.png">
+    <title>Технический перерыв - OTZ</title>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Arial', sans-serif; 
+        }
+        
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+        /* Навигационное меню */
+        nav {
+            background-color: #2a2a2a;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(0, 204, 255, 0.2);
+        }
+
+        /* Основное содержимое */
+        .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Тонкие изогнутые неоновые линии */
-        .neon-line-1,
-        .neon-line-2,
-        .neon-line-3,
-        .neon-line-4,
-        .neon-line-5,
-        .neon-line-6,
-        .neon-line-7,
-        .neon-line-8 {
-            position: absolute;
-            background: #ff8c00;
-            box-shadow: 0 0 5px #ff8c00, 0 0 10px #ff8c00, 0 0 20px #ff8c00, 0 0 30px #ff8c00;
-            z-index: 0;
-            opacity: 0.8;
-            border-radius: 50px;
-        }
-
-        .neon-line-1 {
-            width: 4px;
-            height: 200px;
-            top: 10%;
-            left: 5%;
-            transform: rotate(30deg);
-        }
-
-        .neon-line-2 {
-            width: 4px;
-            height: 200px;
-            bottom: 10%;
-            right: 5%;
-            transform: rotate(-30deg);
-        }
-
-        .neon-line-3 {
-            width: 200px;
-            height: 4px;
-            top: 15%;
-            left: 50%;
-            transform: translateX(-50%) rotate(15deg);
-        }
-
-        .neon-line-4 {
-            width: 200px;
-            height: 4px;
-            bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%) rotate(-15deg);
-        }
-
-        .neon-line-5 {
-            width: 4px;
-            height: 150px;
-            top: 5%;
-            left: 20%;
-            transform: rotate(45deg);
-        }
-
-        .neon-line-6 {
-            width: 4px;
-            height: 150px;
-            bottom: 5%;
-            right: 20%;
-            transform: rotate(-45deg);
-        }
-
-        .neon-line-7 {
-            width: 150px;
-            height: 4px;
-            top: 30%;
-            left: 30%;
-            transform: rotate(20deg);
-        }
-
-        .neon-line-8 {
-            width: 150px;
-            height: 4px;
-            bottom: 30%;
-            right: 30%;
-            transform: rotate(-20deg);
-        }
-
-        /* Светящиеся кружочки */
-        .glow-circle-1,
-        .glow-circle-2,
-        .glow-circle-3,
-        .glow-circle-4 {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: #ff8c00;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ff8c00, 0 0 20px #ff8c00, 0 0 30px #ff8c00;
-            z-index: 0;
-            animation: glow 3s ease-in-out infinite;
-        }
-
-        .glow-circle-1 {
-            top: 20%;
-            left: 15%;
-        }
-
-        .glow-circle-2 {
-            top: 30%;
-            right: 15%;
-        }
-
-        .glow-circle-3 {
-            bottom: 20%;
-            left: 20%;
-        }
-
-        .glow-circle-4 {
-            bottom: 30%;
-            right: 20%;
-        }
-
-        @keyframes glow {
-            0%, 100% {
-                opacity: 0.5;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 1rem;
-        }
-
-        .league-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #ffffff;
+            padding: 2rem;
             text-align: center;
-            margin-bottom: 1.5rem;
+        }
+
+        /* Логотип OTZ */
+        .otz-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 40px;
+            z-index: 10;
+        }
+
+        /* Заголовок */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
+        /* Описание */
+        p {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        /* Анимация баскетбольного мяча */
         .basketball-container {
             position: relative;
             width: 300px;
             height: 300px;
+            margin: 2rem auto;
             z-index: 1;
         }
 
         .basketball {
             width: 120px;
             height: 120px;
-            background: radial-gradient(circle at 30% 30%, #ff8c00 0%, #ff4500 70%);
+            background: radial-gradient(circle at 30% 30%, #00ccff 0%, #0066cc 70%);
             border-radius: 50%;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             animation: bounce 2s ease-in-out infinite;
-            box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
             z-index: 1;
-            cursor: pointer;
-            transition: transform 0.5s ease-out;
-        }
-
-        .basketball.paused {
-            animation: fall 0.5s ease-out forwards;
         }
 
         .basketball::before,
@@ -279,14 +163,10 @@
             animation: rotate 4s linear infinite;
         }
 
-        .texture.paused {
-            animation-play-state: paused;
-        }
-
         .trail {
             width: 96px;
             height: 96px;
-            background: radial-gradient(circle, rgba(255, 165, 0, 0.3), transparent);
+            background: radial-gradient(circle, rgba(0, 204, 255, 0.3), transparent);
             border-radius: 50%;
             position: absolute;
             top: 50%;
@@ -294,11 +174,6 @@
             transform: translate(-50%, -50%);
             animation: trail-bounce 2s ease-in-out infinite;
             z-index: 0;
-        }
-
-        .trail.paused {
-            animation-play-state: paused;
-            opacity: 0;
         }
 
         .shadow {
@@ -314,51 +189,99 @@
             z-index: 0;
         }
 
-        .shadow.paused {
-            animation: shadow-fall 0.5s ease-out forwards;
+        /* Социальные сети */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
         }
 
-        .loader-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-top: 2rem;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background-color: #2a2a2a;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 204, 255, 0.3);
+        }
+
+        .social-links a:hover::before {
+            opacity: 0.3;
+        }
+
+        .social-links img {
+            width: 30px;
+            position: relative;
             z-index: 1;
+            transition: transform 0.3s ease;
         }
 
-        .update-text {
-            font-size: 1rem;
-            color: #d1d5db;
-            margin-top: 1rem;
+        .social-links a:hover img {
+            transform: scale(1.2);
+        }
+
+        /* Подвал */
+        footer {
+            background-color: #2a2a2a;
+            padding: 2rem;
             text-align: center;
-            max-width: 90%;
-            font-style: italic;
-            line-height: 1.5;
-            text-shadow: 0 0 5px rgba(255, 255, 225, 0.1);
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
-            z-index: 1;
+            margin-top: auto;
         }
 
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: #cccccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00ccff;
+        }
+
+        .copyright {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Анимации */
         @keyframes bounce {
             0%, 100% {
                 transform: translate(-50%, -50%);
             }
             50% {
                 transform: translate(-50%, -150px);
-            }
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translate(-50%, -150px);
-            }
-            100% {
-                transform: translate(-50%, -50%);
             }
         }
 
@@ -397,43 +320,35 @@
             }
         }
 
-        @keyframes shadow-fall {
-            0% {
-                transform: translateX(-50%) scale(0.7);
-                opacity: 0.1;
-            }
-            100% {
-                transform: translateX(-50%) scale(1);
-                opacity: 0.3;
-            }
-        }
-
-        @media (max-width: 640px) {
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            .otz-logo { width: 100px; height: 100px; margin-bottom: 30px; }
+            
             .basketball-container {
                 width: 250px;
                 height: 250px;
             }
 
             .basketball {
-                width: 96px;
-                height: 96px;
+                width: 100px;
+                height: 100px;
             }
 
             .basketball::before,
             .basketball::after {
-                width: 86px;
+                width: 90px;
                 height: 10px;
-                left: 5px;
             }
 
-            .trail {
-                width: 77px;
-                height: 77px;
+            .nav-links {
+                gap: 1rem;
             }
 
-            .shadow {
-                width: 77px;
-                height: 19px;
+            .social-links a {
+                width: 50px;
+                height: 50px;
             }
 
             @keyframes bounce {
@@ -444,240 +359,60 @@
                     transform: translate(-50%, -120px);
                 }
             }
-
-            @keyframes fall {
-                0% {
-                    transform: translate(-50%, -120px);
-                }
-                100% {
-                    transform: translate(-50%, -50%);
-                }
-            }
-
-            @keyframes shadow-fall {
-                0% {
-                    transform: translateX(-50%) scale(0.7);
-                    opacity: 0.1;
-                }
-                100% {
-                    transform: translateX(-50%) scale(1);
-                    opacity: 0.3;
-                }
-            }
-
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-
-            .league-title {
-                font-size: 1rem;
-            }
-
-            .loader-text {
-                font-size: 1.25rem;
-            }
-
-            .update-text {
-                font-size: 0.875rem;
-                padding: 0.75rem;
-            }
-
-            .neon-line-1,
-            .neon-line-2,
-            .neon-line-5,
-            .neon-line-6 {
-                height: 160px;
-            }
-
-            .neon-line-3,
-            .neon-line-4,
-            .neon-line-7,
-            .neon-line-8 {
-                width: 160px;
-            }
-
-            .glow-circle-1,
-            .glow-circle-2,
-            .glow-circle-3,
-            .glow-circle-4 {
-                width: 12px;
-                height: 12px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="neon-line-1"></div>
-    <div class="neon-line-2"></div>
-    <div class="neon-line-3"></div>
-    <div class="neon-line-4"></div>
-    <div class="neon-line-5"></div>
-    <div class="neon-line-6"></div>
-    <div class="neon-line-7"></div>
-    <div class="neon-line-8"></div>
-    <div class="glow-circle-1"></div>
-    <div class="glow-circle-2"></div>
-    <div class="glow-circle-3"></div>
-    <div class="glow-circle-4"></div>
-    <img src="https://otz2026.github.io/otz2025/img/OTZ3.png" alt="OTZ Logo" class="logo">
-    <div class="league-title">Over Time Zvenigorod</div>
-    <div class="basketball-container">
-        <div class="basketball" id="basketball">
-            <div class="texture"></div>
-            <div class="trail" id="trail"></div>
+    <!-- Навигационное меню -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="/">Главная</a>
+                <a href="/news/">Новости</a>
+            </div>
         </div>
-        <div class="shadow" id="shadow"></div>
+    </nav>
+
+    <!-- Основное содержимое -->
+    <div class="main-content">
+        <!-- Логотип OTZ -->
+        <img src="https://otz2026.github.io/otz2025/img/OTZ3.png" alt="OTZ Logo" class="otz-logo">
+
+        <h1>ИДЁТ ОБНОВЛЕНИЕ САЙТА</h1>
+        <p>Мы проводим технические работы, чтобы сделать OTZ ещё лучше! Скоро мы вернёмся с обновлённым интерфейсом и новыми функциями.</p>
+        
+        <!-- Анимация баскетбольного мяча -->
+        <div class="basketball-container">
+            <div class="basketball">
+                <div class="texture"></div>
+                <div class="trail"></div>
+            </div>
+            <div class="shadow"></div>
+        </div>
+
+        <!-- Социальные сети -->
+        <div class="social-links">
+            <a href="https://vk.com/club230329098" target="_blank">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/vk-circled.png" alt="VK">
+            </a>
+            <a href="https://t.me/pisunapidora" target="_blank">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/telegram-app.png" alt="Telegram">
+            </a>
+            <a href="https://www.tiktok.com/@otz.summer.league?_t=ZS-8uNhlZxvA0N&_r=1" target="_blank">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok.png" alt="TikTok">
+            </a>
+        </div>
     </div>
-    <div class="loader-text">Идет обновление!</div>
-    <div class="update-text">
-        Мы готовим что-то крутое для баскетбольной лиги OTZ! Новые фичи и стиль уже на подходе, ждите!
-    </div>
 
-    <script>
-        // Существующий код для остановки мяча при клике
-        const basketball = document.getElementById('basketball');
-        const shadow = document.getElementById('shadow');
-        const trail = document.getElementById('trail');
-        const texture = basketball.querySelector('.texture');
-
-        let isPaused = false;
-
-        basketball.addEventListener('click', () => {
-            if (isPaused) return;
-
-            isPaused = true;
-
-            basketball.classList.add('paused');
-            shadow.classList.add('paused');
-            trail.classList.add('paused');
-            texture.classList.add('paused');
-
-            setTimeout(() => {
-                basketball.classList.remove('paused');
-                shadow.classList.remove('paused');
-                trail.classList.remove('paused');
-                texture.classList.remove('paused');
-                isPaused = false;
-            }, 5000);
-        });
-
-        // Код для отправки уведомления в Telegram
-        window.onload = async function() {
-            try {
-                // Проверяем, отправляли ли уже уведомление в этой сессии
-                if (sessionStorage.getItem('telegramNotificationSent')) {
-                    console.log('Уведомление уже отправлено в этой сессии');
-                    return;
-                }
-
-                // Токен бота в закодированном виде (base64)
-                const encodedBotToken = 'ODE3MDUxMzM5OTpBQUZmVmdQRE1oQ3Y4d1QzYWhYdFo0OXVwdWpMbUFqbmg2QQ==';
-                const botToken = atob(encodedBotToken); // Декодируем токен
-                const chatId = '5665980031'; // Твой chat_id
-
-                // Получаем информацию об устройстве и браузере
-                const userAgent = navigator.userAgent;
-                let deviceInfo = 'Unknown device';
-                let browserInfo = 'Unknown browser';
-
-                // Определяем устройство
-                if (/mobile/i.test(userAgent)) {
-                    deviceInfo = 'Mobile';
-                } else if (/tablet/i.test(userAgent)) {
-                    deviceInfo = 'Tablet';
-                } else {
-                    deviceInfo = 'Desktop';
-                }
-
-                // Определяем браузер
-                if (userAgent.includes('Chrome')) {
-                    browserInfo = 'Chrome';
-                } else if (userAgent.includes('Firefox')) {
-                    browserInfo = 'Firefox';
-                } else if (userAgent.includes('Safari')) {
-                    browserInfo = 'Safari';
-                } else if (userAgent.includes('Edge')) {
-                    browserInfo = 'Edge';
-                }
-
-                // Получаем IP-адрес через публичный API
-                let ipAddress = 'Unknown IP';
-                try {
-                    const ipResponse = await fetch('https://api.ipify.org?format=json', {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    if (!ipResponse.ok) {
-                        throw new Error(`Ошибка получения IP: ${ipResponse.status} ${ipResponse.statusText}`);
-                    }
-                    const ipData = await ipResponse.json();
-                    ipAddress = ipData.ip;
-                } catch (error) {
-                    console.error('Ошибка получения IP:', error.message);
-                }
-
-                // Формируем сообщение
-                const message = `A user logged into your site from a device: "${deviceInfo}, ${browserInfo}, ${ipAddress}"`;
-
-                // Формируем URL для отправки сообщения через Telegram API
-                const telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-
-                // Отправляем запрос
-                const response = await fetch(telegramApiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                if (data.ok) {
-                    console.log('Уведомление успешно отправлено в Telegram!');
-                    sessionStorage.setItem('telegramNotificationSent', 'true');
-                } else {
-                    console.error('Ошибка Telegram API:', data.description);
-                }
-            } catch (error) {
-                console.error('Ошибка при отправке уведомления:', error.message);
-            }
-        };
-
-        /*
-         * Для полной защиты токена рекомендуется перенести логику на сервер.
-         * Пример серверного кода (Node.js):
-         *
-         * const express = require('express');
-         * const axios = require('axios');
-         * const app = express();
-         *
-         * app.get('/notify', async (req, res) => {
-         *     const botToken = '8170513399:AAFfVgPDMhCv8wT3ahXtZ49upujLmAjnh6A';
-         *     const chatId = '5665980031';
-         *     const { device, browser, ip } = req.query;
-         *     const message = `A user logged into your site from a device: "${device}, ${browser}, ${ip}"`;
-         *
-         *     try {
-         *         await axios.get(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-         *             params: { chat_id: chatId, text: message }
-         *         });
-         *         res.send('Уведомление отправлено!');
-         *     } catch (error) {
-         *         res.status(500).send('Ошибка отправки уведомления');
-         *     }
-         * });
-         *
-         * app.listen(3000, () => console.log('Сервер запущен на порту 3000'));
-         *
-         * Тогда на клиенте нужно заменить fetch на:
-         * fetch(`http://your-server:3000/notify?device=${deviceInfo}&browser=${browserInfo}&ip=${ipAddress}`)
-         */
-    </script>
+    <!-- Подвал -->
+    <footer>
+        <div class="footer-links">
+            <a href="/">Главная</a>
+            <a href="/news/">Новости</a>
+            <a href="/schedule/">Расписание</a>
+            <a href="/teams/">Команды</a>
+        </div>
+        <p class="copyright">© 2025 Over Time Zwenigorod. Все права защищены.</p>
+    </footer>
 </body>
 </html>
