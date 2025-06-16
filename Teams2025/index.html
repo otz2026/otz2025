@@ -113,7 +113,7 @@
                 tableBody.className = '';
                 data.forEach(team => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td><a href="/otz2025/teams/${team.urlname}"><img src="${team.logo}" alt="${team.team}" onerror="this.src='/otz2025/img/default-team.png'">${team.team}</a></td><td>${team.games}</td><td>${team.wins}</td><td>${team.losses}</td><td>${team.scored}</td><td>${team.conceded}</td><td>${team.percentage}%</td>`;
+                    row.innerHTML = `<td><a href="/otz2025/teams/${team.urlname}"><img src="${team.logo}" alt="${team.team}" onerror="this.src='/otz2025/img/default-team.png'">${team.team}</a></td><td>${team.games}</td><td>${team.wins}</td><td>${team.losses}</td><td>${team.scored}</td><td>${team.conceded}</td><td>${team.percentage}</td>`;
                     tableBody.appendChild(row);
                     const card = document.createElement('div');
                     card.className = 'team-card';
