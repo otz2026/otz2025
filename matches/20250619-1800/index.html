@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e1e1e">
+    <title>Статистика матча - OTZ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { background-color: #1e1e1e; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        nav { background-color: #2a2a2a; padding: 1rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo img { height: 50px; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s ease; }
+        .nav-links a:hover { color: #cccccc; }
+        .menu-toggle { display: none; font-size: 1.5rem; color: #ffffff; cursor: pointer; }
+        .match-container { max-width: 1200px; margin: 0 auto; padding: 1rem; width: 100%; }
+        .match-header { text-align: center; margin-bottom: 1rem; }
+        .match-header h1 { font-size: 1.5rem; margin-bottom: 0.3rem; color: #ffffff; }
+        .match-header .match-date { color: #cccccc; font-size: 0.9rem; }
+        .score-container { display: flex; justify-content: center; align-items: center; gap: 2rem; margin: 1.5rem 0; }
+        .team-score { display: flex; flex-direction: column; align-items: center; min-width: 120px; }
+        .team-score img { height: 80px; margin-bottom: 0.5rem; border: 2px solid #3a3a3a; border-radius: 8px; padding: 3px; background-color: #2a2a2a; }
+        .team-score .team-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.3rem; color: #ffffff; }
+        .team-score .score { font-size: 2rem; font-weight: bold; color: #ffffff; }
+        a { color: #ffffff; text-decoration: none; }
+        a:hover { color: #ffffff; text-decoration: none; }
+        .video-container { margin: 1.5rem 0; text-align: center; }
+        .video-container h2 { margin-bottom: 0.8rem; font-size: 1.3rem; }
+        .video-preview { max-width: 100%; border-radius: 8px; border: 2px solid #3a3a3a; cursor: pointer; }
+        .team-stats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .stats-card { background-color: #2a2a2a; border-radius: 8px; padding: 1rem; }
+        .stats-card h3 { margin-bottom: 0.8rem; color: #ffffff; text-align: center; font-size: 1.2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+        .stat-item { text-align: center; }
+        .stat-item .value { font-size: 1.1rem; font-weight: bold; }
+        .stat-item .label { font-size: 0.8rem; color: #cccccc; }
+        .players-stats h2 { margin-bottom: 1rem; text-align: center; font-size: 1.3rem; }
+        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 2rem; }
+        .stats-table { width: 100%; min-width: 700px; border-collapse: collapse; background-color: #2a2a2a; border-radius: 8px; overflow: hidden; }
+        .stats-table th, .stats-table td { padding: 0.6rem; text-align: center; border-bottom: 1px solid #3a3a3a; }
+        .stats-table th { background-color: #3a3a3a; font-weight: bold; font-size: 0.9rem; }
+        .player-cell { display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start; padding-left: 1rem; }
+        .player-cell img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #3a3a3a; }
+        .team-divider { background-color: #333; }
+        .team-divider td { padding: 0.5rem; text-align: center; }
+        .team-divider-content { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: bold; }
+        .team-divider img { height: 25px; border: 1px solid #3a3a3a; border-radius: 4px; }
+        footer { background-color: #2a2a2a; padding: 1rem; margin-top: auto; text-align: center; }
+        .social-links { display: flex; justify-content: center; gap: 1rem; margin-bottom: 0.5rem; }
+        .social-links img { width: 28px; filter: grayscale(100%); transition: all 0.3s ease; border-radius: 50%; border: 1px solid #3a3a3a; }
+        .social-links img:hover { transform: scale(1.1); filter: grayscale(0%); }
+        @media (max-width: 768px) {
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; width: 100%; background-color: #2a2a2a; padding: 1rem; }
+            .nav-links.active { display: flex; }
+            .menu-toggle { display: block; }
+            .team-score img { height: 70px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .match-container { padding: 1rem; }
+            .stats-table { border-radius: 12px; }
+            .stats-table thead tr:first-child th:first-child { border-top-left-radius: 12px; }
+            .stats-table thead tr:first-child th:last-child { border-top-right-radius: 12px; }
+            .stats-table tbody tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+            .stats-table tbody tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+        }
+        @media (orientation: portrait) {
+            .score-container { flex-direction: row; gap: 1rem; }
+            .team-score { min-width: 80px; }
+            .team-score img { height: 60px; }
+        }
+        .loader { display: flex; justify-content: center; align-items: center; height: 200px; }
+        .loader::after { content: ''; width: 40px; height: 40px; border: 5px solid #ffffff; border-top: 5px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error { text-align: center; padding: 1.5rem; color: #ff5555; background-color: #2a2a2a; border-radius: 8px; margin: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo"><img src="/otz2025/img/logo.png" alt="OTZ Logo"></div>
+            <div class="menu-toggle">☰</div>
+            <div class="nav-links">
+                <a href="/otz2025/">Главная</a>
+                <a href="/otz2025/News/">Новости</a>
+                <a href="/otz2025/Schedule/">Расписание</a>
+                <a href="/otz2025/Teams2025/">Команды</a>
+                <a href="/otz2025/Reward/">Награды</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="match-container">
+        <div id="match-content" class="loader"></div>
+    </div>
+    
+    <footer>
+        <div class="social-links">
+            <a href="https://vk.com/club230329098"><img src="https://img.icons8.com/ios-filled/50/ffffff/vk-circled.png" alt="VK"></a>
+            <a href="https://t.me/pisunapidora"><img src="https://img.icons8.com/ios-filled/50/ffffff/telegram-app.png" alt="Telegram"></a>
+            <a href="https://www.tiktok.com/@otz.summer.league"><img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok.png" alt="TikTok"></a>
+        </div>
+        <p>© 2025 Over Time Zvenigorod. Все права защищены.</p>
+    </footer>
+    
+    <script>
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+            this.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+
+        async function loadMatchStats() {
+            try {
+                const pathParts = window.location.pathname.split('/');
+                const matchId = "20250619-1800"; // Изменено для работы с любым ID в URL
+                const response = await fetch('/database/Database/match_stats.json');
+                
+                if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
+                const data = await response.json();
+                const match = data.matches.find(m => m.id === matchId);
+                
+                if (!match) throw new Error('Матч не найден');
+                
+                const container = document.getElementById('match-content');
+                container.className = '';
+                
+                let html = `
+                    <div class="match-header">
+                        <h1>${match.competition || 'Матч OTZ'}</h1>
+                        <div class="match-date">${match.date} · ${match.location}</div>
+                    </div>
+                    <div class="score-container">
+                        <a href="${match.home_team.link || '#'}" class="team-score">
+                            <img src="${match.home_team.logo}" alt="${match.home_team.name}">
+                            <div class="team-name">${match.home_team.name}</div>
+                            <div class="score">${match.home_team.score}</div>
+                        </a>
+                        <a href="${match.away_team.link || '#'}" class="team-score">
+                            <img src="${match.away_team.logo}" alt="${match.away_team.name}">
+                            <div class="team-name">${match.away_team.name}</div>
+                            <div class="score">${match.away_team.score}</div>
+                        </a>
+                    </div>
+                `;
+                
+                if (match.video) {
+                    html += `
+                        <div class="video-container">
+                            <h2>Видео матча</h2>
+                            <a href="${match.video}" target="_blank">
+                                <img src="/otz2025/img/Watch.png" alt="Видео матча" class="video-preview">
+                            </a>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="team-stats">
+                        <div class="stats-card">
+                            <h3>${match.home_team.name}</h3>
+                            <div class="stats-grid">
+                                ${Object.entries(match.home_team.stats).map(([key, value]) => `
+                                    <div class="stat-item">
+                                        <div class="value">${value}</div>
+                                        <div class="label">${getStatLabel(key)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <h3>${match.away_team.name}</h3>
+                            <div class="stats-grid">
+                                ${Object.entries(match.away_team.stats).map(([key, value]) => `
+                                    <div class="stat-item">
+                                        <div class="value">${value}</div>
+                                        <div class="label">${getStatLabel(key)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="players-stats">
+                        <h2>Статистика игроков</h2>
+                        <div class="table-wrapper">
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Игрок</th>
+                                        <th>Очки</th>
+                                        <th>Подборы</th>
+                                        <th>Ассисты</th>
+                                        <th>Перехваты</th>
+                                        <th>Блокшоты</th>
+                                        <th>3-очк.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="team-divider">
+                                        <td colspan="8">
+                                            <div class="team-divider-content">
+                                                <img src="${match.home_team.logo}" alt="${match.home_team.name}">
+                                                ${match.home_team.name}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    ${match.home_team.players.map(player => `
+                                        <tr>
+                                            <td class="player-cell">
+                                                <a href="${player.link || '#'}">
+                                                    <img src="/otz2025/img/teams/${player.photo}.jpg" alt="${player.name}" onerror="this.src='/otz2025/img/default-player.jpg'">
+                                                    ${player.name}
+                                                </a>
+                                            </td>
+                                            <td>${player.points}</td>
+                                            <td>${player.rebounds}</td>
+                                            <td>${player.assists}</td>
+                                            <td>${player.steals}</td>
+                                            <td>${player.blocks}</td>
+                                            <td>${player['3pt']}</td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr class="team-divider">
+                                        <td colspan="8">
+                                            <div class="team-divider-content">
+                                                <img src="${match.away_team.logo}" alt="${match.away_team.name}">
+                                                ${match.away_team.name}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    ${match.away_team.players.map(player => `
+                                        <tr>
+                                            <td class="player-cell">
+                                                <a href="${player.link || '#'}">
+                                                    <img src="/otz2025/img/teams/${player.photo}.jpg" alt="${player.name}" onerror="this.src='/otz2025/img/default-player.jpg'">
+                                                    ${player.name}
+                                                </a>
+                                            </td>
+                                            <td>${player.points}</td>
+                                            <td>${player.rebounds}</td>
+                                            <td>${player.assists}</td>
+                                            <td>${player.steals}</td>
+                                            <td>${player.blocks}</td>
+                                            <td>${player['3pt']}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                const container = document.getElementById('match-content');
+                container.className = 'error';
+                container.innerHTML = `<p>Ошибка загрузки статистики: ${error.message}</p>`;
+            }
+        }
+        
+        function getStatLabel(key) {
+            const labels = {
+                'points': 'Очки',
+                'rebounds': 'Подборы',
+                'assists': 'Ассисты',
+                'steals': 'Перехваты',
+                'blocks': 'Блокшоты',
+                '3pt': '3-очковые'
+            };
+            return labels[key] || key;
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadMatchStats);
+    </script>
+</body>
+</html>
