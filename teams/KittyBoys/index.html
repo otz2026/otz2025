@@ -80,7 +80,7 @@
                 const container=document.getElementById('stats-body');
                 if(!team) throw new Error('Команда не найдена');
                 container.className='';
-                container.innerHTML=`<tr><td>${team.games}</td><td>${team.wins}</td><td>${team.losses}</td><td>${team.scored}</td><td>${team.conceded}</td><td>${team.percentage}%</td></tr>`;
+                container.innerHTML=`<tr><td>${team.games}</td><td>${team.wins}</td><td>${team.losses}</td><td>${team.scored}</td><td>${team.conceded}</td><td>${team.percentage}</td></tr>`;
             }catch(e){
                 document.getElementById('stats-body').className='error';
                 document.getElementById('stats-body').innerHTML=`<tr><td colspan="6">${e.message}</td></tr>`;
