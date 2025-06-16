@@ -1,0 +1,15 @@
+{
+    "name": "Over Time Zwenigorod",
+    "short_name": "OTZ",
+    "start_url": "/otz2025/",
+    "display": "standalone",
+    "background_color": "#1e1e1e",
+    "theme_color": "#1e1e1e",
+    "icons": [
+        {
+            "src": "/otz2025/img/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
